@@ -1,4 +1,4 @@
-import brain from "@/data/master-brain.json";
+import brain from "@/data/master-brain-v2.json";
 import type { Workflow } from "@/lib/types";
 
 export const workflows = brain as Workflow[];

@@ -2741,23 +2741,26 @@
     "id": "CA0",
     "title": "Master router — \"Audit this content\"",
     "meta": {
-      "category": "Content",
+      "category": "Content / Router",
       "status": "new",
       "handoffs": "CA1, CA2, CA3, CA4, CA5, CA6, CA7, CA8, TECH"
     },
     "clarifying": [
-      "Is this a single-URL audit or a whole-library pass?",
-      "Is the page even live and indexable before auditing content quality?"
+      "Auditing one URL or the whole library?",
+      "Is the page indexable and returning 200?",
+      "Do we have the target keyword and its intent?",
+      "Is a GEO tracker connected, or do we baseline AI visibility manually?"
     ],
     "synonyms": [
+      "audit this page",
       "audit this content",
-      "content brain entry point",
-      "master router",
-      "what's wrong with this page"
+      "which content problem is this",
+      "route a URL to the right check",
+      "content audit entry point"
     ],
-    "structure": "Picks the dominant content problem for a URL (or triggers the library-balance pass), then routes to the specialist module. Gate first: if the page can't be served/indexed, that's a technical fix — hand off, don't audit content on a page that can't rank.",
-    "changes": [],
-    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "structure": "Gate-first router. S0 splits single-URL vs whole-library. A page must be live & indexable or it HANDOFFS to TECH (content can't be audited on a page that can't rank). D0 pulls page-level signals; S1 selects the single dominant content problem across 8 branches — seven route to a specialist module (CA2–CA8), the all-clean branch is a monitor TERMINAL. Library scope routes to CA1 inventory triage first.",
+    "changes": "",
+    "rationale": "Every audit needs one front door that triages to the right lens and refuses to waste content effort on pages blocked by technical gates.",
     "nodes": [
       {
         "id": "A0",
@@ -2922,22 +2925,25 @@
     "id": "CA1",
     "title": "Inventory triage — keep / improve / consolidate / prune / redirect",
     "meta": {
-      "category": "Content",
+      "category": "Content / Inventory",
       "status": "new",
-      "handoffs": "CA8, PM"
+      "handoffs": "CA8, PM, TECH"
     },
     "clarifying": [
-      "Does this page have meaningful traffic or strategic/BOFU value?",
-      "Is it performing to its potential, or underperforming?"
+      "What traffic/impression floor counts as 'meaningful' here?",
+      "Which pages carry strategic/BOFU value regardless of traffic?",
+      "Do we have backlink data to spot equity worth preserving?"
     ],
     "synonyms": [
+      "content inventory",
       "keep improve consolidate prune",
-      "content inventory triage",
-      "which pages to kill or merge"
+      "content pruning",
+      "what to do with old pages",
+      "content triage"
     ],
-    "structure": "The library-level verdict for every URL before deep per-page work. Prevents wasting audit effort on pages that should be merged or killed.",
-    "changes": [],
-    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "structure": "Library-level verdict per URL before deep work. S1 reads traffic + strategic value; S2 checks performance-to-potential; S3/S4 test topic overlap and residual equity. Ends in KEEP / IMPROVE / CONSOLIDATE / PRUNE / REDIRECT, with equity-preserving redirects and prunes handed to PM+TECH.",
+    "changes": "",
+    "rationale": "Deep auditing every URL is wasteful; triage first so effort concentrates on pages worth keeping or fixing.",
     "nodes": [
       {
         "id": "A1",
@@ -3072,22 +3078,25 @@
     "id": "CA2",
     "title": "Intent & funnel fit",
     "meta": {
-      "category": "Content",
+      "category": "Content / Intent & Funnel",
       "status": "new",
       "handoffs": "CA3, CA5, PM"
     },
     "clarifying": [
-      "Does the page format match SERP intent?",
-      "Is the content library balanced across the funnel (40/35/25)?"
+      "What is the SERP intent for the target keyword today?",
+      "What is the current TOFU/MOFU/BOFU split of the library?",
+      "Is the target keyword commercially worthwhile for the ICP?"
     ],
     "synonyms": [
-      "intent mismatch",
-      "funnel balance TOFU MOFU BOFU",
-      "wrong search intent"
+      "search intent match",
+      "funnel balance",
+      "TOFU MOFU BOFU split",
+      "content mix",
+      "intent mismatch"
     ],
-    "structure": "Does the page match the searcher's intent, and is the library balanced to 40% TOFU / 35% MOFU / 25% BOFU?",
-    "changes": [],
-    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "structure": "S1 checks page format vs SERP intent; mismatches get re-angled or spun into a matching asset. S2 checks the library funnel split against 40/35/25 and briefs MOFU/BOFU first when TOFU-heavy. Off-ICP keywords route to CA3; new-asset builds route to CA5/PM.",
+    "changes": "",
+    "rationale": "Traffic that doesn't match intent or fill the commercial funnel doesn't convert; balance the mix toward evaluation/decision.",
     "nodes": [
       {
         "id": "A2",
@@ -3202,23 +3211,26 @@
     "id": "CA3",
     "title": "ICP alignment (5 dimensions)",
     "meta": {
-      "category": "Content",
+      "category": "Content / Audience (ICP)",
       "status": "new",
       "handoffs": "CA4, CA5, PM"
     },
     "clarifying": [
-      "Does the ranking query attract the right ICP role or segment?",
-      "Does the content speak to ICP goals, pains, and decision triggers?"
+      "What is the ICP — role, seniority, company size, industry?",
+      "Which queries actually convert (from CRM/GSC)?",
+      "Are multiple segments competing for the same page, and which has the highest LTV?"
     ],
     "synonyms": [
-      "ICP alignment",
-      "vanity traffic check",
+      "ICP fit",
+      "ideal customer profile",
       "wrong audience",
-      "off-ICP"
+      "vanity traffic",
+      "who is this content for",
+      "LTV weighting"
     ],
-    "structure": "Is the content attracting and speaking to the ideal customer — or driving vanity traffic?",
-    "changes": [],
-    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "structure": "Scores content against the 5 ICP dimensions (identity, goals, pains, information behaviour, decision triggers). Wrong-role queries get retargeted; generic content gets rewritten to ICP success metrics and fears; format/trigger gaps get adjusted. Multi-segment pages resolve via LTV weighting.",
+    "changes": "",
+    "rationale": "High-ICP visitors convert 3–5x; content attracting the wrong audience produces reports, not pipeline.",
     "nodes": [
       {
         "id": "A3",
@@ -3368,22 +3380,27 @@
     "id": "CA4",
     "title": "Answer architecture (AEO) — the minute page-level checks",
     "meta": {
-      "category": "Content",
+      "category": "Content / GEO-AEO structure",
       "status": "new",
-      "handoffs": "GEO-TECH"
+      "handoffs": "GEO-TECH, CA6"
     },
     "clarifying": [
-      "Is there a direct answer in the first sentence/paragraph?",
-      "Are key terms defined, questions used as headings, and data included?"
+      "Is the direct answer in the first sentence/paragraph?",
+      "Is the intent evaluation (needs a comparison table)?",
+      "Does the page expose data points and a closing synthesis?",
+      "Is schema/llms.txt already in place, or is that a tech handoff?"
     ],
     "synonyms": [
-      "AEO answer engine optimization",
-      "structured for AI citation",
-      "snippet-ready page"
+      "answer engine optimization",
+      "AEO",
+      "answer-first",
+      "featured snippet structure",
+      "citation-ready content",
+      "schema handoff"
     ],
-    "structure": "Whether the page is structured to be selected, quoted, and cited by answer engines. Every check is a discrete signal; the sequence hardens the page for AEO.",
-    "changes": [],
-    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "structure": "A sequential hardening tree: answer-first → definitions → question-formatted headings → comparison table (for evaluation intent) → specific data points → structured lists + synthesis + follow-ups. Content-ready-but-markup-missing hands to GEO-TECH for schema/llms.txt/server-render; fully hardened pages recheck citation in CA6.",
+    "changes": "",
+    "rationale": "Answer engines select and quote structured, answer-first, data-rich content; structure is the biggest in-team lever for GEO/AEO.",
     "nodes": [
       {
         "id": "A4",
@@ -3588,23 +3605,26 @@
     "id": "CA5",
     "title": "Coverage & semantic gap (+ prompt universe L1–L5)",
     "meta": {
-      "category": "Content",
+      "category": "Content / Coverage & semantics",
       "status": "new",
       "handoffs": "CA8, PM"
     },
     "clarifying": [
-      "Is the topic missing entirely, shallow, or fragmented across pages?",
-      "Which prompt layers (L1-L5) are uncovered?"
+      "What do competitors cover that we don't (content gap)?",
+      "Is the topic missing entirely, thin, or fragmented across pages?",
+      "Which prompt layers (L1–L5) are uncovered for this cluster?"
     ],
     "synonyms": [
-      "content gap analysis",
-      "topical coverage gap",
+      "content gap",
+      "topical authority",
+      "semantic coverage",
       "prompt universe",
-      "missing clusters"
+      "cluster completeness",
+      "what to write next"
     ],
-    "structure": "Where the library is shallow, fragmented, or missing the commercially valuable prompts.",
-    "changes": [],
-    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "structure": "S1 classifies the gap: missing cluster, shallow page, or fragmented topic (→CA8 consolidate). S2 prioritises by prompt layer — L3 evaluation and L5 role/scenario first (highest commercial value/conversion), L1/L2 for completeness. Briefs are handed to PM for sequencing.",
+    "changes": "",
+    "rationale": "Coverage decides topical authority and AI retrieval; concentrate on the commercially valuable prompts, not vanity breadth.",
     "nodes": [
       {
         "id": "A5",
@@ -3744,22 +3764,26 @@
     "id": "CA6",
     "title": "GEO visibility — baseline vs citation takeover",
     "meta": {
-      "category": "Content",
+      "category": "GEO / AI search",
       "status": "new",
-      "handoffs": "AUTH, CA4, GEO-TECH, PM"
+      "handoffs": "CA4, AUTH, GEO-TECH, PM"
     },
     "clarifying": [
-      "Do we appear when the target prompts are run through AI answer engines?",
-      "If a competitor is cited instead, why?"
+      "Which 10–20 prompts matter most to buyers?",
+      "Do we appear; if not, does a competitor consistently appear?",
+      "Is the gap structure, authority, or machine-readability?"
     ],
     "synonyms": [
-      "GEO visibility",
-      "AI answer citation",
-      "are we cited by ChatGPT/Perplexity"
+      "AI visibility",
+      "cited by ChatGPT Perplexity",
+      "GEO baseline",
+      "citation takeover",
+      "share of voice AI",
+      "are we in AI answers"
     ],
-    "structure": "Are we present in AI answers for the prompts that matter, and if not, why?",
-    "changes": [],
-    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "structure": "D6 runs 10–20 buyer prompts through AI engines and logs appearance, WSoV, competitor cited URLs. Absent-vs-competitor diagnoses the cause — structure (→CA4), authority (→AUTH), or machine-readability (→GEO-TECH). Absent-with-no-leader triggers a GEO baseline build; inconsistent presence strengthens the cited page.",
+    "changes": "",
+    "rationale": "AI answer engines are a distinct surface; being absent needs a specific cause diagnosis, not generic SEO.",
     "nodes": [
       {
         "id": "A6",
@@ -3879,23 +3903,26 @@
     "id": "CA7",
     "title": "Freshness, accuracy & decay",
     "meta": {
-      "category": "Content",
+      "category": "Content / Freshness & decay",
       "status": "new",
-      "handoffs": "CA8, PM, TECH"
+      "handoffs": "CA8, TECH, PM"
     },
     "clarifying": [
-      "Is the traffic/position trend declining or stable?",
-      "Are there outdated facts, stats, or screenshots on the page?"
+      "Is the decline real or seasonal?",
+      "When was the page last meaningfully updated?",
+      "Are the facts/stats/screenshots still current?"
     ],
     "synonyms": [
       "content decay",
+      "refresh",
       "stale content",
-      "freshness check",
-      "outdated stats"
+      "update old posts",
+      "freshness",
+      "declining traffic content"
     ],
-    "structure": "Is the content current, correct, and not silently decaying?",
-    "changes": [],
-    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "structure": "S1 reads the traffic/position trend. Declining-not-seasonal splits by cause: outdated info (refresh), lost rankings with fine content (→CA8), or sitewide fall (→TECH). Stable pages get a factual-accuracy sweep and a next-review interval.",
+    "changes": "",
+    "rationale": "Refreshing pages with existing authority is higher-ROI than net-new; decay is silent and needs a scheduled check.",
     "nodes": [
       {
         "id": "A7",
@@ -4025,22 +4052,25 @@
     "id": "CA8",
     "title": "Cannibalization & duplication (content angle)",
     "meta": {
-      "category": "Content",
+      "category": "Content / Consolidation",
       "status": "new",
-      "handoffs": "PM"
+      "handoffs": "PM, TECH"
     },
     "clarifying": [
-      "Do two or more pages target the same search intent?",
-      "Is one of them clearly the stronger page?"
+      "Which queries show multiple competing URLs?",
+      "Are the pages the same intent or genuinely different?",
+      "Is one page clearly stronger (authority/traffic)?"
     ],
     "synonyms": [
-      "keyword cannibalization",
+      "cannibalization",
       "duplicate content",
-      "competing pages"
+      "two pages same keyword",
+      "consolidate pages",
+      "content overlap"
     ],
-    "structure": "Two or more pages competing for the same intent. Content team decides consolidate vs differentiate; technical canonicalization/redirects are handed off.",
-    "changes": [],
-    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "structure": "D8 finds queries where 2+ URLs rank within 5 positions. Same-intent overlap resolves by consolidation (merge into the winner, redirect the loser) or, if both are weak, a new authoritative page + redirects. Different-intent 'false alarms' get differentiated + internal-link retargeting. Redirects/canonicals hand to PM+TECH.",
+    "changes": "",
+    "rationale": "Self-competition splits authority and confuses selection; one strong page usually beats several thin ones.",
     "nodes": [
       {
         "id": "A8",
@@ -4140,22 +4170,25 @@
     "id": "CA9",
     "title": "Prioritise & route to Project Optimisation (the tie-in)",
     "meta": {
-      "category": "Content",
+      "category": "Content / Prioritisation",
       "status": "new",
       "handoffs": "PM"
     },
     "clarifying": [
-      "Is this item blocked by a technical gate from CA0?",
-      "What's the impact × confidence ÷ effort score?"
+      "What are the revenue/ICP/funnel weights for this client?",
+      "Which findings are blocked by technical gates?",
+      "Who owns execution once briefs are handed to PM?"
     ],
     "synonyms": [
-      "prioritize content backlog",
-      "impact effort scoring",
-      "route to execution"
+      "what to do first",
+      "content backlog",
+      "prioritise fixes",
+      "impact effort",
+      "hand off to project management"
     ],
-    "structure": "The Content Audit Brain's exit point. Turns every TERMINAL/ACTION from CA1–CA8 into a scored, sequenced content backlog and hands execution + traceability to the project-optimisation workflow.",
-    "changes": [],
-    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "structure": "The exit point. D9 gathers all CA1–CA8 findings; scores each = Impact × Confidence ÷ Effort, then × revenue × ICP × funnel × GEO weights. Items behind a technical gate are marked BLOCKED-BY and kept visible. Assigns P0–P3 and hands work items (owner + brief) to the project-optimisation workflow, which owns state and traceability.",
+    "changes": "",
+    "rationale": "A prioritised, traceable backlog is the connective tissue tools don't provide; content stops at the scored brief, PM owns to-done.",
     "nodes": [
       {
         "id": "A9",

@@ -47,7 +47,7 @@ export type Finding = {
 };
 
 export type FindingExplanation = {
-  source: "MASTER_BRAIN.json";
+  source: "MASTER_BRAIN_V2.json";
   whyError: string;
   howToFix: string;
   howToVerify: string[];

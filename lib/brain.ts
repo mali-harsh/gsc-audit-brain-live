@@ -149,13 +149,13 @@ export function explainFinding(
   const workflow = workflowById.get(workflowId);
   if (!workflow) {
     return {
-      source: "MASTER_BRAIN.json",
+      source: "MASTER_BRAIN_V2.json",
       whyError:
-        "This Google Search Console reason is not mapped to a workflow in MASTER_BRAIN.json, so the engine stopped instead of guessing.",
+        "This Google Search Console reason is not mapped to a workflow in MASTER_BRAIN_V2.json, so the engine stopped instead of guessing.",
       howToFix:
         "Add a supported reason label or workflow_id to the import, then run the audit again.",
       howToVerify: [
-        "Confirm the export reason matches a workflow title or synonym in MASTER_BRAIN.json.",
+        "Confirm the export reason matches a workflow title or synonym in MASTER_BRAIN_V2.json.",
         "Re-import the row and confirm it resolves to a workflow ID instead of UNMAPPED.",
       ],
       evidenceUsed: evidenceFrom(row),
@@ -174,11 +174,11 @@ export function explainFinding(
   const selectedPath = path.length ? path : fallback;
 
   return {
-    source: "MASTER_BRAIN.json",
+    source: "MASTER_BRAIN_V2.json",
     whyError:
       status === "evaluated"
         ? `${workflow.structure} The evidence in this import followed the workflow to “${suggestion}”.`
-        : `${workflow.structure} The workflow matched, but MASTER_BRAIN.json requires more evidence before it can choose a safe outcome.`,
+        : `${workflow.structure} The workflow matched, but MASTER_BRAIN_V2.json requires more evidence before it can choose a safe outcome.`,
     howToFix: suggestion,
     howToVerify: workflow.clarifying.length
       ? workflow.clarifying.slice(0, 4).map((question) => `Confirm: ${question}`)
@@ -267,7 +267,7 @@ export function evaluateRow(row: ImportRow, rows: ImportRow[], rowNumber: number
       status: "needs_mapping",
       severity: "unknown",
       suggestionId: "manual_mapping",
-      suggestion: "This export label does not match a workflow in MASTER_BRAIN.json.",
+      suggestion: "This export label does not match a workflow in MASTER_BRAIN_V2.json.",
       missingContext: ["Provide a supported reason label or a workflow_id column."],
       explanation: explainFinding(
         "UNMAPPED",

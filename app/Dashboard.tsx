@@ -294,7 +294,7 @@ export default function Dashboard() {
           <span><strong>SearchOps Workbench</strong><small>Audit each page. Fix each piece once.</small></span>
         </button>
         <nav>
-          <button className={mode === "content" ? "active" : ""} onClick={() => setMode("content")}>Content audit</button>
+          <button className={mode === "content" ? "active" : ""} onClick={() => setMode("content")}>Content + SEO</button>
           <button className={mode === "gsc" ? "active" : ""} onClick={() => setMode("gsc")}>GSC audit</button>
           <button className={mode === "brain" ? "active" : ""} onClick={() => setMode("brain")}>Workflow brain <em>{workflows.length || 46}</em></button>
         </nav>
@@ -308,7 +308,7 @@ export default function Dashboard() {
           <>
             <section className="auditPanel">
               <div className="panelTitle">
-                <div><span>CONTENT INTELLIGENCE</span><h1>Audit a whole site</h1><p>Find every page from the sitemap, then turn technical and content signals into one prioritized fix plan.</p></div>
+                <div><span>CONTENT + SEO INTELLIGENCE</span><h1>Audit a whole site</h1><p>Find every page, then combine technical SEO, intent, AEO, GEO, coverage, and freshness signals into one prioritized fix plan.</p></div>
                 <span className="engineBadge"><i /> Engine online</span>
               </div>
               <div className="siteCommand">
@@ -360,7 +360,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               )}
-              <div className="scopeNote"><strong>Evidence first.</strong> MASTER_BRAIN handles deterministic checks. {useAi ? "Cloudflare AI is on for plain-language explanations." : "AI stays optional and never changes the rule outcome."}</div>
+              <div className="scopeNote"><strong>Evidence first.</strong> MASTER_BRAIN_V2 handles deterministic SEO and content checks. {useAi ? "Cloudflare AI is on for plain-language explanations." : "AI stays optional and never changes the rule outcome."}</div>
             </section>
 
             <section className="summary">
@@ -470,7 +470,7 @@ export default function Dashboard() {
 
         {mode === "brain" && (
           <>
-            <section className="brainHeader"><div><span>MASTER_BRAIN.JSON</span><h1>One inspectable source of truth</h1><p>46 indexing, content, onboarding, and operations workflows. Click any row to inspect its decisions and outcomes.</p></div><strong>{workflows.length || 46}<small>workflows online</small></strong></section>
+            <section className="brainHeader"><div><span>MASTER_BRAIN_V2.JSON</span><h1>One inspectable source of truth</h1><p>46 indexing, SEO, content, onboarding, and operations workflows. Click any row to inspect its decisions and outcomes.</p></div><strong>{workflows.length || 46}<small>workflows online</small></strong></section>
             <section className="filters brainFilters"><input value={workflowQuery} onChange={(event) => setWorkflowQuery(event.target.value)} placeholder="Search workflow ID, title, category…" /></section>
             <div className="workflowList">{workflows.filter((workflow) => `${workflow.id} ${workflow.title} ${workflow.category}`.toLowerCase().includes(workflowQuery.toLowerCase())).map((workflow) => <button key={workflow.id} onClick={() => void openWorkflow(workflow.id)}><span className="workflowChip">{workflow.id}</span><span><strong>{workflow.title}</strong><small>{workflow.category}</small></span><span>{workflow.decisionCount} decisions</span><span>{workflow.terminalCount} outcomes</span><em>→</em></button>)}</div>
           </>

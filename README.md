@@ -1,7 +1,7 @@
 # SearchOps Workbench
 
 A deployable content and Google Search Console operations workbench powered by
-the supplied `MASTER_BRAIN.json`.
+the supplied `MASTER_BRAIN_V2.json`.
 
 ## What works
 
@@ -85,7 +85,7 @@ model.
 
 ## Optional Cloudflare AI explanations
 
-The deterministic workflow engine remains the source of truth. Cloudflare
+The deterministic MASTER_BRAIN_V2 workflow engine remains the source of truth. Cloudflare
 Workers AI can optionally translate an existing finding into a short
 plain-language explanation; it cannot change the workflow, severity, evidence,
 or recommendation.

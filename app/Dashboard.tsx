@@ -338,7 +338,16 @@ export default function Dashboard() {
                 <button className="dangerButton" disabled={!pieces.length} onClick={() => void clearAll()}>Clear</button>
               </div>
               <div className="commandMeta">
-                <label className={`aiToggle ${useAi ? "on" : ""}`}><input type="checkbox" checked={useAi} disabled={!aiEnabled} onChange={(event) => setUseAi(event.target.checked)} /><span>✦</span><b>{aiEnabled ? "AI explanations" : "Add Cloudflare credentials to enable AI"}</b></label>
+                <button
+                  type="button"
+                  className={`aiToggle ${useAi ? "on" : ""}`}
+                  aria-pressed={useAi}
+                  disabled={!aiEnabled}
+                  onClick={() => setUseAi((value) => !value)}
+                >
+                  <i />
+                  <span><strong>AI explanations</strong><small>{aiEnabled ? (useAi ? "On · AI runs only when you click Explain" : "Off · no AI requests") : "Credentials not detected"}</small></span>
+                </button>
                 <button className="manualToggle" onClick={() => setManualOpen((value) => !value)}>{manualOpen ? "− Hide manual URLs" : "+ Or paste specific URLs"}</button>
                 {discoveredUrls.length > 0 && <strong>{discoveredUrls.length} pages ready</strong>}
                 {progress && !progress.startsWith("Auditing") && <em>{progress}</em>}
@@ -365,7 +374,7 @@ export default function Dashboard() {
               <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search title or URL…" />
               <select value={priority} onChange={(event) => setPriority(event.target.value)}><option value="">All priorities</option>{PRIORITIES.map((item) => <option key={item}>{item}</option>)}</select>
               <select value={status} onChange={(event) => setStatus(event.target.value)}><option value="">All statuses</option><option>To fix</option><option>In progress</option><option>Fixed</option></select>
-              <label><input type="checkbox" checked={hideFixed} onChange={(event) => setHideFixed(event.target.checked)} /> hide fixed</label>
+              <label className="toggleFilter"><input type="checkbox" checked={hideFixed} onChange={(event) => setHideFixed(event.target.checked)} /><i /> Hide fixed</label>
               <span />
               <button className="secondaryButton" disabled={!filteredPieces.length} onClick={exportPages}>↓ Pages CSV</button>
               <button className="secondaryButton" disabled={!filteredPieces.some((piece) => piece.consolidatedFixes.length)} onClick={exportFixes}>↓ Fixes CSV</button>
@@ -451,7 +460,7 @@ export default function Dashboard() {
                 </section>
                 <div className="pieceTableWrap">
                   <table className="pieceTable gscTable"><thead><tr><th>URL</th><th>Reason</th><th>Workflow</th><th>Priority</th><th>Recommended action</th><th>Status</th></tr></thead>
-                    <tbody>{gscAudit.findings.map((finding) => <GscFindingRows key={finding.id ?? `${finding.rowNumber}-${finding.url}`} finding={finding} aiEnabled={aiEnabled} onWorkflow={openWorkflow} />)}</tbody>
+                    <tbody>{gscAudit.findings.map((finding) => <GscFindingRows key={finding.id ?? `${finding.rowNumber}-${finding.url}`} finding={finding} aiEnabled={aiEnabled && useAi} onWorkflow={openWorkflow} />)}</tbody>
                   </table>
                 </div>
               </>
@@ -539,7 +548,7 @@ function PieceRows({
               <button className="primarySmall" onClick={() => void onUpdate(piece.url, { fixStatus: "Fixed" })}>✓ Mark fixed</button>
               <button className="secondaryButton" onClick={onReaudit}>↻ Re-audit</button>
               <button className="dangerButton small" onClick={() => { if (window.confirm("Remove this page from the audit list?")) onDelete(); }}>Remove</button>
-              <AiExplainButton
+              {aiEnabled && <AiExplainButton
                 enabled={aiEnabled}
                 kind="content_piece"
                 subject={{
@@ -555,7 +564,7 @@ function PieceRows({
                   issues: piece.issues.slice(0, 12),
                   deterministicFixes: piece.consolidatedFixes.slice(0, 8),
                 }}
-              />
+              />}
               <input value={owner} onChange={(event) => setOwner(event.target.value)} onBlur={() => void onUpdate(piece.url, { owner })} placeholder="Owner" />
               <input value={note} onChange={(event) => setNote(event.target.value)} placeholder="Add a note…" />
               <button className="secondaryButton" onClick={() => { if (note.trim()) void onUpdate(piece.url, { note }).then(() => setNote("")); }}>Add note</button>
@@ -639,7 +648,7 @@ function GscFindingRows({
             </div>
             <div className="explainActions">
               <button className="secondaryButton" onClick={() => void onWorkflow(finding.workflowId)}>Inspect full workflow →</button>
-              <AiExplainButton
+              {aiEnabled && <AiExplainButton
                 enabled={aiEnabled}
                 kind="gsc_finding"
                 subject={{
@@ -654,7 +663,7 @@ function GscFindingRows({
                   deterministicExplanation: finding.explanation,
                   missingContext: finding.missingContext,
                 }}
-              />
+              />}
             </div>
           </td>
         </tr>
@@ -695,8 +704,8 @@ function AiExplainButton({
   };
   return (
     <div className="aiExplain">
-      <button className="aiButton" disabled={loading} onClick={() => void explain()}>
-        {loading ? "✦ Explaining…" : enabled ? "✦ Explain with Cloudflare AI" : "✦ Preview AI setup"}
+      <button className="aiButton" disabled={loading || !enabled} onClick={() => void explain()}>
+        {loading ? "✦ Explaining…" : enabled ? "✦ Explain with Cloudflare AI" : "✦ AI explanations off"}
       </button>
       {error && <div className="aiError">{error}</div>}
       {explanation && <div className="aiAnswer"><span>AI EXPLANATION · DETERMINISTIC RESULT PRESERVED</span><p>{explanation}</p></div>}

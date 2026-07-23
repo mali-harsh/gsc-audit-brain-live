@@ -90,6 +90,12 @@ Workers AI can optionally translate an existing finding into a short
 plain-language explanation; it cannot change the workflow, severity, evidence,
 or recommendation.
 
+The dashboard switch controls whether AI actions are shown. Switching it on
+does not spend an inference request by itself; a request is sent only when the
+operator clicks **Explain with Cloudflare AI**. Responses are checked for
+numeric claims that do not exist in the deterministic payload. Unsupported
+answers are blocked instead of displayed.
+
 Copy the local Cloudflare runtime template:
 
 ```bash
@@ -101,7 +107,7 @@ Set these values in `.dev.vars`:
 ```env
 CLOUDFLARE_ACCOUNT_ID=your-account-id
 CLOUDFLARE_API_TOKEN=your-workers-ai-token
-CLOUDFLARE_AI_MODEL=@cf/meta/llama-3.2-3b-instruct
+CLOUDFLARE_AI_MODEL=@cf/meta/llama-3.1-8b-instruct-fast
 ```
 
 Create the token from Cloudflare **Workers AI → Use REST API**. Keep the token

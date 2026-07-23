@@ -1,0 +1,6 @@
+url,reason,last_crawl_time,in_sitemap,clicks,impressions,robots_txt_state,indexing_state,referring_urls,pattern
+https://example.com/api-timeout,Server error (5xx),2026-07-21T10:00:00Z,yes,0,0,ALLOWED,,,
+https://example.com/outdated-guide,Not found (404),2026-07-10T09:00:00Z,yes,38,290,ALLOWED,,https://partner.example/resource,
+https://example.com/private-preview,URL marked 'noindex',2026-07-16T08:00:00Z,yes,0,0,ALLOWED,BLOCKED_BY_META_TAG,,
+https://example.com/thin-category,Crawled - currently not indexed,2026-04-02T10:00:00Z,yes,0,12,ALLOWED,,,
+https://example.com/legacy?ref=campaign,Duplicate without user-selected canonical,2026-07-19T14:00:00Z,no,0,0,ALLOWED,,,query parameters

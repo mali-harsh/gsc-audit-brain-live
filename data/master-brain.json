@@ -1,0 +1,5338 @@
+[
+  {
+    "id": "R1",
+    "title": "Server error (5xx)",
+    "meta": {
+      "category": "Errors — fix now",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "How many URLs share this reason (single, cluster, sitewide)?",
+      "When was the last crawl attempt on the affected URLs?",
+      "Are these URLs in a submitted sitemap?"
+    ],
+    "synonyms": [
+      "500 5xx",
+      "server error blocking crawl",
+      "URL fetch failed"
+    ],
+    "structure": "GSC signals: URL Inspection.pageFetchState=SERVER_ERROR + lastCrawlTime. Split by blast radius (count of affected URLs) and recency of lastCrawlTime. All terminals are recommendations to infra/backend team — no direct fix in this workflow.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Server error (5xx)"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState + lastCrawlTime for each affected URL"
+      },
+      {
+        "id": "d_agg",
+        "type": "data",
+        "label": "Page Indexing report: count of URLs with this reason"
+      },
+      {
+        "id": "a_pattern",
+        "type": "action",
+        "label": "Analyze URL patterns — same path prefix? Same subdomain?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Blast radius?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. lastCrawlTime recency?"
+      },
+      {
+        "id": "t_single_recent",
+        "type": "terminal",
+        "label": "SUGGEST: Single URL, recent — share URL + timestamp with backend team; ask for app-log review at that timestamp"
+      },
+      {
+        "id": "t_single_old",
+        "type": "terminal",
+        "label": "SUGGEST: Single URL, old — request URL Inspection live test; error may already be resolved"
+      },
+      {
+        "id": "t_cluster",
+        "type": "terminal",
+        "label": "SUGGEST: Cluster on same path pattern — flag section-specific dependency (backend service, DB, template) to eng team"
+      },
+      {
+        "id": "t_site",
+        "type": "terminal",
+        "label": "SUGGEST: Sitewide — escalate to infra/DevOps; likely host availability, CDN/WAF, or deployment issue; share Crawl Stats host-status export"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_agg",
+        "cond": ""
+      },
+      {
+        "from": "d_agg",
+        "to": "a_pattern",
+        "cond": ""
+      },
+      {
+        "from": "a_pattern",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "1 URL"
+      },
+      {
+        "from": "s1",
+        "to": "t_cluster",
+        "cond": "cluster (same pattern)"
+      },
+      {
+        "from": "s1",
+        "to": "t_site",
+        "cond": "sitewide"
+      },
+      {
+        "from": "s2",
+        "to": "t_single_recent",
+        "cond": "<7d"
+      },
+      {
+        "from": "s2",
+        "to": "t_single_old",
+        "cond": "≥7d"
+      }
+    ]
+  },
+  {
+    "id": "R2",
+    "title": "Redirect error",
+    "meta": {
+      "category": "Errors — fix now",
+      "status": "existing",
+      "handoffs": "R7 (if target 404), R4 (if target noindex)"
+    },
+    "clarifying": [
+      "How many URLs have this reason?",
+      "Do the affected URLs share a domain/subdomain flip pattern?",
+      "Are they in the sitemap?"
+    ],
+    "synonyms": [
+      "redirect loop",
+      "chain too long",
+      "meta refresh problem"
+    ],
+    "structure": "GSC API reports the state but not the redirect chain itself. Workflow branches on affected-URL count and URL-pattern analysis, and always terminates in a suggestion for the team to trace the chain externally.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Redirect error"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState=REDIRECT_ERROR"
+      },
+      {
+        "id": "d_agg",
+        "type": "data",
+        "label": "Page Indexing report: URL list + count"
+      },
+      {
+        "id": "a_pattern",
+        "type": "action",
+        "label": "Look for shared prefix, protocol/subdomain flip, or www/non-www variants"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Pattern across affected URLs?"
+      },
+      {
+        "id": "t_flip",
+        "type": "terminal",
+        "label": "SUGGEST: Protocol/subdomain flip pattern detected — instruct eng to enforce one canonical host+scheme with a single 301 at the edge"
+      },
+      {
+        "id": "t_cluster",
+        "type": "terminal",
+        "label": "SUGGEST: Cluster on same path — instruct eng to trace redirect chain (curl -IL) for one sample URL; likely template-level loop or chain"
+      },
+      {
+        "id": "t_single",
+        "type": "terminal",
+        "label": "SUGGEST: Single URL — instruct team to trace redirect chain externally; typical fixes are collapsing to a single 301 to final URL"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_agg",
+        "cond": ""
+      },
+      {
+        "from": "d_agg",
+        "to": "a_pattern",
+        "cond": ""
+      },
+      {
+        "from": "a_pattern",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_flip",
+        "cond": "http↔https or www↔non-www"
+      },
+      {
+        "from": "s1",
+        "to": "t_cluster",
+        "cond": "shared path prefix"
+      },
+      {
+        "from": "s1",
+        "to": "t_single",
+        "cond": "no pattern"
+      }
+    ]
+  },
+  {
+    "id": "R3",
+    "title": "URL blocked by robots.txt",
+    "meta": {
+      "category": "Blocked — check intent",
+      "status": "existing",
+      "handoffs": "R16 (if also indexed)"
+    },
+    "clarifying": [
+      "Is the URL in a submitted sitemap (indicates intent to index)?",
+      "Is the URL indexed via external links (coverageState = Indexed, though blocked)?",
+      "Any Search Analytics impressions on the URL?"
+    ],
+    "synonyms": [
+      "robots.txt disallow",
+      "GSC blocked by robots"
+    ],
+    "structure": "Use Sitemaps API to detect intent conflict, and URL Inspection.coverageState to check whether the URL is still surfacing in Search via external links. Recommendation depends on intent conflict.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "URL blocked by robots.txt"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: robotsTxtState=DISALLOWED, coverageState"
+      },
+      {
+        "id": "d_sitemap",
+        "type": "data",
+        "label": "Sitemaps API: is this URL in a submitted sitemap?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. In sitemap?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Indexed anyway via external links?"
+      },
+      {
+        "id": "t_conflict",
+        "type": "terminal",
+        "label": "SUGGEST: Conflict: URL in sitemap AND blocked by robots.txt. Decide intent — if you want it indexed, ask team to remove the Disallow rule; if not, ask team to remove URL from sitemap"
+      },
+      {
+        "id": "h_r16",
+        "type": "handoff",
+        "label": "HANDOFF: R16 Indexed, though blocked by robots.txt"
+      },
+      {
+        "id": "t_intentional",
+        "type": "terminal",
+        "label": "SUGGEST: Not in sitemap, not indexed — treat as intentional; no action needed. If unintentional, ask team to remove the Disallow rule"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_sitemap",
+        "cond": ""
+      },
+      {
+        "from": "d_sitemap",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_conflict",
+        "cond": "yes — in sitemap"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "h_r16",
+        "cond": "yes — coverageState says indexed"
+      },
+      {
+        "from": "s2",
+        "to": "t_intentional",
+        "cond": "no"
+      }
+    ]
+  },
+  {
+    "id": "R4",
+    "title": "URL marked 'noindex'",
+    "meta": {
+      "category": "Blocked — check intent",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Where is the noindex signal (BLOCKED_BY_META_TAG vs BLOCKED_BY_HTTP_HEADER)?",
+      "Is the URL in a submitted sitemap?",
+      "Is it also disallowed in robots.txt (would prevent Googlebot from seeing a noindex removal)?"
+    ],
+    "synonyms": [
+      "noindex tag",
+      "X-Robots-Tag noindex"
+    ],
+    "structure": "URL Inspection.indexingState distinguishes meta tag vs HTTP header. Sitemap presence signals unintended noindex. Robots.txt conflict flag surfaces a common mistake.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "URL marked 'noindex'"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: indexingState + robotsTxtState"
+      },
+      {
+        "id": "d_sitemap",
+        "type": "data",
+        "label": "Sitemaps API: is URL in a submitted sitemap?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Source of noindex?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. In sitemap?"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Also blocked by robots.txt?"
+      },
+      {
+        "id": "t_meta_conflict",
+        "type": "terminal",
+        "label": "SUGGEST: noindex meta tag on a sitemap URL — ask eng to remove <meta name='robots' content='noindex'> from page template"
+      },
+      {
+        "id": "t_header_conflict",
+        "type": "terminal",
+        "label": "SUGGEST: X-Robots-Tag: noindex header on a sitemap URL — ask eng/DevOps to remove header at server or CDN level"
+      },
+      {
+        "id": "t_robots_conflict",
+        "type": "terminal",
+        "label": "SUGGEST: noindex AND robots.txt Disallow both present — ask team to remove robots.txt Disallow first, otherwise Googlebot cannot see any future noindex change"
+      },
+      {
+        "id": "t_intentional",
+        "type": "terminal",
+        "label": "SUGGEST: Not in sitemap — likely intentional noindex; no action unless you expected this URL in Search"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_sitemap",
+        "cond": ""
+      },
+      {
+        "from": "d_sitemap",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "BLOCKED_BY_META_TAG"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "BLOCKED_BY_HTTP_HEADER"
+      },
+      {
+        "from": "s2",
+        "to": "s3",
+        "cond": "yes — in sitemap"
+      },
+      {
+        "from": "s2",
+        "to": "t_intentional",
+        "cond": "no"
+      },
+      {
+        "from": "s3",
+        "to": "t_robots_conflict",
+        "cond": "yes"
+      },
+      {
+        "from": "s3",
+        "to": "t_meta_conflict",
+        "cond": "no + meta"
+      },
+      {
+        "from": "s3",
+        "to": "t_header_conflict",
+        "cond": "no + header"
+      }
+    ]
+  },
+  {
+    "id": "R5",
+    "title": "Soft 404",
+    "meta": {
+      "category": "Blocked — check intent",
+      "status": "existing",
+      "handoffs": "R7 (if truly gone)"
+    },
+    "clarifying": [
+      "Is the URL in a submitted sitemap?",
+      "Do multiple URLs in the same section share this reason (template issue)?",
+      "Does the URL have Search Analytics history (was it ever ranking)?"
+    ],
+    "synonyms": [
+      "soft 404",
+      "looks like not found"
+    ],
+    "structure": "Split by sitemap membership + cluster pattern. All terminals suggest content or status-code review — the workflow doesn't perform the review.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Soft 404"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState=SOFT_404"
+      },
+      {
+        "id": "d_sitemap",
+        "type": "data",
+        "label": "Sitemaps API: URL in sitemap?"
+      },
+      {
+        "id": "d_sa",
+        "type": "data",
+        "label": "Search Analytics API: any impressions/clicks last 90d?"
+      },
+      {
+        "id": "a_pattern",
+        "type": "action",
+        "label": "Group affected URLs by path prefix / template"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Cluster on shared template?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. In sitemap AND had traffic?"
+      },
+      {
+        "id": "t_template",
+        "type": "terminal",
+        "label": "SUGGEST: Section-wide soft-404 — ask team to audit the template (empty categories, out-of-stock, JS-render failure)"
+      },
+      {
+        "id": "t_valuable",
+        "type": "terminal",
+        "label": "SUGGEST: Sitemap URL with past traffic — ask team to restore content or 301 to the closest replacement"
+      },
+      {
+        "id": "t_gone",
+        "type": "terminal",
+        "label": "SUGGEST: Sitemap URL, no traffic — ask team to remove from sitemap and return a real 404/410"
+      },
+      {
+        "id": "t_singleton",
+        "type": "terminal",
+        "label": "SUGGEST: Not in sitemap, no clear pattern — ask team to audit whether URL should exist; if yes, add real content; if no, return 404/410"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_sitemap",
+        "cond": ""
+      },
+      {
+        "from": "d_sitemap",
+        "to": "d_sa",
+        "cond": ""
+      },
+      {
+        "from": "d_sa",
+        "to": "a_pattern",
+        "cond": ""
+      },
+      {
+        "from": "a_pattern",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_template",
+        "cond": "yes — section-wide"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "t_valuable",
+        "cond": "yes + traffic"
+      },
+      {
+        "from": "s2",
+        "to": "t_gone",
+        "cond": "yes + no traffic"
+      },
+      {
+        "from": "s2",
+        "to": "t_singleton",
+        "cond": "no"
+      }
+    ]
+  },
+  {
+    "id": "R6",
+    "title": "Blocked due to unauthorized request (401)",
+    "meta": {
+      "category": "Errors — fix now",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Are ALL URLs on the property 401 or just a subset?",
+      "Is the domain a staging URL that shouldn't be verified in GSC?",
+      "Any URLs in the sitemap 401'ing (implies intent to be public)?"
+    ],
+    "synonyms": [
+      "401 unauthorized",
+      "login required page"
+    ],
+    "structure": "First check: is the entire property 401 (staging property mistakenly verified)? Otherwise identify subset pattern.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Blocked due to unauthorized request (401)"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState=BLOCKED_4XX (401)"
+      },
+      {
+        "id": "d_agg",
+        "type": "data",
+        "label": "Page Indexing report: what share of URLs are 401?"
+      },
+      {
+        "id": "d_sitemap",
+        "type": "data",
+        "label": "Sitemaps API: any 401'd URLs in a submitted sitemap?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Scope?"
+      },
+      {
+        "id": "t_staging",
+        "type": "terminal",
+        "label": "SUGGEST: Nearly all URLs 401 — GSC property likely points at a staging/preview domain; ask team to verify the production property instead and remove staging"
+      },
+      {
+        "id": "t_conflict",
+        "type": "terminal",
+        "label": "SUGGEST: Sitemap URLs 401'ing — ask team to either make those URLs public or remove them from the sitemap"
+      },
+      {
+        "id": "t_subset",
+        "type": "terminal",
+        "label": "SUGGEST: Subset of URLs 401 — ask security/backend team to review auth wall on those paths; verify Googlebot is not being blocked by intent"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_agg",
+        "cond": ""
+      },
+      {
+        "from": "d_agg",
+        "to": "d_sitemap",
+        "cond": ""
+      },
+      {
+        "from": "d_sitemap",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_staging",
+        "cond": ">80% of URLs"
+      },
+      {
+        "from": "s1",
+        "to": "t_conflict",
+        "cond": "sitemap URLs affected"
+      },
+      {
+        "from": "s1",
+        "to": "t_subset",
+        "cond": "subset only"
+      }
+    ]
+  },
+  {
+    "id": "R7",
+    "title": "Not found (404)",
+    "meta": {
+      "category": "Blocked — check intent",
+      "status": "existing",
+      "handoffs": "R2 (if 301 to replacement)"
+    },
+    "clarifying": [
+      "Was the URL previously indexed (Search Analytics history)?",
+      "Is it in a submitted sitemap?",
+      "Any inbound external links (URL Inspection referring URLs)?"
+    ],
+    "synonyms": [
+      "404 not found",
+      "deleted page"
+    ],
+    "structure": "Route by past value + sitemap intent. A 404 is often correct; only worth escalating when the URL had traffic, is still submitted, or has external links pointing at it.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Not found (404)"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState=NOT_FOUND + referringUrls"
+      },
+      {
+        "id": "d_sa",
+        "type": "data",
+        "label": "Search Analytics API: impressions/clicks last 90d"
+      },
+      {
+        "id": "d_sitemap",
+        "type": "data",
+        "label": "Sitemaps API: URL in sitemap?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Has traffic history OR external links?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. In sitemap?"
+      },
+      {
+        "id": "t_recover",
+        "type": "terminal",
+        "label": "SUGGEST: High-value URL (traffic or links) — ask team to 301 to closest replacement URL"
+      },
+      {
+        "id": "t_sitemap_stale",
+        "type": "terminal",
+        "label": "SUGGEST: URL 404s but is still in sitemap — ask team to remove from sitemap OR restore/redirect"
+      },
+      {
+        "id": "t_ok",
+        "type": "terminal",
+        "label": "SUGGEST: No traffic, no links, not in sitemap — safe to leave as 404 (or 410 for a stronger signal); no urgent action"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_sa",
+        "cond": ""
+      },
+      {
+        "from": "d_sa",
+        "to": "d_sitemap",
+        "cond": ""
+      },
+      {
+        "from": "d_sitemap",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_recover",
+        "cond": "yes"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "t_sitemap_stale",
+        "cond": "yes"
+      },
+      {
+        "from": "s2",
+        "to": "t_ok",
+        "cond": "no"
+      }
+    ]
+  },
+  {
+    "id": "R8",
+    "title": "Blocked due to access forbidden (403)",
+    "meta": {
+      "category": "Errors — fix now",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "What share of URLs are 403 (sitewide vs subset)?",
+      "Any recent WAF/CDN deploy visible in Crawl Stats?",
+      "Is the URL in a sitemap?"
+    ],
+    "synonyms": [
+      "403 forbidden",
+      "WAF blocking Googlebot"
+    ],
+    "structure": "GSC surfaces the state; the API cannot tell you which WAF rule fires. Terminals hand the URL list to infra/security for review.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Blocked due to access forbidden (403)"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState=ACCESS_DENIED"
+      },
+      {
+        "id": "d_agg",
+        "type": "data",
+        "label": "Page Indexing report: 403 count vs total"
+      },
+      {
+        "id": "d_sitemap",
+        "type": "data",
+        "label": "Sitemaps API: any 403'd URLs in sitemap?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Scope?"
+      },
+      {
+        "id": "t_sitewide",
+        "type": "terminal",
+        "label": "SUGGEST: Sitewide 403 — ask security/infra to check WAF/CDN rules blocking verified Googlebot; provide GSC's Googlebot IP verification pattern"
+      },
+      {
+        "id": "t_conflict",
+        "type": "terminal",
+        "label": "SUGGEST: 403 on sitemap URLs — flag as blocking indexing intent; escalate to security with the URL list"
+      },
+      {
+        "id": "t_subset",
+        "type": "terminal",
+        "label": "SUGGEST: Subset of URLs 403 — provide list to security team; possible path-specific ACL or geo-restriction"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_agg",
+        "cond": ""
+      },
+      {
+        "from": "d_agg",
+        "to": "d_sitemap",
+        "cond": ""
+      },
+      {
+        "from": "d_sitemap",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_sitewide",
+        "cond": ">50% of crawled URLs"
+      },
+      {
+        "from": "s1",
+        "to": "t_conflict",
+        "cond": "sitemap URLs affected"
+      },
+      {
+        "from": "s1",
+        "to": "t_subset",
+        "cond": "subset only"
+      }
+    ]
+  },
+  {
+    "id": "R9",
+    "title": "URL blocked due to other 4xx issue",
+    "meta": {
+      "category": "Errors — fix now",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "What is the exact HTTP status (GSC API buckets this)?",
+      "Is the URL in a sitemap?",
+      "Any pattern in the affected URLs?"
+    ],
+    "synonyms": [
+      "4xx other",
+      "429 rate limit",
+      "410 gone",
+      "400 bad request"
+    ],
+    "structure": "GSC does not disclose the exact 4xx sub-code here. The suggestion is always to expose the specific status externally and share the list with the responsible team.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "URL blocked due to other 4xx issue"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState=BLOCKED_4XX"
+      },
+      {
+        "id": "d_agg",
+        "type": "data",
+        "label": "Page Indexing report: URL list"
+      },
+      {
+        "id": "d_sitemap",
+        "type": "data",
+        "label": "Sitemaps API: any of these in sitemap?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. In sitemap?"
+      },
+      {
+        "id": "t_conflict",
+        "type": "terminal",
+        "label": "SUGGEST: Sitemap URLs affected — ask team to run HTTP-status audit on this URL list and reveal the specific 4xx (429 / 410 / 400 / 451). Priority = high"
+      },
+      {
+        "id": "t_other",
+        "type": "terminal",
+        "label": "SUGGEST: Not in sitemap — provide URL list to backend team for HTTP-status audit; likely 429 (rate limit) or 410 (intentional gone)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_agg",
+        "cond": ""
+      },
+      {
+        "from": "d_agg",
+        "to": "d_sitemap",
+        "cond": ""
+      },
+      {
+        "from": "d_sitemap",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_conflict",
+        "cond": "yes"
+      },
+      {
+        "from": "s1",
+        "to": "t_other",
+        "cond": "no"
+      }
+    ]
+  },
+  {
+    "id": "R10",
+    "title": "Crawled — currently not indexed",
+    "meta": {
+      "category": "Quality / discovery",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "How long has the URL been in this state (lastCrawlTime)?",
+      "What share of the site has this reason?",
+      "Do affected URLs have Search Analytics impressions elsewhere?"
+    ],
+    "synonyms": [
+      "crawled not indexed",
+      "not making the index"
+    ],
+    "structure": "Age gate first — <14d is normal. Then split single-URL quality review vs sitewide pattern.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Crawled — currently not indexed"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: coverageState + lastCrawlTime + userCanonical/googleCanonical"
+      },
+      {
+        "id": "d_agg",
+        "type": "data",
+        "label": "Page Indexing report: URL count / share"
+      },
+      {
+        "id": "d_sa",
+        "type": "data",
+        "label": "Search Analytics API: impressions in last 90d"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Time since lastCrawlTime?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Share of site affected?"
+      },
+      {
+        "id": "t_wait",
+        "type": "terminal",
+        "label": "SUGGEST: <14 days since crawl — too early to act; monitor"
+      },
+      {
+        "id": "t_site",
+        "type": "terminal",
+        "label": "SUGGEST: Large share of site affected — sitewide quality signal; recommend content-quality audit and content-strategy review with editorial team"
+      },
+      {
+        "id": "t_perurl",
+        "type": "terminal",
+        "label": "SUGGEST: Subset of URLs — recommend per-URL content-quality audit: depth, uniqueness vs canonical, internal linking, template differentiation"
+      },
+      {
+        "id": "t_stale",
+        "type": "terminal",
+        "label": "SUGGEST: >90 days in this state — URL has failed the quality bar; recommend consolidation, redirect to canonical, or removal"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_agg",
+        "cond": ""
+      },
+      {
+        "from": "d_agg",
+        "to": "d_sa",
+        "cond": ""
+      },
+      {
+        "from": "d_sa",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_wait",
+        "cond": "<14d"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "14–90d"
+      },
+      {
+        "from": "s1",
+        "to": "t_stale",
+        "cond": ">90d"
+      },
+      {
+        "from": "s2",
+        "to": "t_site",
+        "cond": ">20% of site"
+      },
+      {
+        "from": "s2",
+        "to": "t_perurl",
+        "cond": "<20% of site"
+      }
+    ]
+  },
+  {
+    "id": "R11",
+    "title": "Discovered — currently not indexed",
+    "meta": {
+      "category": "Quality / discovery",
+      "status": "existing",
+      "handoffs": "R1 (if server unhealthy)"
+    },
+    "clarifying": [
+      "Is host status healthy in Crawl Stats?",
+      "What's the total URL count on the property?",
+      "Are many affected URLs parametric/faceted?"
+    ],
+    "synonyms": [
+      "discovered not indexed",
+      "google won't crawl"
+    ],
+    "structure": "First check host health (a slow/overloaded server is the biggest cause). Then split by site size and URL pattern (faceted bloat vs low authority).",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Discovered — currently not indexed"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: coverageState='Discovered - currently not indexed'"
+      },
+      {
+        "id": "d_crawl",
+        "type": "data",
+        "label": "Crawl Stats API: host availability + response time"
+      },
+      {
+        "id": "d_agg",
+        "type": "data",
+        "label": "Page Indexing report: total URL count on property"
+      },
+      {
+        "id": "a_pattern",
+        "type": "action",
+        "label": "Scan affected URLs for query params, session IDs, faceted patterns"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Host healthy?"
+      },
+      {
+        "id": "h_r1",
+        "type": "handoff",
+        "label": "HANDOFF: R1 Server error (server unhealthy)"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Site size + URL pattern?"
+      },
+      {
+        "id": "t_perf",
+        "type": "terminal",
+        "label": "SUGGEST: Slow TTFB in Crawl Stats — recommend server-performance work with infra: cache/CDN/DB tuning"
+      },
+      {
+        "id": "t_bloat",
+        "type": "terminal",
+        "label": "SUGGEST: Faceted/parametric URLs dominating discovery — recommend canonicalizing params, disallowing infinite param combos in robots.txt, curating the sitemap"
+      },
+      {
+        "id": "t_authority",
+        "type": "terminal",
+        "label": "SUGGEST: Small site, clean URLs — recommend strengthening internal linking to affected URLs and building external links to raise authority"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_crawl",
+        "cond": ""
+      },
+      {
+        "from": "d_crawl",
+        "to": "d_agg",
+        "cond": ""
+      },
+      {
+        "from": "d_agg",
+        "to": "a_pattern",
+        "cond": ""
+      },
+      {
+        "from": "a_pattern",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "h_r1",
+        "cond": "5xx / host errors"
+      },
+      {
+        "from": "s1",
+        "to": "t_perf",
+        "cond": "slow TTFB"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "healthy"
+      },
+      {
+        "from": "s2",
+        "to": "t_bloat",
+        "cond": "facet/param bloat"
+      },
+      {
+        "from": "s2",
+        "to": "t_authority",
+        "cond": "small site, clean URLs"
+      }
+    ]
+  },
+  {
+    "id": "R12",
+    "title": "Alternate page with proper canonical tag",
+    "meta": {
+      "category": "Expected — no action",
+      "status": "existing",
+      "handoffs": "R14 (if canonical mismatch)"
+    },
+    "clarifying": [
+      "Does userCanonical equal googleCanonical for this URL?",
+      "Is the canonical URL itself indexed?",
+      "Is this an hreflang language variant?"
+    ],
+    "synonyms": [
+      "alternate page canonical",
+      "AMP alternate"
+    ],
+    "structure": "Almost always expected. Only escalates when canonical target isn't indexed, or when this fires on an hreflang variant that should be independently indexed.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Alternate page with proper canonical tag"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: userCanonical, googleCanonical, verdict"
+      },
+      {
+        "id": "d_ci",
+        "type": "data",
+        "label": "URL Inspection API on canonical URL: coverageState"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Canonical mismatch?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Canonical URL indexed?"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Is this an hreflang variant?"
+      },
+      {
+        "id": "h_r14",
+        "type": "handoff",
+        "label": "HANDOFF: R14 Duplicate, Google chose different canonical"
+      },
+      {
+        "id": "t_ok",
+        "type": "terminal",
+        "label": "SUGGEST: Working as expected — no action needed"
+      },
+      {
+        "id": "t_target_gap",
+        "type": "terminal",
+        "label": "SUGGEST: Canonical target isn't indexed — pivot investigation to the target URL's indexing reason"
+      },
+      {
+        "id": "t_hreflang",
+        "type": "terminal",
+        "label": "SUGGEST: Hreflang locale variant treated as alternate — ask team to audit hreflang cluster; language variants should each be independently indexable, not consolidated"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_ci",
+        "cond": ""
+      },
+      {
+        "from": "d_ci",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "h_r14",
+        "cond": "yes — user≠google canonical"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "s3",
+        "cond": "yes — indexed"
+      },
+      {
+        "from": "s2",
+        "to": "t_target_gap",
+        "cond": "no"
+      },
+      {
+        "from": "s3",
+        "to": "t_hreflang",
+        "cond": "yes"
+      },
+      {
+        "from": "s3",
+        "to": "t_ok",
+        "cond": "no"
+      }
+    ]
+  },
+  {
+    "id": "R13",
+    "title": "Duplicate without user-selected canonical",
+    "meta": {
+      "category": "Canonicalization",
+      "status": "existing",
+      "handoffs": "R14 (if Google's pick disputed)"
+    },
+    "clarifying": [
+      "Are affected URLs parametric, protocol variants, or trailing-slash variants?",
+      "Is Google's chosen canonical indexed?",
+      "Are these truly duplicates or should they be distinct?"
+    ],
+    "synonyms": [
+      "duplicate no canonical",
+      "auto canonical"
+    ],
+    "structure": "Pattern-detect the duplication source (params / protocol / slash / case) and recommend the matching normalization. If pages should be distinct, recommend content differentiation.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Duplicate without user-selected canonical"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: userCanonical=null, googleCanonical present"
+      },
+      {
+        "id": "a_pattern",
+        "type": "action",
+        "label": "Compare affected URL vs Google's canonical — identify diff (query param, protocol, slash, case)"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. What causes the duplication?"
+      },
+      {
+        "id": "t_params",
+        "type": "terminal",
+        "label": "SUGGEST: Query-parameter duplicates — recommend adding rel=canonical to param-free URL, and reviewing tracking-param policy"
+      },
+      {
+        "id": "t_proto",
+        "type": "terminal",
+        "label": "SUGGEST: HTTP/HTTPS or WWW/non-WWW variants — recommend edge-level 301 to preferred host+scheme"
+      },
+      {
+        "id": "t_slash",
+        "type": "terminal",
+        "label": "SUGGEST: Trailing-slash variants — recommend normalization: pick one form and 301 the other"
+      },
+      {
+        "id": "t_case",
+        "type": "terminal",
+        "label": "SUGGEST: URL case variants — recommend 301 to lowercase (or configure server to be case-insensitive)"
+      },
+      {
+        "id": "t_distinct",
+        "type": "terminal",
+        "label": "SUGGEST: Pages should be distinct — recommend content-differentiation work with editorial team"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "a_pattern",
+        "cond": ""
+      },
+      {
+        "from": "a_pattern",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_params",
+        "cond": "query params"
+      },
+      {
+        "from": "s1",
+        "to": "t_proto",
+        "cond": "HTTP/HTTPS or WWW"
+      },
+      {
+        "from": "s1",
+        "to": "t_slash",
+        "cond": "trailing slash"
+      },
+      {
+        "from": "s1",
+        "to": "t_case",
+        "cond": "case difference"
+      },
+      {
+        "from": "s1",
+        "to": "t_distinct",
+        "cond": "content actually differs / should differ"
+      }
+    ]
+  },
+  {
+    "id": "R14",
+    "title": "Duplicate, Google chose different canonical than user",
+    "meta": {
+      "category": "Canonicalization",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "What did Google pick (googleCanonical)?",
+      "Are declared and Google-selected canonicals content-equivalent?",
+      "Any hreflang cluster involving these URLs?"
+    ],
+    "synonyms": [
+      "google ignoring canonical",
+      "canonical override"
+    ],
+    "structure": "Diagnose why Google overrode: content dissimilarity vs conflicting signals vs authority gap vs hreflang misconfig.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Duplicate, Google chose different canonical than user"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: userCanonical, googleCanonical"
+      },
+      {
+        "id": "d_sitemap",
+        "type": "data",
+        "label": "Sitemaps API: is chosen canonical in sitemap?"
+      },
+      {
+        "id": "a_signals",
+        "type": "action",
+        "label": "Cross-check: sitemap, hreflang, internal-link count (via Links report)"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Signal-alignment status?"
+      },
+      {
+        "id": "t_conflict",
+        "type": "terminal",
+        "label": "SUGGEST: Conflicting signals (sitemap says X, canonical tag says Y) — ask team to align sitemap, canonical tag, and internal links on the intended URL"
+      },
+      {
+        "id": "t_strength",
+        "type": "terminal",
+        "label": "SUGGEST: Chosen canonical has stronger external+internal signals — either accept Google's pick (update your canonical to match) or invest in strengthening the intended URL"
+      },
+      {
+        "id": "t_hreflang",
+        "type": "terminal",
+        "label": "SUGGEST: Hreflang cluster misconfigured — ask team to audit hreflang self-references and locale codes"
+      },
+      {
+        "id": "t_similar",
+        "type": "terminal",
+        "label": "SUGGEST: Declared canonical too dissimilar to the page — either align content or drop the declared canonical"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_sitemap",
+        "cond": ""
+      },
+      {
+        "from": "d_sitemap",
+        "to": "a_signals",
+        "cond": ""
+      },
+      {
+        "from": "a_signals",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_conflict",
+        "cond": "signals disagree"
+      },
+      {
+        "from": "s1",
+        "to": "t_strength",
+        "cond": "authority mismatch"
+      },
+      {
+        "from": "s1",
+        "to": "t_hreflang",
+        "cond": "hreflang cluster"
+      },
+      {
+        "from": "s1",
+        "to": "t_similar",
+        "cond": "dissimilar content"
+      }
+    ]
+  },
+  {
+    "id": "R15",
+    "title": "Page with redirect",
+    "meta": {
+      "category": "Expected — no action",
+      "status": "existing",
+      "handoffs": "R2 (if chain broken)"
+    },
+    "clarifying": [
+      "Which URL should be indexed — source or target?",
+      "Is the redirect target itself indexed?",
+      "Are affected URLs in the sitemap (implies you want THEM indexed)?"
+    ],
+    "synonyms": [
+      "page with redirect",
+      "URL redirects"
+    ],
+    "structure": "Usually expected. Escalates when the source URL is in the sitemap (contradiction), or when the redirect target isn't indexed.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Page with redirect"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API on source URL: pageFetchState + redirect target"
+      },
+      {
+        "id": "d_sitemap",
+        "type": "data",
+        "label": "Sitemaps API: is source URL in sitemap?"
+      },
+      {
+        "id": "d_target",
+        "type": "data",
+        "label": "URL Inspection API on target URL: coverageState"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Source URL in sitemap?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Target URL indexed?"
+      },
+      {
+        "id": "t_sitemap",
+        "type": "terminal",
+        "label": "SUGGEST: Source URL is in sitemap but redirects away — ask team to either remove the redirect at origin OR remove source URL from sitemap and add the target instead"
+      },
+      {
+        "id": "t_target_gap",
+        "type": "terminal",
+        "label": "SUGGEST: Target URL isn't indexed — pivot investigation to the target's indexing reason"
+      },
+      {
+        "id": "t_ok",
+        "type": "terminal",
+        "label": "SUGGEST: Working as expected — no action needed"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_sitemap",
+        "cond": ""
+      },
+      {
+        "from": "d_sitemap",
+        "to": "d_target",
+        "cond": ""
+      },
+      {
+        "from": "d_target",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_sitemap",
+        "cond": "yes"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "t_ok",
+        "cond": "yes"
+      },
+      {
+        "from": "s2",
+        "to": "t_target_gap",
+        "cond": "no"
+      }
+    ]
+  },
+  {
+    "id": "R16",
+    "title": "Indexed, though blocked by robots.txt",
+    "meta": {
+      "category": "Warnings — indexed with issue",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Do you want this URL in Search or not?",
+      "Any sensitive content on the URL that requires urgent removal?"
+    ],
+    "synonyms": [
+      "indexed but blocked",
+      "robots blocked but showing"
+    ],
+    "structure": "Two-branch decision on intent. If content is sensitive, add an urgent-removal recommendation.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Indexed, though blocked by robots.txt"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: coverageState='Indexed, though blocked by robots.txt'"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Intent?"
+      },
+      {
+        "id": "t_remove",
+        "type": "terminal",
+        "label": "SUGGEST: Wants URL OUT of Search — ask team to (a) remove robots.txt Disallow so Googlebot can crawl, (b) add noindex meta or header. Robots.txt alone will NOT drop it from the index"
+      },
+      {
+        "id": "t_keep",
+        "type": "terminal",
+        "label": "SUGGEST: Wants URL IN Search — ask team to remove the robots.txt Disallow so Googlebot can crawl and produce proper snippets"
+      },
+      {
+        "id": "t_urgent",
+        "type": "terminal",
+        "label": "SUGGEST: Sensitive content — recommend GSC Removals tool for immediate temporary block (6 months), then apply noindex per the OUT-of-Search flow"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_remove",
+        "cond": "OUT of Search"
+      },
+      {
+        "from": "s1",
+        "to": "t_keep",
+        "cond": "IN Search"
+      },
+      {
+        "from": "s1",
+        "to": "t_urgent",
+        "cond": "urgent — sensitive"
+      }
+    ]
+  },
+  {
+    "id": "R17",
+    "title": "Page indexed without content",
+    "meta": {
+      "category": "Warnings — indexed with issue",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Does the rendered HTML in URL Inspection screenshot show content or a blank page?",
+      "Is the raw HTML empty as well?",
+      "Any indication of geo/UA-specific serving?"
+    ],
+    "synonyms": [
+      "indexed no content",
+      "empty snippet",
+      "cloaking flag"
+    ],
+    "structure": "URL Inspection returns the rendered HTML + screenshot. Branch on rendered vs raw vs both.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Page indexed without content"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: rendered HTML + screenshot + HTTP response"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. What does Googlebot see?"
+      },
+      {
+        "id": "t_render",
+        "type": "terminal",
+        "label": "SUGGEST: Raw HTML has content, rendered HTML empty — client-side rendering issue; ask eng team to add SSR/prerender or expose content in raw HTML"
+      },
+      {
+        "id": "t_cloak",
+        "type": "terminal",
+        "label": "SUGGEST: Different content served to Googlebot vs users — cloaking flag; ask team to serve identical content"
+      },
+      {
+        "id": "t_empty",
+        "type": "terminal",
+        "label": "SUGGEST: Both raw and rendered HTML empty — page has no content; ask editorial team to add substantive content"
+      },
+      {
+        "id": "t_format",
+        "type": "terminal",
+        "label": "SUGGEST: Content in unsupported format (image-only, PDF-in-iframe, Flash) — ask team to expose visible content as HTML text"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_render",
+        "cond": "rendered empty, raw has content"
+      },
+      {
+        "from": "s1",
+        "to": "t_cloak",
+        "cond": "different vs user"
+      },
+      {
+        "from": "s1",
+        "to": "t_empty",
+        "cond": "both empty"
+      },
+      {
+        "from": "s1",
+        "to": "t_format",
+        "cond": "unsupported format"
+      }
+    ]
+  },
+  {
+    "id": "R18",
+    "title": "Blocked by Page Removal tool",
+    "meta": {
+      "category": "Edge cases",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Is there an active Removals request for this URL?",
+      "Who submitted it (property owner audit)?",
+      "Should the URL be back in Search?"
+    ],
+    "synonyms": [
+      "removals tool",
+      "URL removed via GSC"
+    ],
+    "structure": "Query Removals API for active requests; branch on intent.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Blocked by Page Removal tool"
+      },
+      {
+        "id": "d_rem",
+        "type": "data",
+        "label": "GSC Removals API: active requests for URL"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Removal intended?"
+      },
+      {
+        "id": "t_cancel",
+        "type": "terminal",
+        "label": "SUGGEST: Unintended — cancel the Removals request in GSC; requester should be identified via property-access audit"
+      },
+      {
+        "id": "t_wait",
+        "type": "terminal",
+        "label": "SUGGEST: Intended — no action; request expires in ~6 months"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_rem",
+        "cond": ""
+      },
+      {
+        "from": "d_rem",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_cancel",
+        "cond": "no — bring back"
+      },
+      {
+        "from": "s1",
+        "to": "t_wait",
+        "cond": "yes — keep out"
+      }
+    ]
+  },
+  {
+    "id": "R19",
+    "title": "Blocked due to legal issue",
+    "meta": {
+      "category": "Edge cases",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Are you the rightful content owner?",
+      "Is documentation available to file a counter-notice?"
+    ],
+    "synonyms": [
+      "legal removal",
+      "DMCA takedown",
+      "451"
+    ],
+    "structure": "Not a technical fix. Route to legal review.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Blocked due to legal issue"
+      },
+      {
+        "id": "d_lu",
+        "type": "data",
+        "label": "URL Inspection API confirms legal-blocked state"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Rightful owner with documentation?"
+      },
+      {
+        "id": "t_counter",
+        "type": "terminal",
+        "label": "SUGGEST: Escalate to legal team — file a counter-notice via Google Legal Removals (or the applicable regional process)"
+      },
+      {
+        "id": "t_leave",
+        "type": "terminal",
+        "label": "SUGGEST: Not rightful owner OR no documentation — legal review outside SEO scope; track resolution date"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_lu",
+        "cond": ""
+      },
+      {
+        "from": "d_lu",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_counter",
+        "cond": "yes"
+      },
+      {
+        "from": "s1",
+        "to": "t_leave",
+        "cond": "no"
+      }
+    ]
+  },
+  {
+    "id": "R20",
+    "title": "Excluded by 'noindex' tag (legacy label)",
+    "meta": {
+      "category": "Legacy labels",
+      "status": "existing",
+      "handoffs": "R4"
+    },
+    "clarifying": [
+      "Same as R4 — is this URL supposed to be indexed?",
+      "Where does the noindex signal originate?"
+    ],
+    "synonyms": [
+      "excluded by noindex",
+      "legacy noindex label"
+    ],
+    "structure": "Legacy label with the same underlying signal as R4. Handoff to R4 workflow.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Excluded by 'noindex' tag (legacy)"
+      },
+      {
+        "id": "h_r4",
+        "type": "handoff",
+        "label": "HANDOFF: R4 URL marked 'noindex' — use that workflow"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "h_r4",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "R21",
+    "title": "Submitted URL not selected as canonical",
+    "meta": {
+      "category": "Legacy sitemap labels",
+      "status": "existing",
+      "handoffs": "R14"
+    },
+    "clarifying": [
+      "Is the URL genuinely supposed to be indexed (its sitemap presence suggests yes)?",
+      "Do you want to keep it in the sitemap?",
+      "Are similar URLs affected (sitemap-generation bug)?"
+    ],
+    "synonyms": [
+      "submitted url not selected as canonical",
+      "sitemap conflict"
+    ],
+    "structure": "Legacy 'Submitted URL' label — the URL is in a submitted sitemap AND the underlying state is R14. Route by intent; if intent is to index, hand off to R14; if not, recommend removing from sitemap.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Submitted URL not selected as canonical"
+      },
+      {
+        "id": "d_sm",
+        "type": "data",
+        "label": "Sitemaps API: confirm URL is in an active sitemap; identify which sitemap file"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: userCanonical vs googleCanonical"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Should this URL be indexed?"
+      },
+      {
+        "id": "t_remove",
+        "type": "terminal",
+        "label": "SUGGEST: URL should NOT be indexed — ask team to remove it from the sitemap (removes the false intent signal)"
+      },
+      {
+        "id": "h_base",
+        "type": "handoff",
+        "label": "HANDOFF: R14 Duplicate, Google chose different canonical — apply that workflow to fix the underlying state"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Is the whole sitemap generated automatically?"
+      },
+      {
+        "id": "t_bug",
+        "type": "terminal",
+        "label": "SUGGEST: Auto-generated sitemap is leaking URLs it shouldn't include — ask team to audit the sitemap-generation logic (filter out noindex/blocked/404 URLs)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_sm",
+        "cond": ""
+      },
+      {
+        "from": "d_sm",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "h_base",
+        "cond": "yes — should be indexed"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "t_bug",
+        "cond": "yes — auto-generated"
+      },
+      {
+        "from": "s2",
+        "to": "t_remove",
+        "cond": "no — manual sitemap"
+      }
+    ]
+  },
+  {
+    "id": "R22",
+    "title": "Submitted URL blocked by robots.txt",
+    "meta": {
+      "category": "Legacy sitemap labels",
+      "status": "existing",
+      "handoffs": "R3"
+    },
+    "clarifying": [
+      "Is the URL genuinely supposed to be indexed (its sitemap presence suggests yes)?",
+      "Do you want to keep it in the sitemap?",
+      "Are similar URLs affected (sitemap-generation bug)?"
+    ],
+    "synonyms": [
+      "submitted url blocked by robots.txt",
+      "sitemap conflict"
+    ],
+    "structure": "Legacy 'Submitted URL' label — the URL is in a submitted sitemap AND the underlying state is R3. Route by intent; if intent is to index, hand off to R3; if not, recommend removing from sitemap.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Submitted URL blocked by robots.txt"
+      },
+      {
+        "id": "d_sm",
+        "type": "data",
+        "label": "Sitemaps API: confirm URL is in an active sitemap; identify which sitemap file"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: robotsTxtState=DISALLOWED"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Should this URL be indexed?"
+      },
+      {
+        "id": "t_remove",
+        "type": "terminal",
+        "label": "SUGGEST: URL should NOT be indexed — ask team to remove it from the sitemap (removes the false intent signal)"
+      },
+      {
+        "id": "h_base",
+        "type": "handoff",
+        "label": "HANDOFF: R3 URL blocked by robots.txt — apply that workflow to fix the underlying state"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Is the whole sitemap generated automatically?"
+      },
+      {
+        "id": "t_bug",
+        "type": "terminal",
+        "label": "SUGGEST: Auto-generated sitemap is leaking URLs it shouldn't include — ask team to audit the sitemap-generation logic (filter out noindex/blocked/404 URLs)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_sm",
+        "cond": ""
+      },
+      {
+        "from": "d_sm",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "h_base",
+        "cond": "yes — should be indexed"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "t_bug",
+        "cond": "yes — auto-generated"
+      },
+      {
+        "from": "s2",
+        "to": "t_remove",
+        "cond": "no — manual sitemap"
+      }
+    ]
+  },
+  {
+    "id": "R23",
+    "title": "Submitted URL marked 'noindex'",
+    "meta": {
+      "category": "Legacy sitemap labels",
+      "status": "existing",
+      "handoffs": "R4"
+    },
+    "clarifying": [
+      "Is the URL genuinely supposed to be indexed (its sitemap presence suggests yes)?",
+      "Do you want to keep it in the sitemap?",
+      "Are similar URLs affected (sitemap-generation bug)?"
+    ],
+    "synonyms": [
+      "submitted url marked 'noindex'",
+      "sitemap conflict"
+    ],
+    "structure": "Legacy 'Submitted URL' label — the URL is in a submitted sitemap AND the underlying state is R4. Route by intent; if intent is to index, hand off to R4; if not, recommend removing from sitemap.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Submitted URL marked 'noindex'"
+      },
+      {
+        "id": "d_sm",
+        "type": "data",
+        "label": "Sitemaps API: confirm URL is in an active sitemap; identify which sitemap file"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: indexingState (meta vs header)"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Should this URL be indexed?"
+      },
+      {
+        "id": "t_remove",
+        "type": "terminal",
+        "label": "SUGGEST: URL should NOT be indexed — ask team to remove it from the sitemap (removes the false intent signal)"
+      },
+      {
+        "id": "h_base",
+        "type": "handoff",
+        "label": "HANDOFF: R4 URL marked 'noindex' — apply that workflow to fix the underlying state"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Is the whole sitemap generated automatically?"
+      },
+      {
+        "id": "t_bug",
+        "type": "terminal",
+        "label": "SUGGEST: Auto-generated sitemap is leaking URLs it shouldn't include — ask team to audit the sitemap-generation logic (filter out noindex/blocked/404 URLs)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_sm",
+        "cond": ""
+      },
+      {
+        "from": "d_sm",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "h_base",
+        "cond": "yes — should be indexed"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "t_bug",
+        "cond": "yes — auto-generated"
+      },
+      {
+        "from": "s2",
+        "to": "t_remove",
+        "cond": "no — manual sitemap"
+      }
+    ]
+  },
+  {
+    "id": "R24",
+    "title": "Submitted URL seems to be a Soft 404",
+    "meta": {
+      "category": "Legacy sitemap labels",
+      "status": "existing",
+      "handoffs": "R5"
+    },
+    "clarifying": [
+      "Is the URL genuinely supposed to be indexed (its sitemap presence suggests yes)?",
+      "Do you want to keep it in the sitemap?",
+      "Are similar URLs affected (sitemap-generation bug)?"
+    ],
+    "synonyms": [
+      "submitted url seems to be a soft 404",
+      "sitemap conflict"
+    ],
+    "structure": "Legacy 'Submitted URL' label — the URL is in a submitted sitemap AND the underlying state is R5. Route by intent; if intent is to index, hand off to R5; if not, recommend removing from sitemap.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Submitted URL seems to be a Soft 404"
+      },
+      {
+        "id": "d_sm",
+        "type": "data",
+        "label": "Sitemaps API: confirm URL is in an active sitemap; identify which sitemap file"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState=SOFT_404"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Should this URL be indexed?"
+      },
+      {
+        "id": "t_remove",
+        "type": "terminal",
+        "label": "SUGGEST: URL should NOT be indexed — ask team to remove it from the sitemap (removes the false intent signal)"
+      },
+      {
+        "id": "h_base",
+        "type": "handoff",
+        "label": "HANDOFF: R5 Soft 404 — apply that workflow to fix the underlying state"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Is the whole sitemap generated automatically?"
+      },
+      {
+        "id": "t_bug",
+        "type": "terminal",
+        "label": "SUGGEST: Auto-generated sitemap is leaking URLs it shouldn't include — ask team to audit the sitemap-generation logic (filter out noindex/blocked/404 URLs)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_sm",
+        "cond": ""
+      },
+      {
+        "from": "d_sm",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "h_base",
+        "cond": "yes — should be indexed"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "t_bug",
+        "cond": "yes — auto-generated"
+      },
+      {
+        "from": "s2",
+        "to": "t_remove",
+        "cond": "no — manual sitemap"
+      }
+    ]
+  },
+  {
+    "id": "R25",
+    "title": "Submitted URL returns unauthorized request (401)",
+    "meta": {
+      "category": "Legacy sitemap labels",
+      "status": "existing",
+      "handoffs": "R6"
+    },
+    "clarifying": [
+      "Is the URL genuinely supposed to be indexed (its sitemap presence suggests yes)?",
+      "Do you want to keep it in the sitemap?",
+      "Are similar URLs affected (sitemap-generation bug)?"
+    ],
+    "synonyms": [
+      "submitted url returns unauthorized request (401)",
+      "sitemap conflict"
+    ],
+    "structure": "Legacy 'Submitted URL' label — the URL is in a submitted sitemap AND the underlying state is R6. Route by intent; if intent is to index, hand off to R6; if not, recommend removing from sitemap.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Submitted URL returns unauthorized request (401)"
+      },
+      {
+        "id": "d_sm",
+        "type": "data",
+        "label": "Sitemaps API: confirm URL is in an active sitemap; identify which sitemap file"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState=BLOCKED_4XX (401)"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Should this URL be indexed?"
+      },
+      {
+        "id": "t_remove",
+        "type": "terminal",
+        "label": "SUGGEST: URL should NOT be indexed — ask team to remove it from the sitemap (removes the false intent signal)"
+      },
+      {
+        "id": "h_base",
+        "type": "handoff",
+        "label": "HANDOFF: R6 Blocked due to unauthorized request (401) — apply that workflow to fix the underlying state"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Is the whole sitemap generated automatically?"
+      },
+      {
+        "id": "t_bug",
+        "type": "terminal",
+        "label": "SUGGEST: Auto-generated sitemap is leaking URLs it shouldn't include — ask team to audit the sitemap-generation logic (filter out noindex/blocked/404 URLs)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_sm",
+        "cond": ""
+      },
+      {
+        "from": "d_sm",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "h_base",
+        "cond": "yes — should be indexed"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "t_bug",
+        "cond": "yes — auto-generated"
+      },
+      {
+        "from": "s2",
+        "to": "t_remove",
+        "cond": "no — manual sitemap"
+      }
+    ]
+  },
+  {
+    "id": "R26",
+    "title": "Submitted URL not found (404)",
+    "meta": {
+      "category": "Legacy sitemap labels",
+      "status": "existing",
+      "handoffs": "R7"
+    },
+    "clarifying": [
+      "Is the URL genuinely supposed to be indexed (its sitemap presence suggests yes)?",
+      "Do you want to keep it in the sitemap?",
+      "Are similar URLs affected (sitemap-generation bug)?"
+    ],
+    "synonyms": [
+      "submitted url not found (404)",
+      "sitemap conflict"
+    ],
+    "structure": "Legacy 'Submitted URL' label — the URL is in a submitted sitemap AND the underlying state is R7. Route by intent; if intent is to index, hand off to R7; if not, recommend removing from sitemap.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Submitted URL not found (404)"
+      },
+      {
+        "id": "d_sm",
+        "type": "data",
+        "label": "Sitemaps API: confirm URL is in an active sitemap; identify which sitemap file"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState=NOT_FOUND"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Should this URL be indexed?"
+      },
+      {
+        "id": "t_remove",
+        "type": "terminal",
+        "label": "SUGGEST: URL should NOT be indexed — ask team to remove it from the sitemap (removes the false intent signal)"
+      },
+      {
+        "id": "h_base",
+        "type": "handoff",
+        "label": "HANDOFF: R7 Not found (404) — apply that workflow to fix the underlying state"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Is the whole sitemap generated automatically?"
+      },
+      {
+        "id": "t_bug",
+        "type": "terminal",
+        "label": "SUGGEST: Auto-generated sitemap is leaking URLs it shouldn't include — ask team to audit the sitemap-generation logic (filter out noindex/blocked/404 URLs)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_sm",
+        "cond": ""
+      },
+      {
+        "from": "d_sm",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "h_base",
+        "cond": "yes — should be indexed"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "no"
+      },
+      {
+        "from": "s2",
+        "to": "t_bug",
+        "cond": "yes — auto-generated"
+      },
+      {
+        "from": "s2",
+        "to": "t_remove",
+        "cond": "no — manual sitemap"
+      }
+    ]
+  },
+  {
+    "id": "R27",
+    "title": "Submitted URL has crawl issue",
+    "meta": {
+      "category": "Legacy sitemap labels",
+      "status": "existing",
+      "handoffs": "R1, R2, R7, R9"
+    },
+    "clarifying": [
+      "What does URL Inspection report as pageFetchState?",
+      "Is the crawl issue transient (Crawl Stats availability blips)?",
+      "How many sitemap URLs share this reason?"
+    ],
+    "synonyms": [
+      "submitted crawl issue",
+      "sitemap crawl error"
+    ],
+    "structure": "Catch-all legacy label. Route to the specific reason once pageFetchState reveals it.",
+    "changes": [],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Submitted URL has crawl issue"
+      },
+      {
+        "id": "d_ui",
+        "type": "data",
+        "label": "URL Inspection API: pageFetchState — reveals the specific crawl error"
+      },
+      {
+        "id": "d_crawl",
+        "type": "data",
+        "label": "Crawl Stats API: host status around lastCrawlTime"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. What state does URL Inspection report?"
+      },
+      {
+        "id": "h_r1",
+        "type": "handoff",
+        "label": "HANDOFF: R1 Server error"
+      },
+      {
+        "id": "h_r2",
+        "type": "handoff",
+        "label": "HANDOFF: R2 Redirect error"
+      },
+      {
+        "id": "h_r7",
+        "type": "handoff",
+        "label": "HANDOFF: R7 Not found"
+      },
+      {
+        "id": "h_r9",
+        "type": "handoff",
+        "label": "HANDOFF: R9 Other 4xx"
+      },
+      {
+        "id": "t_transient",
+        "type": "terminal",
+        "label": "SUGGEST: Crawl Stats shows availability blip around lastCrawlTime — likely transient; recommend live URL Inspection re-test and monitor for 7 days before escalating"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_ui",
+        "cond": ""
+      },
+      {
+        "from": "d_ui",
+        "to": "d_crawl",
+        "cond": ""
+      },
+      {
+        "from": "d_crawl",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "h_r1",
+        "cond": "SERVER_ERROR"
+      },
+      {
+        "from": "s1",
+        "to": "h_r2",
+        "cond": "REDIRECT_ERROR"
+      },
+      {
+        "from": "s1",
+        "to": "h_r7",
+        "cond": "NOT_FOUND"
+      },
+      {
+        "from": "s1",
+        "to": "h_r9",
+        "cond": "BLOCKED_4XX (other)"
+      },
+      {
+        "from": "s1",
+        "to": "t_transient",
+        "cond": "no persistent state / transient"
+      }
+    ]
+  },
+  {
+    "id": "CA0",
+    "title": "Master router — \"Audit this content\"",
+    "meta": {
+      "category": "Content",
+      "status": "new",
+      "handoffs": "CA1, CA2, CA3, CA4, CA5, CA6, CA7, CA8, TECH"
+    },
+    "clarifying": [
+      "Is this a single-URL audit or a whole-library pass?",
+      "Is the page even live and indexable before auditing content quality?"
+    ],
+    "synonyms": [
+      "audit this content",
+      "content brain entry point",
+      "master router",
+      "what's wrong with this page"
+    ],
+    "structure": "Picks the dominant content problem for a URL (or triggers the library-balance pass), then routes to the specialist module. Gate first: if the page can't be served/indexed, that's a technical fix — hand off, don't audit content on a page that can't rank.",
+    "changes": [],
+    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "nodes": [
+      {
+        "id": "A0",
+        "type": "root",
+        "label": "Q0: Audit this content"
+      },
+      {
+        "id": "S0",
+        "type": "decision",
+        "label": "S0. Scope?"
+      },
+      {
+        "id": "G0",
+        "type": "decision",
+        "label": "S0a. Live & indexable? (200, not noindex, canonical-self)"
+      },
+      {
+        "id": "DLIB",
+        "type": "data",
+        "label": "DATA: full inventory — GSC pages 90d, Semrush/Ahrefs positions + content gap, GEO tracker citations, crawl export (headings/schema/wordcount/links/dates)"
+      },
+      {
+        "id": "HG",
+        "type": "handoff",
+        "label": "HANDOFF → TECH: indexation/crawl gate — content audit paused until page can rank"
+      },
+      {
+        "id": "D0",
+        "type": "data",
+        "label": "DATA: page-level pull — query→page (GSC), target keyword + intent, competitor top pages, AI citation status, on-page structure signals"
+      },
+      {
+        "id": "S1",
+        "type": "decision",
+        "label": "S1. Dominant content problem?"
+      },
+      {
+        "id": "C3",
+        "type": "handoff",
+        "label": "→ CA3 ICP alignment"
+      },
+      {
+        "id": "C2",
+        "type": "handoff",
+        "label": "→ CA2 Intent & funnel fit"
+      },
+      {
+        "id": "C4",
+        "type": "handoff",
+        "label": "→ CA4 Answer architecture"
+      },
+      {
+        "id": "C5",
+        "type": "handoff",
+        "label": "→ CA5 Coverage & semantic gap"
+      },
+      {
+        "id": "C6",
+        "type": "handoff",
+        "label": "→ CA6 GEO visibility"
+      },
+      {
+        "id": "C7",
+        "type": "handoff",
+        "label": "→ CA7 Freshness & accuracy"
+      },
+      {
+        "id": "C8",
+        "type": "handoff",
+        "label": "→ CA8 Cannibalization"
+      },
+      {
+        "id": "T0",
+        "type": "terminal",
+        "label": "TERMINAL: healthy — tag 'monitor', feed to CA9 prioritisation, re-audit in 90d"
+      },
+      {
+        "id": "C1",
+        "type": "handoff",
+        "label": "→ CA1 Inventory triage (keep/improve/consolidate/prune) then per-URL CA0"
+      }
+    ],
+    "edges": [
+      {
+        "from": "A0",
+        "to": "S0",
+        "cond": ""
+      },
+      {
+        "from": "S0",
+        "to": "G0",
+        "cond": "1. Single URL"
+      },
+      {
+        "from": "S0",
+        "to": "DLIB",
+        "cond": "2. Whole library"
+      },
+      {
+        "from": "G0",
+        "to": "HG",
+        "cond": "No"
+      },
+      {
+        "from": "G0",
+        "to": "D0",
+        "cond": "Yes"
+      },
+      {
+        "from": "D0",
+        "to": "S1",
+        "cond": ""
+      },
+      {
+        "from": "S1",
+        "to": "C3",
+        "cond": "1. Wrong audience (low conversion, off-ICP queries)"
+      },
+      {
+        "from": "S1",
+        "to": "C2",
+        "cond": "2. Intent / funnel mismatch"
+      },
+      {
+        "from": "S1",
+        "to": "C4",
+        "cond": "3. Weak answer structure (AEO)"
+      },
+      {
+        "from": "S1",
+        "to": "C5",
+        "cond": "4. Topical / coverage gap"
+      },
+      {
+        "from": "S1",
+        "to": "C6",
+        "cond": "5. Absent from AI answers"
+      },
+      {
+        "from": "S1",
+        "to": "C7",
+        "cond": "6. Stale / decaying"
+      },
+      {
+        "from": "S1",
+        "to": "C8",
+        "cond": "7. Cannibalizing / duplicate"
+      },
+      {
+        "from": "S1",
+        "to": "T0",
+        "cond": "8. All clean"
+      },
+      {
+        "from": "DLIB",
+        "to": "C1",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "CA1",
+    "title": "Inventory triage — keep / improve / consolidate / prune / redirect",
+    "meta": {
+      "category": "Content",
+      "status": "new",
+      "handoffs": "CA8, PM"
+    },
+    "clarifying": [
+      "Does this page have meaningful traffic or strategic/BOFU value?",
+      "Is it performing to its potential, or underperforming?"
+    ],
+    "synonyms": [
+      "keep improve consolidate prune",
+      "content inventory triage",
+      "which pages to kill or merge"
+    ],
+    "structure": "The library-level verdict for every URL before deep per-page work. Prevents wasting audit effort on pages that should be merged or killed.",
+    "changes": [],
+    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "nodes": [
+      {
+        "id": "A1",
+        "type": "root",
+        "label": "Q1: Keep, improve, consolidate, or prune this page?"
+      },
+      {
+        "id": "D1",
+        "type": "data",
+        "label": "DATA: clicks/impressions 90d + trend (GSC), avg position, backlinks/RD, AI citations, topic overlap with siblings, last-updated date, business value tag"
+      },
+      {
+        "id": "S1",
+        "type": "decision",
+        "label": "S1. Traffic + value signal?"
+      },
+      {
+        "id": "S2",
+        "type": "decision",
+        "label": "S2. Performing to potential?"
+      },
+      {
+        "id": "RRED",
+        "type": "action",
+        "label": "ACTION: preserve equity — 301 to strongest relevant page, or upgrade if topic still matters"
+      },
+      {
+        "id": "S3",
+        "type": "decision",
+        "label": "S3. Any topic overlap with a stronger page?"
+      },
+      {
+        "id": "TKEEP",
+        "type": "terminal",
+        "label": "TERMINAL: KEEP — monitor; light CA7 freshness only"
+      },
+      {
+        "id": "TIMP",
+        "type": "terminal",
+        "label": "TERMINAL: IMPROVE — enter CA2→CA7 deep audit; create refresh brief"
+      },
+      {
+        "id": "C8",
+        "type": "handoff",
+        "label": "→ CA8 Cannibalization (consolidate candidates)"
+      },
+      {
+        "id": "S4",
+        "type": "decision",
+        "label": "S4. Any external links or historical value?"
+      },
+      {
+        "id": "TPRUNE",
+        "type": "terminal",
+        "label": "TERMINAL: PRUNE — noindex or remove; log to PM for redirect mapping"
+      },
+      {
+        "id": "HPM",
+        "type": "handoff",
+        "label": "HANDOFF → PM: schedule redirect + TECH to implement/verify"
+      }
+    ],
+    "edges": [
+      {
+        "from": "A1",
+        "to": "D1",
+        "cond": ""
+      },
+      {
+        "from": "D1",
+        "to": "S1",
+        "cond": ""
+      },
+      {
+        "from": "S1",
+        "to": "S2",
+        "cond": "1. Meaningful traffic OR strategic/BOFU value"
+      },
+      {
+        "from": "S1",
+        "to": "RRED",
+        "cond": "2. Near-zero traffic, has backlinks/authority"
+      },
+      {
+        "from": "S1",
+        "to": "S3",
+        "cond": "3. Near-zero traffic, no equity, off-strategy"
+      },
+      {
+        "from": "S2",
+        "to": "TKEEP",
+        "cond": "Yes — ranks/cited well"
+      },
+      {
+        "from": "S2",
+        "to": "TIMP",
+        "cond": "No — underperforming"
+      },
+      {
+        "from": "S3",
+        "to": "C8",
+        "cond": "Yes — overlaps"
+      },
+      {
+        "from": "S3",
+        "to": "S4",
+        "cond": "No — thin & orphaned"
+      },
+      {
+        "from": "S4",
+        "to": "RRED",
+        "cond": "Yes"
+      },
+      {
+        "from": "S4",
+        "to": "TPRUNE",
+        "cond": "No"
+      },
+      {
+        "from": "RRED",
+        "to": "HPM",
+        "cond": ""
+      },
+      {
+        "from": "TPRUNE",
+        "to": "HPM",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "CA2",
+    "title": "Intent & funnel fit",
+    "meta": {
+      "category": "Content",
+      "status": "new",
+      "handoffs": "CA3, CA5, PM"
+    },
+    "clarifying": [
+      "Does the page format match SERP intent?",
+      "Is the content library balanced across the funnel (40/35/25)?"
+    ],
+    "synonyms": [
+      "intent mismatch",
+      "funnel balance TOFU MOFU BOFU",
+      "wrong search intent"
+    ],
+    "structure": "Does the page match the searcher's intent, and is the library balanced to 40% TOFU / 35% MOFU / 25% BOFU?",
+    "changes": [],
+    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "nodes": [
+      {
+        "id": "A2",
+        "type": "root",
+        "label": "Q2: Does this content match intent & fill the funnel?"
+      },
+      {
+        "id": "D2",
+        "type": "data",
+        "label": "DATA: SERP intent for target keyword (informational/commercial/transactional), page's actual angle, library funnel split vs 40/35/25"
+      },
+      {
+        "id": "S1",
+        "type": "decision",
+        "label": "S1. Does the page format match SERP intent?"
+      },
+      {
+        "id": "X1",
+        "type": "action",
+        "label": "ACTION: re-angle to matching type (comparison page, use-case, pricing) or spin off a new matching asset"
+      },
+      {
+        "id": "S2",
+        "type": "decision",
+        "label": "S2. Library funnel gap?"
+      },
+      {
+        "id": "X2",
+        "type": "action",
+        "label": "ACTION: brief MOFU/BOFU first — 'best X for [use case]', 'X vs Y', 'how to choose', pricing/ROI, case studies"
+      },
+      {
+        "id": "TOK",
+        "type": "terminal",
+        "label": "TERMINAL: intent OK — continue to CA4 structure"
+      },
+      {
+        "id": "S3",
+        "type": "decision",
+        "label": "S3. Is the target keyword itself commercial-worthy for the ICP?"
+      },
+      {
+        "id": "C3",
+        "type": "handoff",
+        "label": "→ CA3 ICP alignment"
+      },
+      {
+        "id": "C5",
+        "type": "handoff",
+        "label": "→ CA5 Coverage (build the matching asset)"
+      },
+      {
+        "id": "HPM",
+        "type": "handoff",
+        "label": "HANDOFF → PM: sequence new MOFU/BOFU briefs into backlog (CA9)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "A2",
+        "to": "D2",
+        "cond": ""
+      },
+      {
+        "from": "D2",
+        "to": "S1",
+        "cond": ""
+      },
+      {
+        "from": "S1",
+        "to": "X1",
+        "cond": "1. Mismatch (e.g., blog ranking where SERP = comparison/product)"
+      },
+      {
+        "from": "S1",
+        "to": "S2",
+        "cond": "2. Match"
+      },
+      {
+        "from": "S2",
+        "to": "X2",
+        "cond": "1. Over-indexed TOFU, thin MOFU/BOFU (typical: 80/15/5)"
+      },
+      {
+        "from": "S2",
+        "to": "TOK",
+        "cond": "2. Balanced ~40/35/25"
+      },
+      {
+        "from": "X1",
+        "to": "S3",
+        "cond": ""
+      },
+      {
+        "from": "S3",
+        "to": "C3",
+        "cond": "Off-ICP / vanity"
+      },
+      {
+        "from": "S3",
+        "to": "C5",
+        "cond": "On-ICP"
+      },
+      {
+        "from": "X2",
+        "to": "HPM",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "CA3",
+    "title": "ICP alignment (5 dimensions)",
+    "meta": {
+      "category": "Content",
+      "status": "new",
+      "handoffs": "CA4, CA5, PM"
+    },
+    "clarifying": [
+      "Does the ranking query attract the right ICP role or segment?",
+      "Does the content speak to ICP goals, pains, and decision triggers?"
+    ],
+    "synonyms": [
+      "ICP alignment",
+      "vanity traffic check",
+      "wrong audience",
+      "off-ICP"
+    ],
+    "structure": "Is the content attracting and speaking to the ideal customer — or driving vanity traffic?",
+    "changes": [],
+    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "nodes": [
+      {
+        "id": "A3",
+        "type": "root",
+        "label": "Q3: Is this content aligned to the ICP?"
+      },
+      {
+        "id": "D3",
+        "type": "data",
+        "label": "DATA: ICP profile (identity/goals/pains/info-behaviour/triggers), converting-query list (GSC+CRM), segment LTV tags"
+      },
+      {
+        "id": "S1",
+        "type": "decision",
+        "label": "S1. Does the query attract the ICP role/segment?"
+      },
+      {
+        "id": "X1",
+        "type": "action",
+        "label": "ACTION: retarget to ICP vocabulary (their job title, their problem framing)"
+      },
+      {
+        "id": "S2",
+        "type": "decision",
+        "label": "S2. Does the content hit ICP goals & pains?"
+      },
+      {
+        "id": "X2",
+        "type": "action",
+        "label": "ACTION: rewrite around ICP success metrics + fears; add proof relevant to their context"
+      },
+      {
+        "id": "S3",
+        "type": "decision",
+        "label": "S3. Right format & decision triggers covered?"
+      },
+      {
+        "id": "X3",
+        "type": "action",
+        "label": "ACTION: adjust depth/format to their research behaviour; address triggers & blockers explicitly"
+      },
+      {
+        "id": "TOK",
+        "type": "terminal",
+        "label": "TERMINAL: ICP-fit strong — continue to CA4"
+      },
+      {
+        "id": "S4",
+        "type": "decision",
+        "label": "S4. Multiple segments competing for this page?"
+      },
+      {
+        "id": "TLTV",
+        "type": "terminal",
+        "label": "TERMINAL: LTV-weight — prioritise the high-LTV angle; brief a dedicated asset"
+      },
+      {
+        "id": "C5",
+        "type": "handoff",
+        "label": "→ CA5 Coverage (rebuild keyword cluster from ICP language)"
+      },
+      {
+        "id": "C4",
+        "type": "handoff",
+        "label": "→ CA4 Answer architecture"
+      },
+      {
+        "id": "HPM",
+        "type": "handoff",
+        "label": "HANDOFF → PM: backlog the ICP-led rebuild (CA9)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "A3",
+        "to": "D3",
+        "cond": ""
+      },
+      {
+        "from": "D3",
+        "to": "S1",
+        "cond": ""
+      },
+      {
+        "from": "S1",
+        "to": "X1",
+        "cond": "1. No — wrong role/seniority"
+      },
+      {
+        "from": "S1",
+        "to": "S2",
+        "cond": "2. Yes"
+      },
+      {
+        "from": "S2",
+        "to": "X2",
+        "cond": "1. Generic / feature-led"
+      },
+      {
+        "from": "S2",
+        "to": "S3",
+        "cond": "2. Yes"
+      },
+      {
+        "from": "S3",
+        "to": "X3",
+        "cond": "1. Format/trigger gap"
+      },
+      {
+        "from": "S3",
+        "to": "TOK",
+        "cond": "2. Yes — high ICP fit"
+      },
+      {
+        "from": "X1",
+        "to": "S4",
+        "cond": ""
+      },
+      {
+        "from": "S4",
+        "to": "TLTV",
+        "cond": "High-LTV segment underserved"
+      },
+      {
+        "from": "S4",
+        "to": "C5",
+        "cond": "Single segment"
+      },
+      {
+        "from": "X2",
+        "to": "C4",
+        "cond": ""
+      },
+      {
+        "from": "X3",
+        "to": "C4",
+        "cond": ""
+      },
+      {
+        "from": "TLTV",
+        "to": "HPM",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "CA4",
+    "title": "Answer architecture (AEO) — the minute page-level checks",
+    "meta": {
+      "category": "Content",
+      "status": "new",
+      "handoffs": "GEO-TECH"
+    },
+    "clarifying": [
+      "Is there a direct answer in the first sentence/paragraph?",
+      "Are key terms defined, questions used as headings, and data included?"
+    ],
+    "synonyms": [
+      "AEO answer engine optimization",
+      "structured for AI citation",
+      "snippet-ready page"
+    ],
+    "structure": "Whether the page is structured to be selected, quoted, and cited by answer engines. Every check is a discrete signal; the sequence hardens the page for AEO.",
+    "changes": [],
+    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "nodes": [
+      {
+        "id": "A4",
+        "type": "root",
+        "label": "Q4: Is this page structured to be cited by AI / win snippets?"
+      },
+      {
+        "id": "D4",
+        "type": "data",
+        "label": "DATA: on-page parse — first-paragraph answer, headings, tables, lists, data points, definitions, TL;DR, FAQ; SERP features present"
+      },
+      {
+        "id": "S1",
+        "type": "decision",
+        "label": "S1. Answer-first? Direct answer in the first sentence/paragraph"
+      },
+      {
+        "id": "X1",
+        "type": "action",
+        "label": "ACTION: add a 2–3 sentence direct answer at the very top, then expand"
+      },
+      {
+        "id": "S2",
+        "type": "decision",
+        "label": "S2. Key terms defined at first use?"
+      },
+      {
+        "id": "X2",
+        "type": "action",
+        "label": "ACTION: add crisp definitions for entities/terms"
+      },
+      {
+        "id": "S3",
+        "type": "decision",
+        "label": "S3. Question-formatted H2/H3 that mirror real prompts?"
+      },
+      {
+        "id": "X3",
+        "type": "action",
+        "label": "ACTION: rewrite headings as the questions buyers ask"
+      },
+      {
+        "id": "S4",
+        "type": "decision",
+        "label": "S4. Evaluation intent → comparison table present?"
+      },
+      {
+        "id": "X4",
+        "type": "action",
+        "label": "ACTION: add a comparison table (options × criteria)"
+      },
+      {
+        "id": "S5",
+        "type": "decision",
+        "label": "S5. Specific data points (numbers, %, benchmarks)?"
+      },
+      {
+        "id": "X5",
+        "type": "action",
+        "label": "ACTION: add concrete stats, figures, dated benchmarks"
+      },
+      {
+        "id": "S6",
+        "type": "decision",
+        "label": "S6. Structured lists for processes + synthesis at end + follow-ups covered?"
+      },
+      {
+        "id": "X6",
+        "type": "action",
+        "label": "ACTION: add numbered steps, a closing synthesis, and a mini-FAQ of implied questions"
+      },
+      {
+        "id": "S7",
+        "type": "decision",
+        "label": "S7. Machine-readability need? (schema / llms.txt / server-render)"
+      },
+      {
+        "id": "HGT",
+        "type": "handoff",
+        "label": "HANDOFF → GEO-TECH: add FAQPage/Article schema, add URL to llms.txt, ensure server-render"
+      },
+      {
+        "id": "TOK",
+        "type": "terminal",
+        "label": "TERMINAL: AEO-hardened — recheck citation in CA6 after re-crawl"
+      }
+    ],
+    "edges": [
+      {
+        "from": "A4",
+        "to": "D4",
+        "cond": ""
+      },
+      {
+        "from": "D4",
+        "to": "S1",
+        "cond": ""
+      },
+      {
+        "from": "S1",
+        "to": "X1",
+        "cond": "No"
+      },
+      {
+        "from": "S1",
+        "to": "S2",
+        "cond": "Yes"
+      },
+      {
+        "from": "X1",
+        "to": "S2",
+        "cond": ""
+      },
+      {
+        "from": "S2",
+        "to": "X2",
+        "cond": "No"
+      },
+      {
+        "from": "S2",
+        "to": "S3",
+        "cond": "Yes"
+      },
+      {
+        "from": "X2",
+        "to": "S3",
+        "cond": ""
+      },
+      {
+        "from": "S3",
+        "to": "X3",
+        "cond": "No"
+      },
+      {
+        "from": "S3",
+        "to": "S4",
+        "cond": "Yes"
+      },
+      {
+        "from": "X3",
+        "to": "S4",
+        "cond": ""
+      },
+      {
+        "from": "S4",
+        "to": "X4",
+        "cond": "No & intent=evaluation"
+      },
+      {
+        "from": "S4",
+        "to": "S5",
+        "cond": "Yes / N.A."
+      },
+      {
+        "from": "X4",
+        "to": "S5",
+        "cond": ""
+      },
+      {
+        "from": "S5",
+        "to": "X5",
+        "cond": "No"
+      },
+      {
+        "from": "S5",
+        "to": "S6",
+        "cond": "Yes"
+      },
+      {
+        "from": "X5",
+        "to": "S6",
+        "cond": ""
+      },
+      {
+        "from": "S6",
+        "to": "X6",
+        "cond": "No"
+      },
+      {
+        "from": "S6",
+        "to": "S7",
+        "cond": "Yes"
+      },
+      {
+        "from": "X6",
+        "to": "S7",
+        "cond": ""
+      },
+      {
+        "from": "S7",
+        "to": "HGT",
+        "cond": "Content is ready; tech markup missing"
+      },
+      {
+        "from": "S7",
+        "to": "TOK",
+        "cond": "All present"
+      }
+    ]
+  },
+  {
+    "id": "CA5",
+    "title": "Coverage & semantic gap (+ prompt universe L1–L5)",
+    "meta": {
+      "category": "Content",
+      "status": "new",
+      "handoffs": "CA8, PM"
+    },
+    "clarifying": [
+      "Is the topic missing entirely, shallow, or fragmented across pages?",
+      "Which prompt layers (L1-L5) are uncovered?"
+    ],
+    "synonyms": [
+      "content gap analysis",
+      "topical coverage gap",
+      "prompt universe",
+      "missing clusters"
+    ],
+    "structure": "Where the library is shallow, fragmented, or missing the commercially valuable prompts.",
+    "changes": [],
+    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "nodes": [
+      {
+        "id": "A5",
+        "type": "root",
+        "label": "Q5: Where are the topical / semantic / prompt gaps?"
+      },
+      {
+        "id": "D5",
+        "type": "data",
+        "label": "DATA: content-gap vs competitors (Semrush/Ahrefs), entity/subtopic coverage, cluster map, prompt-universe test (L1–L5) in ChatGPT/Perplexity"
+      },
+      {
+        "id": "S1",
+        "type": "decision",
+        "label": "S1. Gap type?"
+      },
+      {
+        "id": "X1",
+        "type": "action",
+        "label": "ACTION: design a pillar + supporting cluster; brief in priority order"
+      },
+      {
+        "id": "X2",
+        "type": "action",
+        "label": "ACTION: expand page to full semantic coverage; add missing entities/subtopics"
+      },
+      {
+        "id": "C8",
+        "type": "handoff",
+        "label": "→ CA8 Cannibalization (consolidate into one authority page)"
+      },
+      {
+        "id": "S2",
+        "type": "decision",
+        "label": "S2. Which prompt layers are uncovered?"
+      },
+      {
+        "id": "X3",
+        "type": "action",
+        "label": "ACTION: prioritise L3 comparison/evaluation assets"
+      },
+      {
+        "id": "X4",
+        "type": "action",
+        "label": "ACTION: prioritise L5 role/use-case assets"
+      },
+      {
+        "id": "X5",
+        "type": "action",
+        "label": "ACTION: cover for completeness but down-weight vs L3/L5"
+      },
+      {
+        "id": "TOK",
+        "type": "terminal",
+        "label": "TERMINAL: gap briefs created — hand to CA9 for sequencing"
+      },
+      {
+        "id": "HPM",
+        "type": "handoff",
+        "label": "HANDOFF → PM: load briefs into project-optimisation backlog (CA9)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "A5",
+        "to": "D5",
+        "cond": ""
+      },
+      {
+        "from": "D5",
+        "to": "S1",
+        "cond": ""
+      },
+      {
+        "from": "S1",
+        "to": "X1",
+        "cond": "1. Missing cluster (topic absent entirely)"
+      },
+      {
+        "from": "S1",
+        "to": "X2",
+        "cond": "2. Shallow page (entities/subtopics missing vs top results)"
+      },
+      {
+        "from": "S1",
+        "to": "C8",
+        "cond": "3. Fragmented (several thin pages on one topic)"
+      },
+      {
+        "from": "X1",
+        "to": "S2",
+        "cond": ""
+      },
+      {
+        "from": "X2",
+        "to": "S2",
+        "cond": ""
+      },
+      {
+        "from": "S2",
+        "to": "X3",
+        "cond": "L3 evaluation ('best X', 'X vs Y') — highest commercial value"
+      },
+      {
+        "from": "S2",
+        "to": "X4",
+        "cond": "L5 role/scenario ('best X for [role] at [co type]') — highest conversion"
+      },
+      {
+        "from": "S2",
+        "to": "X5",
+        "cond": "L1/L2 only (definition/how-to)"
+      },
+      {
+        "from": "X3",
+        "to": "TOK",
+        "cond": ""
+      },
+      {
+        "from": "X4",
+        "to": "TOK",
+        "cond": ""
+      },
+      {
+        "from": "X5",
+        "to": "TOK",
+        "cond": ""
+      },
+      {
+        "from": "TOK",
+        "to": "HPM",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "CA6",
+    "title": "GEO visibility — baseline vs citation takeover",
+    "meta": {
+      "category": "Content",
+      "status": "new",
+      "handoffs": "AUTH, CA4, GEO-TECH, PM"
+    },
+    "clarifying": [
+      "Do we appear when the target prompts are run through AI answer engines?",
+      "If a competitor is cited instead, why?"
+    ],
+    "synonyms": [
+      "GEO visibility",
+      "AI answer citation",
+      "are we cited by ChatGPT/Perplexity"
+    ],
+    "structure": "Are we present in AI answers for the prompts that matter, and if not, why?",
+    "changes": [],
+    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "nodes": [
+      {
+        "id": "A6",
+        "type": "root",
+        "label": "Q6: Are we cited in AI answers for our key prompts?"
+      },
+      {
+        "id": "D6",
+        "type": "data",
+        "label": "DATA: run 10–20 buyer prompts through ChatGPT/Perplexity/AI Overviews; log appearance, WSoV, competitor cited URLs (Profound/Peec/manual)"
+      },
+      {
+        "id": "S1",
+        "type": "decision",
+        "label": "S1. Do we appear?"
+      },
+      {
+        "id": "S2",
+        "type": "decision",
+        "label": "S2. Why is the competitor cited?"
+      },
+      {
+        "id": "X3",
+        "type": "action",
+        "label": "ACTION: GEO Baseline — build answer-first, data-rich content for L3+L5 prompts"
+      },
+      {
+        "id": "X4",
+        "type": "action",
+        "label": "ACTION: strengthen the cited page (more data, clearer answer, freshness)"
+      },
+      {
+        "id": "C4",
+        "type": "handoff",
+        "label": "→ CA4 out-structure the competitor"
+      },
+      {
+        "id": "HAUTH",
+        "type": "handoff",
+        "label": "HANDOFF → AUTH: earn citations/links (original research, digital PR)"
+      },
+      {
+        "id": "HGT",
+        "type": "handoff",
+        "label": "HANDOFF → GEO-TECH: schema + llms.txt + AI-crawler access"
+      },
+      {
+        "id": "TB",
+        "type": "terminal",
+        "label": "TERMINAL: baseline GEO assets briefed; set WSoV/AVS/BCS tracking"
+      },
+      {
+        "id": "HPM",
+        "type": "handoff",
+        "label": "HANDOFF → PM: backlog + monthly re-measure of AI visibility"
+      }
+    ],
+    "edges": [
+      {
+        "from": "A6",
+        "to": "D6",
+        "cond": ""
+      },
+      {
+        "from": "D6",
+        "to": "S1",
+        "cond": ""
+      },
+      {
+        "from": "S1",
+        "to": "S2",
+        "cond": "1. Never; a competitor consistently does"
+      },
+      {
+        "from": "S1",
+        "to": "X3",
+        "cond": "2. Never; no one is strongly cited"
+      },
+      {
+        "from": "S1",
+        "to": "X4",
+        "cond": "3. Sometimes / inconsistently"
+      },
+      {
+        "from": "S2",
+        "to": "C4",
+        "cond": "Better answer structure"
+      },
+      {
+        "from": "S2",
+        "to": "HAUTH",
+        "cond": "Stronger authority / more citations"
+      },
+      {
+        "from": "S2",
+        "to": "HGT",
+        "cond": "Better machine-readability"
+      },
+      {
+        "from": "X3",
+        "to": "TB",
+        "cond": ""
+      },
+      {
+        "from": "X4",
+        "to": "TB",
+        "cond": ""
+      },
+      {
+        "from": "TB",
+        "to": "HPM",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "CA7",
+    "title": "Freshness, accuracy & decay",
+    "meta": {
+      "category": "Content",
+      "status": "new",
+      "handoffs": "CA8, PM, TECH"
+    },
+    "clarifying": [
+      "Is the traffic/position trend declining or stable?",
+      "Are there outdated facts, stats, or screenshots on the page?"
+    ],
+    "synonyms": [
+      "content decay",
+      "stale content",
+      "freshness check",
+      "outdated stats"
+    ],
+    "structure": "Is the content current, correct, and not silently decaying?",
+    "changes": [],
+    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "nodes": [
+      {
+        "id": "A7",
+        "type": "root",
+        "label": "Q7: Is this content fresh, accurate, and not decaying?"
+      },
+      {
+        "id": "D7",
+        "type": "data",
+        "label": "DATA: last-updated date, 90/180d click+position trend (GSC), stat/claim age, broken examples, competitor recency"
+      },
+      {
+        "id": "S1",
+        "type": "decision",
+        "label": "S1. Traffic/position trend?"
+      },
+      {
+        "id": "S2",
+        "type": "decision",
+        "label": "S2. Cause?"
+      },
+      {
+        "id": "S3",
+        "type": "decision",
+        "label": "S3. Any outdated facts/stats/screenshots?"
+      },
+      {
+        "id": "X1",
+        "type": "action",
+        "label": "ACTION: refresh — update data, examples, re-apply CA4 answer architecture, update dates"
+      },
+      {
+        "id": "C8",
+        "type": "handoff",
+        "label": "→ CA8 check cannibalization"
+      },
+      {
+        "id": "HTECH",
+        "type": "handoff",
+        "label": "HANDOFF → TECH: diagnose technical/algo regression"
+      },
+      {
+        "id": "X2",
+        "type": "action",
+        "label": "ACTION: correct facts; add current stats; note review date"
+      },
+      {
+        "id": "TOK",
+        "type": "terminal",
+        "label": "TERMINAL: fresh — set next review interval (e.g., 90–180d)"
+      },
+      {
+        "id": "TR",
+        "type": "terminal",
+        "label": "TERMINAL: refresh brief created"
+      },
+      {
+        "id": "HPM",
+        "type": "handoff",
+        "label": "HANDOFF → PM: schedule refresh + verify score delta after publish"
+      }
+    ],
+    "edges": [
+      {
+        "from": "A7",
+        "to": "D7",
+        "cond": ""
+      },
+      {
+        "from": "D7",
+        "to": "S1",
+        "cond": ""
+      },
+      {
+        "from": "S1",
+        "to": "S2",
+        "cond": "1. Declining (not seasonal)"
+      },
+      {
+        "from": "S1",
+        "to": "S3",
+        "cond": "2. Stable/growing"
+      },
+      {
+        "from": "S2",
+        "to": "X1",
+        "cond": "Outdated info / fresher competitor"
+      },
+      {
+        "from": "S2",
+        "to": "C8",
+        "cond": "Lost rankings, content fine"
+      },
+      {
+        "from": "S2",
+        "to": "HTECH",
+        "cond": "Traffic fell sitewide"
+      },
+      {
+        "from": "S3",
+        "to": "X2",
+        "cond": "Yes"
+      },
+      {
+        "from": "S3",
+        "to": "TOK",
+        "cond": "No"
+      },
+      {
+        "from": "X1",
+        "to": "TR",
+        "cond": ""
+      },
+      {
+        "from": "X2",
+        "to": "TR",
+        "cond": ""
+      },
+      {
+        "from": "TR",
+        "to": "HPM",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "CA8",
+    "title": "Cannibalization & duplication (content angle)",
+    "meta": {
+      "category": "Content",
+      "status": "new",
+      "handoffs": "PM"
+    },
+    "clarifying": [
+      "Do two or more pages target the same search intent?",
+      "Is one of them clearly the stronger page?"
+    ],
+    "synonyms": [
+      "keyword cannibalization",
+      "duplicate content",
+      "competing pages"
+    ],
+    "structure": "Two or more pages competing for the same intent. Content team decides consolidate vs differentiate; technical canonicalization/redirects are handed off.",
+    "changes": [],
+    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "nodes": [
+      {
+        "id": "A8",
+        "type": "root",
+        "label": "Q8: Are these pages cannibalizing / duplicating?"
+      },
+      {
+        "id": "D8",
+        "type": "data",
+        "label": "DATA: queries with 2+ URLs within 5 positions (GSC), URL overlap by topic, relative authority + traffic of each"
+      },
+      {
+        "id": "S1",
+        "type": "decision",
+        "label": "S1. Same intent or different?"
+      },
+      {
+        "id": "S2",
+        "type": "decision",
+        "label": "S2. Is one clearly stronger?"
+      },
+      {
+        "id": "X0",
+        "type": "action",
+        "label": "ACTION: differentiate angles + fix internal-link targeting"
+      },
+      {
+        "id": "X1",
+        "type": "action",
+        "label": "ACTION: consolidate — merge unique value into the winner, redirect the loser"
+      },
+      {
+        "id": "X2",
+        "type": "action",
+        "label": "ACTION: build one new authoritative page; redirect both"
+      },
+      {
+        "id": "HPM",
+        "type": "handoff",
+        "label": "HANDOFF → PM + TECH: implement 301 + canonical, verify consolidation"
+      },
+      {
+        "id": "TOK",
+        "type": "terminal",
+        "label": "TERMINAL: differentiated — monitor overlap"
+      }
+    ],
+    "edges": [
+      {
+        "from": "A8",
+        "to": "D8",
+        "cond": ""
+      },
+      {
+        "from": "D8",
+        "to": "S1",
+        "cond": ""
+      },
+      {
+        "from": "S1",
+        "to": "S2",
+        "cond": "1. Same intent, overlapping"
+      },
+      {
+        "from": "S1",
+        "to": "X0",
+        "cond": "2. Different intent (false alarm)"
+      },
+      {
+        "from": "S2",
+        "to": "X1",
+        "cond": "Yes — one winner"
+      },
+      {
+        "from": "S2",
+        "to": "X2",
+        "cond": "No — both mediocre"
+      },
+      {
+        "from": "X1",
+        "to": "HPM",
+        "cond": ""
+      },
+      {
+        "from": "X2",
+        "to": "HPM",
+        "cond": ""
+      },
+      {
+        "from": "X0",
+        "to": "TOK",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "CA9",
+    "title": "Prioritise & route to Project Optimisation (the tie-in)",
+    "meta": {
+      "category": "Content",
+      "status": "new",
+      "handoffs": "PM"
+    },
+    "clarifying": [
+      "Is this item blocked by a technical gate from CA0?",
+      "What's the impact × confidence ÷ effort score?"
+    ],
+    "synonyms": [
+      "prioritize content backlog",
+      "impact effort scoring",
+      "route to execution"
+    ],
+    "structure": "The Content Audit Brain's exit point. Turns every TERMINAL/ACTION from CA1–CA8 into a scored, sequenced content backlog and hands execution + traceability to the project-optimisation workflow.",
+    "changes": [],
+    "rationale": "Converted from the content-audit brain's mermaid flowchart (content_audit_brain_viewer.html) into the shared root/data/action/decision/terminal/handoff node-edge schema used by the SEO/GEO and ops brains, so all domains render in one viewer.",
+    "nodes": [
+      {
+        "id": "A9",
+        "type": "root",
+        "label": "Q9: What should we do first?"
+      },
+      {
+        "id": "D9",
+        "type": "data",
+        "label": "DATA: all audit findings (CA1–CA8) with impact, effort, evidence, funnel stage, ICP fit, LTV tier, GEO relevance"
+      },
+      {
+        "id": "X1",
+        "type": "action",
+        "label": "ACTION: score each = Impact × Confidence ÷ Effort, then × revenue × ICP × funnel × GEO weight"
+      },
+      {
+        "id": "S1",
+        "type": "decision",
+        "label": "S1. Blocked by a technical gate? (from CA0 handoff)"
+      },
+      {
+        "id": "X2",
+        "type": "action",
+        "label": "ACTION: mark BLOCKED-BY tech; keep visible, sequence after gate clears"
+      },
+      {
+        "id": "X3",
+        "type": "action",
+        "label": "ACTION: assign P0/P1/P2/P3 tier"
+      },
+      {
+        "id": "T0",
+        "type": "terminal",
+        "label": "TERMINAL: prioritised content backlog produced"
+      },
+      {
+        "id": "HPM",
+        "type": "handoff",
+        "label": "HANDOFF → PM: create work items with owner + brief; project-optimisation workflow owns state (New→…→Verified→Done) and traceability. Content team verifies score delta on re-audit."
+      }
+    ],
+    "edges": [
+      {
+        "from": "A9",
+        "to": "D9",
+        "cond": ""
+      },
+      {
+        "from": "D9",
+        "to": "X1",
+        "cond": ""
+      },
+      {
+        "from": "X1",
+        "to": "S1",
+        "cond": ""
+      },
+      {
+        "from": "S1",
+        "to": "X2",
+        "cond": "Yes"
+      },
+      {
+        "from": "S1",
+        "to": "X3",
+        "cond": "No"
+      },
+      {
+        "from": "X2",
+        "to": "X3",
+        "cond": ""
+      },
+      {
+        "from": "X3",
+        "to": "T0",
+        "cond": ""
+      },
+      {
+        "from": "T0",
+        "to": "HPM",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "ONB1",
+    "title": "New account onboarding: PO to live",
+    "meta": {
+      "category": "Onboarding",
+      "status": "new",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Is there a separate contract/addendum, or is the PO the sole governing document?",
+      "Which service lines does this SOW actually cover: SEO/GEO, Social, Video, or a combination?",
+      "Are any deliverable line items billed on actuals with no stated ceiling?"
+    ],
+    "synonyms": [
+      "new account setup / onboarding checklist / getting a new client ready",
+      "what do I need before starting work / account kickoff steps",
+      "PO to contract to SOW workflow / pre-kickoff checklist"
+    ],
+    "structure": "Linear pre-setup spine (PO -> contract/SOW -> scope lock -> internal kickoff), then a\nbranch by SOW nature into up to three parallel service-line checklists (SEO/GEO, Social,\nVideo), each a sequential chain of six grouped checkpoints. All branches converge on the\nclient kickoff call, then terminate by handing the account into the live RAG dashboard.\nAny checkpoint left unresolved at handoff is designed to surface as a Yellow flag in the\nfirst monitoring cycle rather than silently passing through.",
+    "changes": [],
+    "rationale": "Built from the account onboarding workflow discussion: PO receipt and contract/SOW signing are gate conditions, not just paperwork steps, because Pepper has at least one live account (Flipkart) where the PO is the sole governing document with no separate addendum. The service-line branch exists because a single SOW may cover any combination of SEO/GEO, Social, and Video, and each has materially different setup requirements. Checkpoints are grouped (rather than one node per individual checklist item) to keep the tree navigable; the full item-level detail for each checkpoint lives in the account onboarding checklist doc and should be linked from each node in the app.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "ONB1: New account onboarding"
+      },
+      {
+        "id": "p1",
+        "type": "action",
+        "label": "PO received and logged"
+      },
+      {
+        "id": "p2",
+        "type": "action",
+        "label": "Contract / SOW signed"
+      },
+      {
+        "id": "p3",
+        "type": "action",
+        "label": "Scope and deliverables locked"
+      },
+      {
+        "id": "p4",
+        "type": "action",
+        "label": "Internal kickoff and resourcing"
+      },
+      {
+        "id": "branch",
+        "type": "decision",
+        "label": "Which service lines does the SOW cover?"
+      },
+      {
+        "id": "seo1",
+        "type": "action",
+        "label": "SEO/GEO: access and tooling"
+      },
+      {
+        "id": "seo2",
+        "type": "action",
+        "label": "SEO/GEO: strategy foundations"
+      },
+      {
+        "id": "seo3",
+        "type": "action",
+        "label": "SEO/GEO: content pipeline"
+      },
+      {
+        "id": "seo4",
+        "type": "action",
+        "label": "SEO/GEO: off-page and backlinks"
+      },
+      {
+        "id": "seo5",
+        "type": "action",
+        "label": "SEO/GEO: tech coordination"
+      },
+      {
+        "id": "seo6",
+        "type": "action",
+        "label": "SEO/GEO: reporting setup"
+      },
+      {
+        "id": "soc1",
+        "type": "action",
+        "label": "Social: platform access and admin"
+      },
+      {
+        "id": "soc2",
+        "type": "action",
+        "label": "Social: brand foundations"
+      },
+      {
+        "id": "soc3",
+        "type": "action",
+        "label": "Social: content planning and approval"
+      },
+      {
+        "id": "soc4",
+        "type": "action",
+        "label": "Social: community and boundaries"
+      },
+      {
+        "id": "soc5",
+        "type": "action",
+        "label": "Social: production logistics"
+      },
+      {
+        "id": "soc6",
+        "type": "action",
+        "label": "Social: reporting setup"
+      },
+      {
+        "id": "vid1",
+        "type": "action",
+        "label": "Video: scope boundaries"
+      },
+      {
+        "id": "vid2",
+        "type": "action",
+        "label": "Video: platform specs"
+      },
+      {
+        "id": "vid3",
+        "type": "action",
+        "label": "Video: assets and production"
+      },
+      {
+        "id": "vid4",
+        "type": "action",
+        "label": "Video: approval workflow"
+      },
+      {
+        "id": "vid5",
+        "type": "action",
+        "label": "Video: tech builds and hosting"
+      },
+      {
+        "id": "vid6",
+        "type": "action",
+        "label": "Video: reporting setup"
+      },
+      {
+        "id": "kickoff",
+        "type": "action",
+        "label": "Client kickoff call"
+      },
+      {
+        "id": "t_live",
+        "type": "terminal",
+        "label": "TERMINAL: Live - account enters RAG health dashboard"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "p1",
+        "cond": ""
+      },
+      {
+        "from": "p1",
+        "to": "p2",
+        "cond": ""
+      },
+      {
+        "from": "p2",
+        "to": "p3",
+        "cond": ""
+      },
+      {
+        "from": "p3",
+        "to": "p4",
+        "cond": ""
+      },
+      {
+        "from": "p4",
+        "to": "branch",
+        "cond": ""
+      },
+      {
+        "from": "branch",
+        "to": "seo1",
+        "cond": "1. SEO/GEO in scope"
+      },
+      {
+        "from": "seo1",
+        "to": "seo2",
+        "cond": ""
+      },
+      {
+        "from": "seo2",
+        "to": "seo3",
+        "cond": ""
+      },
+      {
+        "from": "seo3",
+        "to": "seo4",
+        "cond": ""
+      },
+      {
+        "from": "seo4",
+        "to": "seo5",
+        "cond": ""
+      },
+      {
+        "from": "seo5",
+        "to": "seo6",
+        "cond": ""
+      },
+      {
+        "from": "seo6",
+        "to": "kickoff",
+        "cond": ""
+      },
+      {
+        "from": "branch",
+        "to": "soc1",
+        "cond": "2. Social in scope"
+      },
+      {
+        "from": "soc1",
+        "to": "soc2",
+        "cond": ""
+      },
+      {
+        "from": "soc2",
+        "to": "soc3",
+        "cond": ""
+      },
+      {
+        "from": "soc3",
+        "to": "soc4",
+        "cond": ""
+      },
+      {
+        "from": "soc4",
+        "to": "soc5",
+        "cond": ""
+      },
+      {
+        "from": "soc5",
+        "to": "soc6",
+        "cond": ""
+      },
+      {
+        "from": "soc6",
+        "to": "kickoff",
+        "cond": ""
+      },
+      {
+        "from": "branch",
+        "to": "vid1",
+        "cond": "3. Video in scope"
+      },
+      {
+        "from": "vid1",
+        "to": "vid2",
+        "cond": ""
+      },
+      {
+        "from": "vid2",
+        "to": "vid3",
+        "cond": ""
+      },
+      {
+        "from": "vid3",
+        "to": "vid4",
+        "cond": ""
+      },
+      {
+        "from": "vid4",
+        "to": "vid5",
+        "cond": ""
+      },
+      {
+        "from": "vid5",
+        "to": "vid6",
+        "cond": ""
+      },
+      {
+        "from": "vid6",
+        "to": "kickoff",
+        "cond": ""
+      },
+      {
+        "from": "kickoff",
+        "to": "t_live",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "OPS1",
+    "title": "Deliverable & stage rollup",
+    "meta": {
+      "status": "new",
+      "category": "Ops · Status",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "How many deliverables are open right now, and at which spine stage (0-9)?",
+      "How many are in which portal status (detected/scheduled/in progress/shipped/verified)?",
+      "Is any single stage holding more work than the team can move through this week?"
+    ],
+    "synonyms": [
+      "WIP count",
+      "status rollup",
+      "stage distribution",
+      "pipeline view",
+      "deliverable tracker"
+    ],
+    "structure": "Pulls every open deliverable's stage and status from the PM tool and gate-clearance records, buckets them, and checks stage concentration against weekly throughput capacity before publishing the rollup to the portal.",
+    "changes": [],
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "OPS1. Ops rollup cycle triggered (scheduled or on-demand)"
+      },
+      {
+        "id": "d_tasks",
+        "type": "data",
+        "label": "Pull every open deliverable: service line, stage, owner, due date (PM tool)"
+      },
+      {
+        "id": "d_gates",
+        "type": "data",
+        "label": "Pull gate-clearance status per deliverable (Gates 0-4)"
+      },
+      {
+        "id": "a_bucket",
+        "type": "action",
+        "label": "Bucket each deliverable by spine stage (0-9) and portal status"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Does any single stage hold more deliverables than weekly throughput capacity?"
+      },
+      {
+        "id": "t_bottleneck",
+        "type": "terminal",
+        "label": "FLAG: stage bottleneck — N deliverables stuck at Stage X; review capacity or reprioritize"
+      },
+      {
+        "id": "t_healthy",
+        "type": "terminal",
+        "label": "Rollup healthy — publish stage/status distribution to portal dashboard"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_tasks",
+        "cond": ""
+      },
+      {
+        "from": "d_tasks",
+        "to": "d_gates",
+        "cond": ""
+      },
+      {
+        "from": "d_gates",
+        "to": "a_bucket",
+        "cond": ""
+      },
+      {
+        "from": "a_bucket",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_bottleneck",
+        "cond": "Yes — concentration exceeds capacity"
+      },
+      {
+        "from": "s1",
+        "to": "t_healthy",
+        "cond": "No — distribution within capacity"
+      }
+    ]
+  },
+  {
+    "id": "OPS2",
+    "title": "Roadblock & stall detection",
+    "meta": {
+      "status": "new",
+      "category": "Ops · Blockers",
+      "handoffs": "OPS3, OPS4, OPS5, OPS8"
+    },
+    "clarifying": [
+      "How long has this deliverable sat in its current stage?",
+      "Which gate (0-4) is it stalled at?",
+      "Does the stall match a known escalation-matrix pattern (scope, resource, deadline, quality, relationship)?"
+    ],
+    "synonyms": [
+      "stuck deliverables",
+      "where are we blocked",
+      "bottleneck",
+      "stall detection",
+      "roadblocks"
+    ],
+    "structure": "Checks whether a deliverable has exceeded the turnaround SLA for its current stage, then classifies which gate it is stalled at so the right playbook (or handoff) fires — brief ambiguity, creative approval, resourcing, invoicing, or QC.",
+    "changes": [],
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "OPS2. Deliverable flagged for staleness check"
+      },
+      {
+        "id": "d_stage",
+        "type": "data",
+        "label": "Pull current stage, last status-change timestamp, gate-clearance flags (PM tool)"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Has time-in-stage exceeded the SLA for that stage?"
+      },
+      {
+        "id": "t_ontrack",
+        "type": "terminal",
+        "label": "On track — within SLA, no flag, recheck next cycle"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Which gate/stage is it stalled at?"
+      },
+      {
+        "id": "h_invoice",
+        "type": "handoff",
+        "label": "HANDOFF: OPS3 Invoicing & commercial health"
+      },
+      {
+        "id": "h_resource",
+        "type": "handoff",
+        "label": "HANDOFF: OPS4 Resourcing & utilization"
+      },
+      {
+        "id": "t_brief",
+        "type": "terminal",
+        "label": "SUGGEST: brief ambiguity stall — CP re-confirms scope + success metric before creative proceeds"
+      },
+      {
+        "id": "t_creative",
+        "type": "terminal",
+        "label": "SUGGEST: creative approval stall — escalate to CD; check revision rounds used vs SLA"
+      },
+      {
+        "id": "h_approval",
+        "type": "handoff",
+        "label": "HANDOFF: OPS5 Approval / revision SLA breach"
+      },
+      {
+        "id": "h_qc",
+        "type": "handoff",
+        "label": "HANDOFF: OPS8 Release / QC gate compliance"
+      },
+      {
+        "id": "t_unclear",
+        "type": "terminal",
+        "label": "SUGGEST: manual triage — stall doesn't map to a known gate pattern; escalate to PM for direct review"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_stage",
+        "cond": ""
+      },
+      {
+        "from": "d_stage",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_ontrack",
+        "cond": "No — within SLA"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "Yes — SLA breached"
+      },
+      {
+        "from": "s2",
+        "to": "h_invoice",
+        "cond": "Gate 0 — PO/SOW not validated"
+      },
+      {
+        "from": "s2",
+        "to": "h_resource",
+        "cond": "Gate 1 — staffing/resourcing incomplete"
+      },
+      {
+        "from": "s2",
+        "to": "t_brief",
+        "cond": "Gate 2 — brief/scope not signed off"
+      },
+      {
+        "from": "s2",
+        "to": "t_creative",
+        "cond": "Gate 3 — creative concept not approved"
+      },
+      {
+        "from": "s2",
+        "to": "h_approval",
+        "cond": "Client feedback / revision window exceeded"
+      },
+      {
+        "from": "s2",
+        "to": "h_qc",
+        "cond": "Gate 4 — QC/release checklist incomplete"
+      },
+      {
+        "from": "s2",
+        "to": "t_unclear",
+        "cond": "No matching gate pattern"
+      }
+    ]
+  },
+  {
+    "id": "OPS3",
+    "title": "Invoicing & commercial health",
+    "meta": {
+      "status": "new",
+      "category": "Ops · Finance",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Was the PO/SOW validated (Gate 0) before work started?",
+      "Has the invoicing milestone been triggered within the standard window after delivery?"
+    ],
+    "synonyms": [
+      "invoicing delay",
+      "unpaid work",
+      "commercial health",
+      "PO validation",
+      "billing flag"
+    ],
+    "structure": "Confirms Gate 0 was cleared before work began, then checks whether the delivery-triggered invoicing milestone was raised on schedule — the two commercial checkpoints that protect margin.",
+    "changes": [],
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "OPS3. Deliverable reaches Stage 8 (Delivery & handover) or PO check cycle"
+      },
+      {
+        "id": "d_po",
+        "type": "data",
+        "label": "Pull PO/SOW validation status + payment milestone terms (PO & Contract repository)"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Was PO/SOW validated (Gate 0) before work start?"
+      },
+      {
+        "id": "t_unpaid",
+        "type": "terminal",
+        "label": "FLAG: unprotected delivery — team worked without validated PO/SOW; escalate to Finance/AE immediately"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Has the invoicing milestone been triggered within the standard window after delivery?"
+      },
+      {
+        "id": "t_ontime",
+        "type": "terminal",
+        "label": "Commercial health clean — no action"
+      },
+      {
+        "id": "t_delayed",
+        "type": "terminal",
+        "label": "FLAG: invoicing delayed — delivery pack shared but invoice not raised; escalate to Finance, check for missing sign-off or scope discrepancy"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_po",
+        "cond": ""
+      },
+      {
+        "from": "d_po",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_unpaid",
+        "cond": "No — work started without validated PO/SOW"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "Yes — PO/SOW validated"
+      },
+      {
+        "from": "s2",
+        "to": "t_ontime",
+        "cond": "Yes — invoice raised on schedule"
+      },
+      {
+        "from": "s2",
+        "to": "t_delayed",
+        "cond": "No — invoice overdue"
+      }
+    ]
+  },
+  {
+    "id": "OPS4",
+    "title": "Resourcing & utilization",
+    "meta": {
+      "status": "new",
+      "category": "Ops · Staffing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Is the requested capacity available within the delivery window?",
+      "Would this allocation push any individual over 100% booked across concurrent projects?"
+    ],
+    "synonyms": [
+      "staffing gap",
+      "over-allocation",
+      "capacity check",
+      "resourcing",
+      "freelancer gap"
+    ],
+    "structure": "Runs the resource request raised by the PM through the RM's capacity check, then a utilization guard so no one gets booked over 100% without sign-off — the two failure modes that most often cause missed deadlines elsewhere.",
+    "changes": [],
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "OPS4. Resource Request raised by PM (Stage 3) or scheduled utilization check"
+      },
+      {
+        "id": "d_cap",
+        "type": "data",
+        "label": "Pull capacity/allocation data from Resource tracker"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Is requested capacity available within the delivery window?"
+      },
+      {
+        "id": "t_gap",
+        "type": "terminal",
+        "label": "SUGGEST: capacity gap — reprioritize, adjust timeline with CP, or engage vetted freelancer (Finance pre-approval required)"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Would allocation push any individual over 100% booked across concurrent projects?"
+      },
+      {
+        "id": "t_overalloc",
+        "type": "terminal",
+        "label": "FLAG: over-allocation — requires RM sign-off before confirming; sustained over-allocation escalates to Creative lead"
+      },
+      {
+        "id": "t_confirmed",
+        "type": "terminal",
+        "label": "Allocation confirmed — Gate 1 cleared, loaded into plan"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_cap",
+        "cond": ""
+      },
+      {
+        "from": "d_cap",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_gap",
+        "cond": "No — capacity gap"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "Yes — capacity available"
+      },
+      {
+        "from": "s2",
+        "to": "t_overalloc",
+        "cond": "Yes — over-allocation"
+      },
+      {
+        "from": "s2",
+        "to": "t_confirmed",
+        "cond": "No — within utilization target"
+      }
+    ]
+  },
+  {
+    "id": "OPS5",
+    "title": "Approval / revision SLA breach",
+    "meta": {
+      "status": "new",
+      "category": "Ops · Client",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Has the client feedback window elapsed without a response?",
+      "Have revision rounds exceeded the agreed SLA for this service line?"
+    ],
+    "synonyms": [
+      "feedback delay",
+      "revision overrun",
+      "scope creep",
+      "approval SLA",
+      "client review stall"
+    ],
+    "structure": "Checks the two most common client-side stall points: an overdue feedback window, and revision rounds exceeding the service line's agreed SLA (short:1, long:2, films:2 offline+online) — the latter is logged as a change request, not absorbed silently.",
+    "changes": [],
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "OPS5. Deliverable in client review/approval loop"
+      },
+      {
+        "id": "d_sla",
+        "type": "data",
+        "label": "Pull agreed feedback window + revision rounds used vs SLA"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Has the client feedback window elapsed without response?"
+      },
+      {
+        "id": "t_feedback_late",
+        "type": "terminal",
+        "label": "FLAG: client feedback delay — PM logs the slip, CP resets client expectation and deadline"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Have revision rounds exceeded the agreed SLA for this service line?"
+      },
+      {
+        "id": "t_scope_creep",
+        "type": "terminal",
+        "label": "FLAG: scope creep — extra revision round is a change request; PM logs it, CP raises change request to AE/Finance"
+      },
+      {
+        "id": "t_clean",
+        "type": "terminal",
+        "label": "Approval loop healthy — no action"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_sla",
+        "cond": ""
+      },
+      {
+        "from": "d_sla",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_feedback_late",
+        "cond": "Yes — feedback overdue"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "No — within window"
+      },
+      {
+        "from": "s2",
+        "to": "t_scope_creep",
+        "cond": "Yes — extra round requested"
+      },
+      {
+        "from": "s2",
+        "to": "t_clean",
+        "cond": "No — within agreed rounds"
+      }
+    ]
+  },
+  {
+    "id": "OPS6",
+    "title": "Cross-brain aggregation (BOPM overview)",
+    "meta": {
+      "status": "new",
+      "category": "Ops · Rollup",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "What open issues has the SEO/GEO brain flagged for this account?",
+      "What open issues have the content and video brains flagged for this account?",
+      "Are two or more domains flagging the same account in the same cycle?"
+    ],
+    "synonyms": [
+      "BOPM overview",
+      "unified view",
+      "cross-brain rollup",
+      "account health",
+      "one dashboard"
+    ],
+    "structure": "Pulls open issue line items from the SEO/GEO, content, and video brains into the common schema, then checks whether multiple domains are flagging the same account at once — a signal to brief the client team with one narrative instead of three separate alerts.",
+    "changes": [],
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "OPS6. BOPM rollup cycle (consumes SEO/content/video brain outputs)"
+      },
+      {
+        "id": "d_seo",
+        "type": "data",
+        "label": "Pull open issue line items from SEO/GEO brain (severity, priority score, node id)"
+      },
+      {
+        "id": "d_content",
+        "type": "data",
+        "label": "Pull open issue line items from content brain"
+      },
+      {
+        "id": "d_video",
+        "type": "data",
+        "label": "Pull open issue line items from video brain"
+      },
+      {
+        "id": "a_merge",
+        "type": "action",
+        "label": "Merge all issues into common schema: issue, evidence, asset, tree·node id, severity, priority score"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Do 2+ domains flag the same account/deliverable in the same cycle?"
+      },
+      {
+        "id": "t_compound",
+        "type": "terminal",
+        "label": "FLAG: compounding account risk — SEO/content/video all flagging same account; CP briefed for one client-facing narrative"
+      },
+      {
+        "id": "t_normal",
+        "type": "terminal",
+        "label": "Publish unified BOPM view — one account-level rollup, ranked by priority score across all domains"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_seo",
+        "cond": ""
+      },
+      {
+        "from": "root",
+        "to": "d_content",
+        "cond": ""
+      },
+      {
+        "from": "root",
+        "to": "d_video",
+        "cond": ""
+      },
+      {
+        "from": "d_seo",
+        "to": "a_merge",
+        "cond": ""
+      },
+      {
+        "from": "d_content",
+        "to": "a_merge",
+        "cond": ""
+      },
+      {
+        "from": "d_video",
+        "to": "a_merge",
+        "cond": ""
+      },
+      {
+        "from": "a_merge",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_compound",
+        "cond": "Yes — compounding risk"
+      },
+      {
+        "from": "s1",
+        "to": "t_normal",
+        "cond": "No — isolated issues"
+      }
+    ]
+  },
+  {
+    "id": "OPS7",
+    "title": "Renewal, pipeline & retention risk",
+    "meta": {
+      "status": "new",
+      "category": "Ops · Commercial",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Is this a pilot (conversion-model) engagement or a standing retainer?",
+      "Did the success metric move clearly against baseline by the Month 3 checkpoint?",
+      "Is the retainer within 60 days of its annual renewal date?"
+    ],
+    "synonyms": [
+      "conversion risk",
+      "renewal flag",
+      "pipeline",
+      "retention",
+      "pilot conversion",
+      "QBR"
+    ],
+    "structure": "Splits by engagement type — pilots get a Month-3 conversion check against baseline, retainers get a renewal-window check ahead of the QBR — surfacing whichever commercial risk is relevant to that engagement's lifecycle stage.",
+    "changes": [],
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "OPS7. Pilot reaches Month 3 checkpoint OR retainer reaches quarterly review"
+      },
+      {
+        "id": "d_metric",
+        "type": "data",
+        "label": "Pull baseline vs current result on the agreed success metric (Reporting dashboard)"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Is this a pilot (conversion-model) engagement?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Did the success metric move clearly against baseline by Month 3?"
+      },
+      {
+        "id": "t_convert",
+        "type": "terminal",
+        "label": "SUGGEST: build conversion deck — case for annual retainer scope, CP aligns internally on price"
+      },
+      {
+        "id": "t_miss",
+        "type": "terminal",
+        "label": "FLAG: pilot at risk of non-conversion — retro why the metric didn't move before the Month 3 review"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Is the retainer within 60 days of its annual renewal date?"
+      },
+      {
+        "id": "t_renewal",
+        "type": "terminal",
+        "label": "SUGGEST: prep renewal — CP flags upsell/renewal in pipeline report ahead of QBR"
+      },
+      {
+        "id": "t_none",
+        "type": "terminal",
+        "label": "No renewal action needed this cycle"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_metric",
+        "cond": ""
+      },
+      {
+        "from": "d_metric",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "Yes — pilot"
+      },
+      {
+        "from": "s1",
+        "to": "s3",
+        "cond": "No — standing retainer"
+      },
+      {
+        "from": "s2",
+        "to": "t_convert",
+        "cond": "Yes — clear movement vs baseline"
+      },
+      {
+        "from": "s2",
+        "to": "t_miss",
+        "cond": "No — flat or unclear"
+      },
+      {
+        "from": "s3",
+        "to": "t_renewal",
+        "cond": "Yes — renewal window open"
+      },
+      {
+        "from": "s3",
+        "to": "t_none",
+        "cond": "No — not yet due"
+      }
+    ]
+  },
+  {
+    "id": "OPS8",
+    "title": "Release / QC gate compliance",
+    "meta": {
+      "status": "new",
+      "category": "Ops · Quality",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Has the Gate 4 release checklist been fully ticked (brand, proof, spec, rights, client approval)?",
+      "Is there a written client approval on record before anything goes live?"
+    ],
+    "synonyms": [
+      "QC hold",
+      "release checklist",
+      "Gate 4",
+      "pre-flight check",
+      "compliance flag"
+    ],
+    "structure": "Runs the Gate 4 release checklist as a single yes/no gate before invoicing or publish is allowed to fire — the last line of defense against a brand, rights, or spec miss reaching the client live.",
+    "changes": [],
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "OPS8. Deliverable reaches Gate 4 (pre-release) checkpoint"
+      },
+      {
+        "id": "d_checklist",
+        "type": "data",
+        "label": "Pull Gate 4 checklist status: brand-correct, proofed, spec-correct, rights cleared, client approval on record"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Are all five checklist items cleared?"
+      },
+      {
+        "id": "t_hold",
+        "type": "terminal",
+        "label": "FLAG: release held — QC to clear outstanding checklist item(s) before anything goes live"
+      },
+      {
+        "id": "t_release",
+        "type": "terminal",
+        "label": "Gate 4 cleared — release authorized, invoicing milestone may trigger"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_checklist",
+        "cond": ""
+      },
+      {
+        "from": "d_checklist",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_hold",
+        "cond": "No — one or more items outstanding"
+      },
+      {
+        "from": "s1",
+        "to": "t_release",
+        "cond": "Yes — all five items cleared"
+      }
+    ]
+  }
+]

@@ -364,3 +364,98 @@ button:disabled { cursor: wait; opacity: 0.6; }
   .workflowList > button { grid-template-columns: 50px 1fr 18px; }
   .workflowList > button > span:nth-child(3), .workflowList > button > span:nth-child(4) { display: none; }
 }
+
+/* Compact Atlas direction */
+.appHeader {
+  min-height: 58px;
+  padding-inline: max(20px, calc((100vw - 1180px) / 2));
+  background: linear-gradient(110deg, #172554 0%, #312e81 55%, #4f46e5 100%);
+}
+.logo { width: 31px; height: 31px; border-radius: 9px; font-size: 15px; }
+.identity strong { font-size: 13px; }
+.identity small { font-size: 9px; }
+.appHeader nav button { min-height: 29px; padding: 0 10px; font-size: 10px; }
+.aiStatus { padding: 6px 8px; font-size: 7.5px; }
+.workbench { width: min(1180px, 100%); padding: 18px 20px 48px; }
+.auditPanel { padding: 17px 18px; border-radius: 13px; }
+.panelTitle { margin-bottom: 13px; }
+.panelTitle h1, .brainHeader h1 { margin-top: 3px; font-size: 20px; letter-spacing: -.45px; }
+.panelTitle p, .brainHeader p { max-width: 720px; font-size: 11px; line-height: 1.45; }
+.panelTitle > div > span, .brainHeader > div > span { font-size: 8px; }
+.engineBadge { padding: 6px 9px; font-size: 8px; }
+.siteCommand {
+  display: grid; grid-template-columns: minmax(260px, 1.5fr) 86px auto auto auto auto; gap: 7px; align-items: end;
+}
+.siteCommand label > span { display: block; margin-bottom: 4px; color: var(--muted); font-size: 8px; font-weight: 750; }
+.siteCommand input {
+  width: 100%; height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); outline: none; font-size: 10.5px;
+}
+.siteCommand input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.09); }
+.siteCommand .secondaryButton, .siteCommand .runAudit, .uploadButton, .dangerButton { height: 36px; min-height: 36px; }
+.findButton { padding-inline: 14px; }
+.siteCommand .runAudit { min-width: 95px; }
+.uploadButton {
+  padding: 0 11px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink-2); cursor: pointer; font-size: 9.5px; font-weight: 750; white-space: nowrap;
+}
+.uploadButton input { display: none; }
+.dangerButton {
+  padding: 0 10px; border: 1px solid #ead7df; border-radius: 8px; background: #fff; color: #a43a5b; font-size: 9.5px; font-weight: 750;
+}
+.dangerButton.small { min-height: 34px; }
+.commandMeta { min-height: 28px; margin-top: 9px; display: flex; align-items: center; gap: 12px; }
+.commandMeta > strong { margin-left: auto; padding: 4px 7px; border-radius: 99px; background: #edf3ff; color: #294aa6; font-size: 8px; }
+.commandMeta > em { color: var(--muted); font-size: 9px; font-style: normal; }
+.aiToggle { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 8.5px; }
+.aiToggle input { width: 13px; height: 13px; margin: 0; accent-color: #6366f1; }
+.aiToggle span { color: #8b7cf6; }
+.aiToggle.on b { color: #4f46e5; }
+.manualToggle { padding: 0; border: 0; background: transparent; color: #4f46e5; font-size: 9px; font-weight: 750; }
+.manualUrls { margin-top: 8px; display: grid; grid-template-columns: 1fr 150px; gap: 7px; }
+.manualUrls textarea { min-height: 64px; padding: 9px 10px; resize: vertical; border: 1px solid var(--line); border-radius: 8px; outline: none; font-size: 10px; line-height: 1.45; }
+.scopeNote { margin-top: 8px; padding: 7px 9px; border-color: #e6defc; background: #faf8ff; color: #5b5375; font-size: 9px; }
+.scopeNote strong { color: #4338ca; }
+.summary { margin: 11px 0; gap: 8px; }
+.stat { min-width: 112px; min-height: 61px; padding: 10px 12px; border-radius: 10px; }
+.stat > span { font-size: 8px; }
+.stat > strong { margin-top: 2px; font-size: 19px; }
+.priorityStat { min-width: 260px; }
+.priorityStat div { margin-top: 6px; }
+.priorityStat b, .priority { padding: 2px 7px; font-size: 8px; }
+.filters { margin-bottom: 8px; gap: 7px; }
+.filters input, .filters select { min-height: 32px; font-size: 10px; }
+.filters label { font-size: 9px; }
+.filters .secondaryButton { min-height: 32px; padding: 0 9px; font-size: 9px; }
+.pieceTableWrap { border-radius: 11px; }
+.pieceTable th, .pieceTable td { padding: 9px 10px; font-size: 10.5px; }
+.pieceTable th { top: 57px; font-size: 7.5px; }
+.pieceRow td:first-child > small { font-size: 8.5px; }
+.funnel, .issueCount, .pieceRow select { font-size: 8px; }
+.detailRow > td, .gscExplainRow > td { padding: 12px 13px 14px; }
+.detailHeading h3 { font-size: 11px; }
+.fixItem p { font-size: 9.5px; }
+.fixItem p small, .issue small { font-size: 8px; }
+.gscInputs label { font-size: 9px; }
+.gscInputs label > input, .fileInput > span { min-height: 36px; font-size: 10px; }
+.gscTable td p { font-size: 9.5px; }
+.gscTable td small { font-size: 8px; }
+.explainIntro h2 { font-size: 14px; }
+.explainGrid section { min-height: 135px; padding: 12px; }
+.explainGrid h3 { font-size: 10px; }
+.explainGrid p { font-size: 9px !important; }
+.explainGrid li { font-size: 8.5px; }
+.decisionTrace { padding: 12px; }
+.brainHeader { padding: 18px 20px; border-radius: 13px; }
+.workflowList > button { min-height: 52px; }
+.drawer { width: min(520px, 94vw); padding: 28px; }
+
+@media (max-width: 980px) {
+  .siteCommand { grid-template-columns: 1fr 90px repeat(2, auto); }
+  .siteCommand .uploadButton, .siteCommand .dangerButton { grid-row: 2; }
+}
+
+@media (max-width: 700px) {
+  .siteCommand, .manualUrls { grid-template-columns: 1fr; }
+  .siteCommand .uploadButton, .siteCommand .dangerButton { grid-row: auto; }
+  .commandMeta { align-items: flex-start; flex-direction: column; }
+  .commandMeta > strong { margin-left: 0; }
+}

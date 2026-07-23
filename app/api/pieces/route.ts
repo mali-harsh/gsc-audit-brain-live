@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auditContentUrl } from "@/lib/content-audit";
-import { listPieces, storePiece, updatePiece } from "@/db/pieces";
+import { clearPieces, deletePiece, listPieces, storePiece, updatePiece } from "@/db/pieces";
 
 export const dynamic = "force-dynamic";
 
@@ -50,5 +50,18 @@ export async function PATCH(request: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "The content piece could not be updated." }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const body = (await request.json()) as { url?: string; all?: boolean };
+    if (body.all) await clearPieces();
+    else if (body.url) await deletePiece(body.url);
+    else return NextResponse.json({ error: "Choose a page to remove." }, { status: 400 });
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "The content could not be removed." }, { status: 500 });
   }
 }

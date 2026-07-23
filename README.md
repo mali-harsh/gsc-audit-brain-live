@@ -6,6 +6,9 @@ the supplied `MASTER_BRAIN.json`.
 ## What works
 
 - Fetches and audits live public URLs from the dashboard.
+- Discovers up to 200 same-site pages from nested sitemaps, with a safe
+  homepage-link fallback.
+- Imports URL lists from CSV and audits large lists in controlled batches.
 - Groups AEO, GEO, technical, and freshness issues per content piece.
 - Stores owner, status, notes, audit history, evidence, and a consolidated fix
   plan for each page.
@@ -20,6 +23,8 @@ the supplied `MASTER_BRAIN.json`.
   Cloudflare D1.
 - Reopens previous audits from history.
 - Filters and exports findings as CSV.
+- Exports page summaries and ordered fix lists as separate CSV files.
+- Supports individual removal, clear-all, and one-click re-audits.
 - Exposes all 46 indexing, content, onboarding, and operations workflows in an
   inspectable workflow library.
 
@@ -85,13 +90,13 @@ Workers AI can optionally translate an existing finding into a short
 plain-language explanation; it cannot change the workflow, severity, evidence,
 or recommendation.
 
-Copy the environment template:
+Copy the local Cloudflare runtime template:
 
 ```bash
-cp .env.example .env
+cp .dev.vars.example .dev.vars
 ```
 
-Set these values in `.env`:
+Set these values in `.dev.vars`:
 
 ```env
 CLOUDFLARE_ACCOUNT_ID=your-account-id
@@ -100,7 +105,7 @@ CLOUDFLARE_AI_MODEL=@cf/meta/llama-3.2-3b-instruct
 ```
 
 Create the token from Cloudflare **Workers AI → Use REST API**. Keep the token
-server-side; never put it in browser code or commit `.env`.
+server-side; never put it in browser code or commit `.dev.vars`.
 
 Cloudflare Workers AI documentation:
 

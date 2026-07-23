@@ -90,7 +90,12 @@ export default function Dashboard() {
   const [pieces, setPieces] = useState<ContentPiece[]>([]);
   const [workflows, setWorkflows] = useState<WorkflowSummary[]>([]);
   const [urls, setUrls] = useState("");
+  const [site, setSite] = useState("");
+  const [maxPages, setMaxPages] = useState(50);
+  const [discoveredUrls, setDiscoveredUrls] = useState<string[]>([]);
+  const [manualOpen, setManualOpen] = useState(false);
   const [running, setRunning] = useState(false);
+  const [progress, setProgress] = useState("");
   const [error, setError] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [query, setQuery] = useState("");
@@ -104,6 +109,7 @@ export default function Dashboard() {
   const [gscFile, setGscFile] = useState("");
   const [gscAudit, setGscAudit] = useState<AuditDetail | null>(null);
   const [aiEnabled, setAiEnabled] = useState(false);
+  const [useAi, setUseAi] = useState(false);
 
   const loadPieces = useCallback(async () => {
     const response = await fetch("/api/pieces");
@@ -130,29 +136,90 @@ export default function Dashboard() {
     setRunning(true);
     setError("");
     try {
-      const response = await fetch("/api/pieces", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ urls: input }),
-      });
-      const data = (await response.json()) as { items?: ContentPiece[]; error?: string };
-      if (!response.ok || !data.items) throw new Error(data.error || "Audit failed.");
-      setPieces((current) => {
-        const next = [...current];
-        data.items!.forEach((item) => {
-          const index = next.findIndex((piece) => piece.url === item.url);
-          if (index >= 0) next[index] = item;
-          else next.unshift(item);
+      for (let index = 0; index < input.length; index += 10) {
+        const batch = input.slice(index, index + 10);
+        setProgress(`Auditing ${Math.min(index + batch.length, input.length)} of ${input.length}`);
+        const response = await fetch("/api/pieces", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ urls: batch }),
         });
-        return next;
-      });
+        const data = (await response.json()) as { items?: ContentPiece[]; error?: string };
+        if (!response.ok || !data.items) throw new Error(data.error || "Audit failed.");
+        setPieces((current) => {
+          const next = [...current];
+          data.items!.forEach((item) => {
+            const existing = next.findIndex((piece) => piece.url === item.url);
+            if (existing >= 0) next[existing] = item;
+            else next.unshift(item);
+          });
+          return next;
+        });
+      }
       setUrls("");
+      setDiscoveredUrls([]);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Audit failed.");
     } finally {
       setRunning(false);
+      setProgress("");
     }
   };
+
+  const discoverSite = async () => {
+    if (!site.trim()) return setError("Enter a website or sitemap URL.");
+    setRunning(true);
+    setError("");
+    setProgress("Reading sitemap…");
+    try {
+      const response = await fetch("/api/discover", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ site, max: maxPages }),
+      });
+      const data = (await response.json()) as { urls?: string[]; source?: string; error?: string };
+      if (!response.ok || !data.urls) throw new Error(data.error || "Pages could not be found.");
+      setDiscoveredUrls(data.urls);
+      if (!data.urls.length) setError("No public content pages were found.");
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Pages could not be found.");
+    } finally {
+      setRunning(false);
+      setProgress("");
+    }
+  };
+
+  const removePiece = async (url: string) => {
+    const response = await fetch("/api/pieces", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+    if (!response.ok) return setError("The page could not be removed.");
+    setPieces((current) => current.filter((piece) => piece.url !== url));
+  };
+
+  const clearAll = async () => {
+    if (!pieces.length || !window.confirm(`Clear all ${pieces.length} audited pages? Export first if you need a copy.`)) return;
+    const response = await fetch("/api/pieces", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ all: true }),
+    });
+    if (!response.ok) return setError("The audit list could not be cleared.");
+    setPieces([]);
+    setOpen({});
+  };
+
+  const exportPages = () => download("content-audit-pages.csv", [
+    ["url", "title", "funnel", "priority", "issues", "status", "owner", "words", "schema", "freshness"],
+    ...filteredPieces.map((piece) => [piece.url, piece.title, piece.funnel, piece.priority, piece.issueCount, piece.fixStatus, piece.owner, piece.wordCount, piece.schemaTypes.join("; "), piece.freshnessDate]),
+  ]);
+
+  const exportFixes = () => download("content-audit-fixes.csv", [
+    ["url", "title", "priority", "order", "fix", "discipline", "severity", "workflow", "status", "owner"],
+    ...filteredPieces.flatMap((piece) => piece.consolidatedFixes.map((fix, index) => [piece.url, piece.title, piece.priority, index + 1, fix.fix, fix.discipline, fix.severity, fix.workflowId, piece.fixStatus, piece.owner])),
+  ]);
 
   const updatePiece = async (
     url: string,
@@ -241,17 +308,50 @@ export default function Dashboard() {
           <>
             <section className="auditPanel">
               <div className="panelTitle">
-                <div><span>LIVE PAGE AUDIT</span><h1>What content should we inspect?</h1><p>Paste URLs. The workbench fetches the real pages, runs deterministic MASTER_BRAIN checks, and stores one operational row per page.</p></div>
+                <div><span>CONTENT INTELLIGENCE</span><h1>Audit a whole site</h1><p>Find every page from the sitemap, then turn technical and content signals into one prioritized fix plan.</p></div>
                 <span className="engineBadge"><i /> Engine online</span>
               </div>
-              <div className="auditInputRow">
-                <textarea value={urls} onChange={(event) => setUrls(event.target.value)} placeholder={"Paste one or more URLs — one per line\nhttps://example.com/blog/best-crm\nhttps://example.com/pricing"} />
-                <div className="auditSide">
-                  <div className="checkSummary"><span>✓ AEO architecture</span><span>✓ GEO/schema</span><span>✓ Technical gates</span><span>✓ Freshness</span></div>
-                  <button className="runAudit" onClick={() => void runContentAudit()} disabled={running}>{running ? <><i className="spinner" /> Auditing live pages…</> : <>▶ Run audit</>}</button>
-                </div>
+              <div className="siteCommand">
+                <label className="siteField"><span>Website or sitemap</span><input value={site} onChange={(event) => setSite(event.target.value)} placeholder="atlas.org or atlas.org/sitemap.xml" /></label>
+                <label className="pageLimit"><span>Max pages</span><input type="number" min={1} max={200} value={maxPages} onChange={(event) => setMaxPages(Number(event.target.value))} /></label>
+                <button className="secondaryButton findButton" disabled={running} onClick={() => void discoverSite()}>Find pages</button>
+                <button className="runAudit" disabled={running || !discoveredUrls.length} onClick={() => void runContentAudit(discoveredUrls)}>
+                  {running && progress.startsWith("Auditing") ? <><i className="spinner" /> {progress}</> : `Audit ${discoveredUrls.length ? discoveredUrls.length : "all"}`}
+                </button>
+                <label className="uploadButton">
+                  <input type="file" accept=".csv,.txt,text/csv" onChange={async (event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const rows = parseCsv(await file.text());
+                      const imported = rows.map((row) => String(row.url ?? row.page ?? "").trim()).filter(Boolean);
+                      if (!imported.length) throw new Error("The CSV needs a URL column.");
+                      setDiscoveredUrls(imported.slice(0, 200));
+                      setError("");
+                    } catch (caught) {
+                      setError(caught instanceof Error ? caught.message : "The URL CSV could not be read.");
+                    }
+                    event.target.value = "";
+                  }} />
+                  ⇧ Upload CSV
+                </label>
+                <button className="dangerButton" disabled={!pieces.length} onClick={() => void clearAll()}>Clear</button>
               </div>
-              <div className="scopeNote"><strong>Transparent by design:</strong> checks use fetched HTML and deterministic rules. JavaScript-rendered content, brand voice, and subjective quality still need human review.</div>
+              <div className="commandMeta">
+                <label className={`aiToggle ${useAi ? "on" : ""}`}><input type="checkbox" checked={useAi} disabled={!aiEnabled} onChange={(event) => setUseAi(event.target.checked)} /><span>✦</span><b>{aiEnabled ? "AI explanations" : "Add Cloudflare credentials to enable AI"}</b></label>
+                <button className="manualToggle" onClick={() => setManualOpen((value) => !value)}>{manualOpen ? "− Hide manual URLs" : "+ Or paste specific URLs"}</button>
+                {discoveredUrls.length > 0 && <strong>{discoveredUrls.length} pages ready</strong>}
+                {progress && !progress.startsWith("Auditing") && <em>{progress}</em>}
+              </div>
+              {manualOpen && (
+                <div className="manualUrls">
+                  <textarea value={urls} onChange={(event) => setUrls(event.target.value)} placeholder={"Paste one URL per line\nhttps://example.com/blog/best-crm"} />
+                  <button className="runAudit" disabled={running || !urls.trim()} onClick={() => void runContentAudit()}>
+                    {running ? <><i className="spinner" /> {progress || "Auditing…"}</> : "Audit pasted URLs"}
+                  </button>
+                </div>
+              )}
+              <div className="scopeNote"><strong>Evidence first.</strong> MASTER_BRAIN handles deterministic checks. {useAi ? "Cloudflare AI is on for plain-language explanations." : "AI stays optional and never changes the rule outcome."}</div>
             </section>
 
             <section className="summary">
@@ -267,6 +367,8 @@ export default function Dashboard() {
               <select value={status} onChange={(event) => setStatus(event.target.value)}><option value="">All statuses</option><option>To fix</option><option>In progress</option><option>Fixed</option></select>
               <label><input type="checkbox" checked={hideFixed} onChange={(event) => setHideFixed(event.target.checked)} /> hide fixed</label>
               <span />
+              <button className="secondaryButton" disabled={!filteredPieces.length} onClick={exportPages}>↓ Pages CSV</button>
+              <button className="secondaryButton" disabled={!filteredPieces.some((piece) => piece.consolidatedFixes.length)} onClick={exportFixes}>↓ Fixes CSV</button>
               <button className="secondaryButton" disabled={!pieces.length || running} onClick={() => void runContentAudit(pieces.map((piece) => piece.url))}>↻ Re-audit all</button>
             </section>
 
@@ -283,8 +385,9 @@ export default function Dashboard() {
                         onToggle={() => setOpen((current) => ({ ...current, [piece.url]: !current[piece.url] }))}
                         onUpdate={updatePiece}
                         onReaudit={() => void runContentAudit([piece.url])}
+                        onDelete={() => void removePiece(piece.url)}
                         onWorkflow={openWorkflow}
-                        aiEnabled={aiEnabled}
+                        aiEnabled={aiEnabled && useAi}
                       />
                     ))}
                   </tbody>
@@ -380,6 +483,7 @@ function PieceRows({
   onToggle,
   onUpdate,
   onReaudit,
+  onDelete,
   onWorkflow,
   aiEnabled,
 }: {
@@ -388,6 +492,7 @@ function PieceRows({
   onToggle: () => void;
   onUpdate: (url: string, changes: { fixStatus?: ContentPiece["fixStatus"]; owner?: string; note?: string }) => Promise<void>;
   onReaudit: () => void;
+  onDelete: () => void;
   onWorkflow: (id: string) => void;
   aiEnabled: boolean;
 }) {
@@ -433,6 +538,7 @@ function PieceRows({
             <div className="pieceActions">
               <button className="primarySmall" onClick={() => void onUpdate(piece.url, { fixStatus: "Fixed" })}>✓ Mark fixed</button>
               <button className="secondaryButton" onClick={onReaudit}>↻ Re-audit</button>
+              <button className="dangerButton small" onClick={() => { if (window.confirm("Remove this page from the audit list?")) onDelete(); }}>Remove</button>
               <AiExplainButton
                 enabled={aiEnabled}
                 kind="content_piece"

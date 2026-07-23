@@ -12,7 +12,10 @@ test("build contains the finished SearchOps Workbench", async () => {
   ]);
 
   assert.match(layout, /SearchOps Workbench/);
-  assert.match(dashboard, /What content should we inspect/);
+  assert.match(dashboard, /Audit a whole site/);
+  assert.match(dashboard, /Find pages/);
+  assert.match(dashboard, /Upload CSV/);
+  assert.match(dashboard, /Pages CSV/);
   assert.match(dashboard, /Audit each page\. Fix each piece once/);
   assert.match(dashboard, /Engine online/);
   assert.match(dashboard, /GSC audit/);

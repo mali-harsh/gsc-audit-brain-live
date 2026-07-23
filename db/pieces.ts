@@ -187,3 +187,13 @@ export async function storePiece(piece: ContentPiece) {
   const row = await savePiece(piece);
   return toPiece(row);
 }
+
+export async function deletePiece(url: string) {
+  await ensureSchema();
+  await db().prepare("DELETE FROM content_pieces WHERE url = ?").bind(url).run();
+}
+
+export async function clearPieces() {
+  await ensureSchema();
+  await db().prepare("DELETE FROM content_pieces").run();
+}

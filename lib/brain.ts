@@ -1,4 +1,4 @@
-import type { Finding, ImportRow, Workflow } from "@/lib/types";
+import type { Finding, FindingExplanation, ImportRow, Workflow } from "@/lib/types";
 import { workflowById } from "@/lib/workflows";
 
 const REASON_TO_ID: Record<string, string> = {
@@ -100,6 +100,104 @@ function classify(row: ImportRow) {
   return REASON_TO_ID[normaliseReason(text(row, "reason", "reason_label", "indexing_reason"))] ?? "";
 }
 
+function displayValue(value: ImportRow[string]) {
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return String(value ?? "").trim();
+}
+
+function evidenceFrom(row: ImportRow) {
+  return Object.entries(row)
+    .filter(
+      ([key, value]) =>
+        !["url", "page", "address"].includes(key) &&
+        value !== null &&
+        value !== undefined &&
+        displayValue(value),
+    )
+    .slice(0, 12)
+    .map(([field, value]) => ({ field, value: displayValue(value) }));
+}
+
+function pathToNode(workflow: Workflow, targetId: string) {
+  const queue: Array<{ nodeId: string; path: Array<{ nodeId: string; condition?: string }> }> = [
+    { nodeId: "root", path: [{ nodeId: "root" }] },
+  ];
+  const visited = new Set<string>();
+
+  while (queue.length) {
+    const current = queue.shift();
+    if (!current || visited.has(current.nodeId)) continue;
+    visited.add(current.nodeId);
+    if (current.nodeId === targetId) return current.path;
+    for (const edge of workflow.edges.filter((candidate) => candidate.from === current.nodeId)) {
+      queue.push({
+        nodeId: edge.to,
+        path: [...current.path, { nodeId: edge.to, condition: edge.cond }],
+      });
+    }
+  }
+  return [];
+}
+
+export function explainFinding(
+  workflowId: string,
+  row: ImportRow,
+  suggestionId: string,
+  status: Finding["status"],
+  suggestion: string,
+): FindingExplanation {
+  const workflow = workflowById.get(workflowId);
+  if (!workflow) {
+    return {
+      source: "MASTER_BRAIN.json",
+      whyError:
+        "This Google Search Console reason is not mapped to a workflow in MASTER_BRAIN.json, so the engine stopped instead of guessing.",
+      howToFix:
+        "Add a supported reason label or workflow_id to the import, then run the audit again.",
+      howToVerify: [
+        "Confirm the export reason matches a workflow title or synonym in MASTER_BRAIN.json.",
+        "Re-import the row and confirm it resolves to a workflow ID instead of UNMAPPED.",
+      ],
+      evidenceUsed: evidenceFrom(row),
+      decisionPath: [],
+    };
+  }
+
+  const targetId = suggestionId.startsWith(`${workflow.id}.`)
+    ? suggestionId.slice(workflow.id.length + 1)
+    : "";
+  const path = targetId && targetId !== "needs_context" ? pathToNode(workflow, targetId) : [];
+  const fallback = workflow.nodes
+    .filter((node) => ["root", "data", "action", "decision"].includes(node.type))
+    .slice(0, 8)
+    .map((node) => ({ nodeId: node.id, condition: undefined as string | undefined }));
+  const selectedPath = path.length ? path : fallback;
+
+  return {
+    source: "MASTER_BRAIN.json",
+    whyError:
+      status === "evaluated"
+        ? `${workflow.structure} The evidence in this import followed the workflow to “${suggestion}”.`
+        : `${workflow.structure} The workflow matched, but MASTER_BRAIN.json requires more evidence before it can choose a safe outcome.`,
+    howToFix: suggestion,
+    howToVerify: workflow.clarifying.length
+      ? workflow.clarifying.slice(0, 4).map((question) => `Confirm: ${question}`)
+      : [
+          "Re-export or inspect the URL in Google Search Console.",
+          "Confirm the original indexing reason is cleared.",
+        ],
+    evidenceUsed: evidenceFrom(row),
+    decisionPath: selectedPath
+      .map(({ nodeId, condition }) => {
+        const node = workflow.nodes.find((candidate) => candidate.id === nodeId);
+        return node
+          ? { nodeId, type: node.type, label: node.label.replace(/^SUGGEST:\s*/i, ""), condition }
+          : null;
+      })
+      .filter((node): node is NonNullable<typeof node> => Boolean(node)),
+  };
+}
+
 function result(
   workflow: Workflow,
   row: ImportRow,
@@ -124,6 +222,13 @@ function result(
       suggestion:
         "Workflow matched, but the export does not contain enough evidence to select a safe recommendation. Add the missing context shown below and re-run.",
       missingContext: missingContext.length ? missingContext : workflow.clarifying,
+      explanation: explainFinding(
+        workflow.id,
+        row,
+        `${workflow.id}.needs_context`,
+        "needs_context",
+        "Collect the missing context shown below, then re-run this row.",
+      ),
       raw: row,
     };
   }
@@ -140,6 +245,7 @@ function result(
     suggestionId: chosen.suggestionId,
     suggestion: chosen.suggestion,
     missingContext: [],
+    explanation: explainFinding(workflow.id, row, chosen.suggestionId, "evaluated", chosen.suggestion),
     raw: row,
   };
 }
@@ -163,6 +269,13 @@ export function evaluateRow(row: ImportRow, rows: ImportRow[], rowNumber: number
       suggestionId: "manual_mapping",
       suggestion: "This export label does not match a workflow in MASTER_BRAIN.json.",
       missingContext: ["Provide a supported reason label or a workflow_id column."],
+      explanation: explainFinding(
+        "UNMAPPED",
+        row,
+        "manual_mapping",
+        "needs_mapping",
+        "Add a supported reason label or workflow_id to the import, then run the audit again.",
+      ),
       raw: row,
     };
   }

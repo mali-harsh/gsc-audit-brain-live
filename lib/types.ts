@@ -42,7 +42,22 @@ export type Finding = {
   suggestionId: string;
   suggestion: string;
   missingContext: string[];
+  explanation: FindingExplanation;
   raw: ImportRow;
+};
+
+export type FindingExplanation = {
+  source: "MASTER_BRAIN.json";
+  whyError: string;
+  howToFix: string;
+  howToVerify: string[];
+  evidenceUsed: Array<{ field: string; value: string }>;
+  decisionPath: Array<{
+    nodeId: string;
+    type: WorkflowNode["type"];
+    label: string;
+    condition?: string;
+  }>;
 };
 
 export type AuditSummary = {

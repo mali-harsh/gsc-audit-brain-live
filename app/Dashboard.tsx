@@ -472,13 +472,7 @@ function GscFindingRows({
   onWorkflow: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const evidence = Object.entries(finding.raw).filter(
-    ([key, value]) =>
-      !["url", "page", "address", "reason", "reason_label", "indexing_reason"].includes(key) &&
-      value !== null &&
-      value !== undefined &&
-      String(value).trim(),
-  );
+  const { explanation } = finding;
   return (
     <>
       <tr className="gscFindingRow" onClick={() => setOpen((value) => !value)}>
@@ -492,11 +486,50 @@ function GscFindingRows({
       {open && (
         <tr className="gscExplainRow">
           <td colSpan={6}>
+            <div className="explainIntro">
+              <div>
+                <span>Decision explanation</span>
+                <h2>Here’s what happened—and what to do next.</h2>
+              </div>
+              <strong>Source · {explanation.source}</strong>
+            </div>
             <div className="explainGrid">
-              <section><span>01 · WHY IT MATCHED</span><h3>{finding.reason} → {finding.workflowId}</h3><p>The export reason maps directly to <strong>{finding.workflowTitle}</strong>. The deterministic engine then evaluates only the context present in this row and its import batch.</p></section>
-              <section><span>02 · EVIDENCE USED</span><h3>{evidence.length ? `${evidence.length} context fields` : "Reason label only"}</h3>{evidence.length ? <dl>{evidence.slice(0, 8).map(([key, value]) => <div key={key}><dt>{key.replaceAll("_", " ")}</dt><dd>{String(value)}</dd></div>)}</dl> : <p>No optional decision fields were present. The engine will not invent them.</p>}</section>
-              <section><span>03 · DECISION OUTCOME</span><h3>{finding.suggestionId}</h3><p>{finding.suggestion}</p></section>
-              <section className={finding.missingContext.length ? "needsContext" : ""}><span>04 · CONFIDENCE GATE</span><h3>{finding.status === "evaluated" ? "Safe terminal reached" : "Human context required"}</h3><p>{finding.missingContext.length ? `Collect: ${finding.missingContext.join(" · ")}` : "The available evidence was sufficient to select a workflow outcome."}</p></section>
+              <section>
+                <span>01 · Why this happened</span>
+                <h3>{finding.reason} → {finding.workflowId}</h3>
+                <p>{explanation.whyError}</p>
+              </section>
+              <section>
+                <span>02 · Evidence used</span>
+                <h3>{explanation.evidenceUsed.length ? `${explanation.evidenceUsed.length} signals checked` : "Reason label only"}</h3>
+                {explanation.evidenceUsed.length ? (
+                  <dl>{explanation.evidenceUsed.map(({ field, value }) => <div key={field}><dt>{field.replaceAll("_", " ")}</dt><dd>{value}</dd></div>)}</dl>
+                ) : <p>No optional decision fields were present. The engine stopped before making assumptions.</p>}
+              </section>
+              <section>
+                <span>03 · How to fix it</span>
+                <h3>{finding.suggestionId}</h3>
+                <p>{explanation.howToFix}</p>
+              </section>
+              <section className={finding.missingContext.length ? "needsContext" : ""}>
+                <span>04 · How to verify</span>
+                <h3>{finding.status === "evaluated" ? "Prove the fix worked" : "Collect context first"}</h3>
+                <ul>{explanation.howToVerify.map((step) => <li key={step}>{step}</li>)}</ul>
+                {finding.missingContext.length > 0 && <p className="missingEvidence">Still needed: {finding.missingContext.join(" · ")}</p>}
+              </section>
+            </div>
+            <div className="decisionTrace">
+              <div className="traceHeading"><span>MASTER_BRAIN decision path</span><strong>{explanation.decisionPath.length} steps</strong></div>
+              {explanation.decisionPath.length ? (
+                <ol>
+                  {explanation.decisionPath.map((step, index) => (
+                    <li key={`${step.nodeId}-${index}`}>
+                      <i>{index + 1}</i>
+                      <div><span>{step.type} · {step.nodeId}</span><strong>{step.label}</strong>{step.condition && <small>Branch: {step.condition}</small>}</div>
+                    </li>
+                  ))}
+                </ol>
+              ) : <p>This reason needs a workflow mapping before a decision path can be shown.</p>}
             </div>
             <div className="explainActions">
               <button className="secondaryButton" onClick={() => void onWorkflow(finding.workflowId)}>Inspect full workflow →</button>
@@ -512,7 +545,7 @@ function GscFindingRows({
                   status: finding.status,
                   suggestionId: finding.suggestionId,
                   deterministicRecommendation: finding.suggestion,
-                  evidence: finding.raw,
+                  deterministicExplanation: finding.explanation,
                   missingContext: finding.missingContext,
                 }}
               />

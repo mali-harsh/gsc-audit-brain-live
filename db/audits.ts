@@ -1,5 +1,6 @@
 import { env } from "cloudflare:workers";
 import type { AuditDetail, AuditSummary, Finding } from "@/lib/types";
+import { explainFinding } from "@/lib/brain";
 
 let schemaReady = false;
 
@@ -186,20 +187,30 @@ export async function getAudit(id: string): Promise<AuditDetail | null> {
 
   return {
     ...toSummary(audit),
-    findings: rows.results.map((row) => ({
-      id: row.id,
-      rowNumber: row.row_number,
-      url: row.url,
-      reason: row.reason,
-      workflowId: row.workflow_id,
-      workflowTitle: row.workflow_title,
-      category: row.category,
-      status: row.status,
-      severity: row.severity,
-      suggestionId: row.suggestion_id,
-      suggestion: row.suggestion,
-      missingContext: JSON.parse(row.missing_context_json) as string[],
-      raw: JSON.parse(row.raw_json),
-    })),
+    findings: rows.results.map((row) => {
+      const raw = JSON.parse(row.raw_json);
+      return {
+        id: row.id,
+        rowNumber: row.row_number,
+        url: row.url,
+        reason: row.reason,
+        workflowId: row.workflow_id,
+        workflowTitle: row.workflow_title,
+        category: row.category,
+        status: row.status,
+        severity: row.severity,
+        suggestionId: row.suggestion_id,
+        suggestion: row.suggestion,
+        missingContext: JSON.parse(row.missing_context_json) as string[],
+        explanation: explainFinding(
+          row.workflow_id,
+          raw,
+          row.suggestion_id,
+          row.status,
+          row.suggestion,
+        ),
+        raw,
+      };
+    }),
   };
 }

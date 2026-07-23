@@ -37,6 +37,10 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .appHeader nav button { min-height: 32px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 11px; font-weight: 700; }
 .appHeader nav button.active { background: white; color: var(--ink); box-shadow: 0 1px 4px rgba(20, 22, 27, 0.09); }
 .appHeader nav em { margin-left: 4px; padding: 2px 5px; border-radius: 99px; background: #eeeff3; font-size: 8px; font-style: normal; }
+.aiStatus { padding: 7px 9px; border: 1px solid #ddd7f6; border-radius: 99px; background: #f7f5ff; color: #6555aa; font-size: 8px; font-weight: 850; white-space: nowrap; }
+.aiStatus i { display: inline-block; width: 6px; height: 6px; margin-right: 4px; border-radius: 50%; background: #9184ca; }
+.aiStatus.ready { border-color: #bce4ca; background: #f1fbf4; color: #257245; }
+.aiStatus.ready i { background: #26ad5b; }
 
 .workbench { width: min(1380px, 100%); margin: 0 auto; padding: 24px 26px 60px; }
 .alert { margin-bottom: 14px; padding: 10px 13px; display: flex; align-items: center; gap: 10px; border: 1px solid #f4b7b3; border-radius: 9px; background: #fff5f4; color: #9c2b24; font-size: 12px; }
@@ -64,6 +68,21 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .scopeNote { margin-top: 11px; padding: 8px 10px; border: 1px solid #f5df9d; border-radius: 8px; background: #fffbeb; color: #7d6119; font-size: 9.5px; }
 .scopeNote a { color: #a4590a; font-weight: 800; }
 .scopeNote code { padding: 1px 4px; border-radius: 3px; background: #f3ead0; }
+.csvPreflight { margin-top: 10px; display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 9px; background: var(--surface-2); }
+.csvPreflight span { padding: 9px 11px; border-left: 1px solid var(--line); color: var(--muted); font-size: 8px; }
+.csvPreflight span:first-child { border-left: 0; }
+.csvPreflight strong { margin-right: 3px; color: var(--ink); font-size: 10px; }
+.aiStrip { margin-top: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; border: 1px solid #ded9f6; border-radius: 9px; background: #f8f6ff; }
+.aiStrip > span { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; background: #eeeafd; color: #6555aa; }
+.aiStrip p { flex: 1; margin: 0; }
+.aiStrip p strong, .aiStrip p small { display: block; }
+.aiStrip p strong { color: #403763; font-size: 9px; }
+.aiStrip p small { margin-top: 2px; color: #766e8f; font-size: 8px; }
+.aiStrip em { color: #7969ba; font-size: 7px; font-style: normal; font-weight: 900; letter-spacing: 0.08em; }
+.aiStrip.ready { border-color: #bce4ca; background: #f1fbf4; }
+.aiStrip.ready > span { background: #dff4e6; color: #257245; }
+.aiStrip.ready p strong, .aiStrip.ready em { color: #257245; }
+.aiStrip.ready p small { color: #5d7c68; }
 
 .summary { margin: 15px 0; display: flex; gap: 11px; flex-wrap: wrap; }
 .stat { min-width: 140px; min-height: 76px; padding: 13px 16px; border: 1px solid var(--line); border-radius: 11px; background: white; box-shadow: var(--shadow); text-align: left; }
@@ -162,16 +181,42 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .fileInput { position: relative; }
 .fileInput > input { position: absolute; inset: 22px 0 0; opacity: 0; cursor: pointer; }
 .fileInput > span { min-height: 42px; margin-top: 5px; padding: 0 11px; display: flex; align-items: center; overflow: hidden; border: 1px dashed #cbd1db; border-radius: 8px; background: #fafbfc; color: var(--muted); font-size: 10px; white-space: nowrap; text-overflow: ellipsis; }
+.gscActions { display: grid; grid-template-columns: 1fr; gap: 6px; }
+.gscActions .secondaryButton, .gscActions .runAudit { min-height: 36px; }
 .secondaryEmpty { margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; background: white; }
 .gscTable td { vertical-align: top; }
 .gscTable td:first-child { max-width: 250px; word-break: break-all; }
 .gscTable td p { min-width: 280px; margin: 4px 0 0; color: var(--ink-2); font-size: 9px; line-height: 1.45; }
 .gscTable td small { display: block; margin-top: 4px; color: #a26b0a; font-size: 8px; }
+.gscFindingRow { cursor: pointer; }
+.gscFindingRow:hover { background: #fdfdfd; }
+.gscExplainRow > td { padding: 15px 17px 17px; background: #fafbfc; }
+.explainGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+.explainGrid section { min-height: 128px; padding: 12px; border: 1px solid var(--line); border-top: 3px solid var(--red); border-radius: 8px; background: white; }
+.explainGrid section:nth-child(2) { border-top-color: var(--blue); }
+.explainGrid section:nth-child(3) { border-top-color: var(--purple); }
+.explainGrid section:nth-child(4) { border-top-color: var(--ok); }
+.explainGrid section.needsContext { border-top-color: var(--warn); background: #fffdf8; }
+.explainGrid section > span { color: var(--muted); font-size: 6.5px; font-weight: 900; letter-spacing: 0.08em; }
+.explainGrid h3 { margin: 6px 0 5px; font-size: 10px; line-height: 1.35; }
+.explainGrid p { min-width: 0 !important; margin: 0 !important; color: var(--muted) !important; font-size: 8px !important; line-height: 1.45 !important; }
+.explainGrid dl { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 7px; }
+.explainGrid dl div { min-width: 0; }
+.explainGrid dt { overflow: hidden; color: var(--muted); font-size: 6px; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.explainGrid dd { margin: 0; overflow: hidden; color: var(--ink-2); font-size: 7.5px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.explainActions { margin-top: 9px; display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
 .suggestionId { color: var(--purple); font-size: 8px; }
 .workflowChip { display: inline-flex; padding: 3px 7px; border: 0; border-radius: 5px; background: #eeeafd; color: #5845b6; font-size: 8px; font-weight: 850; }
 .state { display: inline-flex; padding: 3px 7px; border-radius: 99px; font-size: 7px; font-weight: 850; text-transform: uppercase; }
 .state.done { background: #e7f6eb; color: #267345; }
 .state.review { background: #fff2dc; color: #925f0c; }
+.aiExplain { position: relative; }
+.aiButton { min-height: 34px; padding: 0 11px; border: 1px solid #d8d1f4; border-radius: 8px; background: #f7f5ff; color: #5b4aab; font-size: 9px; font-weight: 800; }
+.aiButton:hover { border-color: #a99cde; }
+.aiError { position: absolute; z-index: 10; top: calc(100% + 5px); left: 0; width: min(330px, 80vw); padding: 8px 9px; border: 1px solid #f0c1bd; border-radius: 7px; background: #fff6f5; color: #99382f; font-size: 8px; box-shadow: var(--shadow); }
+.aiAnswer { width: min(650px, 80vw); margin-top: 7px; padding: 12px 13px; border: 1px solid #d8d1f4; border-radius: 9px; background: #faf9ff; }
+.aiAnswer span { color: #6755b2; font-size: 6.5px; font-weight: 900; letter-spacing: 0.08em; }
+.aiAnswer p { margin: 6px 0 0; color: var(--ink-2); font-size: 9px; line-height: 1.55; white-space: pre-wrap; }
 
 .brainHeader { margin-bottom: 16px; padding: 24px 26px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: var(--shadow); }
 .brainHeader > strong { min-width: 120px; color: var(--red); font-size: 34px; text-align: center; }
@@ -213,10 +258,12 @@ button:disabled { cursor: wait; opacity: 0.6; }
 @media (max-width: 900px) {
   .auditInputRow, .gscInputs { grid-template-columns: 1fr; }
   .detailGrid { grid-template-columns: 1fr; }
+  .explainGrid { grid-template-columns: 1fr 1fr; }
   .issueGroups { grid-template-columns: 1fr; }
   .appHeader { align-items: flex-start; padding: 11px 16px; flex-direction: column; }
   .appHeader nav { width: 100%; overflow-x: auto; }
   .appHeader nav button { flex: 1; white-space: nowrap; }
+  .aiStatus { position: absolute; top: 12px; right: 16px; }
   .pieceTable th { top: 118px; }
 }
 
@@ -232,6 +279,9 @@ button:disabled { cursor: wait; opacity: 0.6; }
   .filters input, .filters select { width: 100%; }
   .filters > span { display: none; }
   .brainHeader > strong { display: none; }
+  .csvPreflight, .explainGrid { grid-template-columns: 1fr; }
+  .csvPreflight span { border-top: 1px solid var(--line); border-left: 0; }
+  .csvPreflight span:first-child { border-top: 0; }
   .workflowList > button { grid-template-columns: 50px 1fr 18px; }
   .workflowList > button > span:nth-child(3), .workflowList > button > span:nth-child(4) { display: none; }
 }

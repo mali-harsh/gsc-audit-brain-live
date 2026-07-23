@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ContentPiece } from "@/lib/content-audit";
-import type { AuditDetail, ImportRow, Workflow } from "@/lib/types";
+import type { AuditDetail, Finding, ImportRow, Workflow } from "@/lib/types";
 
 type Mode = "content" | "gsc" | "brain";
 type WorkflowSummary = {
@@ -17,6 +17,12 @@ type WorkflowSummary = {
 
 const GROUPS = ["AEO", "GEO", "TECH", "FRESH"] as const;
 const PRIORITIES = ["P0", "P1", "P2", "P3", "OK"] as const;
+const GUIDED_GSC_DEMO: ImportRow[] = [
+  { url: "https://example.com/server-error", reason: "Server error (5xx)", last_crawl_time: "2026-07-20T10:00:00Z", in_sitemap: "yes" },
+  { url: "https://example.com/private", reason: "URL marked 'noindex'", indexing_state: "BLOCKED_BY_META_TAG", robots_txt_state: "ALLOWED", in_sitemap: "yes" },
+  { url: "https://example.com/deleted", reason: "Not found (404)", clicks: "23", impressions: "120", in_sitemap: "yes" },
+  { url: "https://example.com/quality", reason: "Crawled - currently not indexed", last_crawl_time: "2026-04-01T10:00:00Z", in_sitemap: "yes" },
+];
 
 function parseCsv(source: string): ImportRow[] {
   const output: string[][] = [];
@@ -97,6 +103,7 @@ export default function Dashboard() {
   const [gscRows, setGscRows] = useState<ImportRow[]>([]);
   const [gscFile, setGscFile] = useState("");
   const [gscAudit, setGscAudit] = useState<AuditDetail | null>(null);
+  const [aiEnabled, setAiEnabled] = useState(false);
 
   const loadPieces = useCallback(async () => {
     const response = await fetch("/api/pieces");
@@ -111,6 +118,9 @@ export default function Dashboard() {
       fetch("/api/workflows")
         .then((response) => response.json())
         .then((data: { items: WorkflowSummary[] }) => setWorkflows(data.items)),
+      fetch("/api/ai/explain")
+        .then((response) => response.json())
+        .then((data: { enabled: boolean }) => setAiEnabled(data.enabled)),
     ]).catch(() => setError("The workbench could not load its saved data."));
   }, [loadPieces]);
 
@@ -221,6 +231,7 @@ export default function Dashboard() {
           <button className={mode === "gsc" ? "active" : ""} onClick={() => setMode("gsc")}>GSC audit</button>
           <button className={mode === "brain" ? "active" : ""} onClick={() => setMode("brain")}>Workflow brain <em>{workflows.length || 46}</em></button>
         </nav>
+        <span className={`aiStatus ${aiEnabled ? "ready" : ""}`}><i /> {aiEnabled ? "Cloudflare AI ready" : "AI optional"}</span>
       </header>
 
       <main className="workbench">
@@ -273,6 +284,7 @@ export default function Dashboard() {
                         onUpdate={updatePiece}
                         onReaudit={() => void runContentAudit([piece.url])}
                         onWorkflow={openWorkflow}
+                        aiEnabled={aiEnabled}
                       />
                     ))}
                   </tbody>
@@ -303,9 +315,25 @@ export default function Dashboard() {
                     setError(caught instanceof Error ? caught.message : "CSV could not be read.");
                   }
                 }} /><span>{gscRows.length ? `${gscFile} · ${gscRows.length} rows ready` : "Choose CSV file"}</span></label>
-                <button className="runAudit" disabled={running} onClick={() => void runGscAudit()}>{running ? "Running workflow brain…" : "▶ Run GSC audit"}</button>
+                <div className="gscActions">
+                  <button className="secondaryButton" onClick={() => { setGscProperty("sc-domain:example.com"); setGscRows(GUIDED_GSC_DEMO); setGscFile("guided-demo.csv"); setError(""); }}>Load guided demo</button>
+                  <button className="runAudit" disabled={running} onClick={() => void runGscAudit()}>{running ? "Running workflow brain…" : "▶ Run GSC audit"}</button>
+                </div>
               </div>
               <div className="scopeNote">Required columns: <code>url</code> + <code>reason</code>. <a href="/sample-gsc-export.csv" download>Download the working template</a>.</div>
+              {gscRows.length > 0 && (
+                <div className="csvPreflight">
+                  <span><strong>{gscRows.length}</strong> rows detected</span>
+                  <span><strong>{Object.keys(gscRows[0]).length}</strong> columns mapped</span>
+                  <span><strong>{gscRows.filter((row) => !row.url).length}</strong> missing URLs</span>
+                  <span><strong>{gscRows.filter((row) => !row.reason && !row.workflow_id).length}</strong> missing reasons</span>
+                </div>
+              )}
+              <div className={`aiStrip ${aiEnabled ? "ready" : ""}`}>
+                <span>✦</span>
+                <p><strong>Cloudflare AI explanation layer</strong><small>{aiEnabled ? "Ready to translate deterministic findings into plain-language action plans." : "Optional. Add server-side Cloudflare credentials to enable explanations; the rule engine works without AI."}</small></p>
+                <em>{aiEnabled ? "READY" : "SAFE BY DEFAULT"}</em>
+              </div>
             </section>
             {gscAudit ? (
               <>
@@ -320,7 +348,7 @@ export default function Dashboard() {
                 </section>
                 <div className="pieceTableWrap">
                   <table className="pieceTable gscTable"><thead><tr><th>URL</th><th>Reason</th><th>Workflow</th><th>Priority</th><th>Recommended action</th><th>Status</th></tr></thead>
-                    <tbody>{gscAudit.findings.map((finding) => <tr key={finding.id}><td><strong>{finding.url}</strong></td><td>{finding.reason}</td><td><button className="workflowChip" onClick={() => void openWorkflow(finding.workflowId)}>{finding.workflowId}</button></td><td><span className={`severity ${finding.severity}`}>{finding.severity}</span></td><td><strong className="suggestionId">{finding.suggestionId}</strong><p>{finding.suggestion}</p>{finding.missingContext.length > 0 && <small>Missing: {finding.missingContext.join(" · ")}</small>}</td><td><span className={`state ${finding.status === "evaluated" ? "done" : "review"}`}>{finding.status === "evaluated" ? "Resolved" : "Review"}</span></td></tr>)}</tbody>
+                    <tbody>{gscAudit.findings.map((finding) => <GscFindingRows key={finding.id ?? `${finding.rowNumber}-${finding.url}`} finding={finding} aiEnabled={aiEnabled} onWorkflow={openWorkflow} />)}</tbody>
                   </table>
                 </div>
               </>
@@ -353,6 +381,7 @@ function PieceRows({
   onUpdate,
   onReaudit,
   onWorkflow,
+  aiEnabled,
 }: {
   piece: ContentPiece;
   open: boolean;
@@ -360,6 +389,7 @@ function PieceRows({
   onUpdate: (url: string, changes: { fixStatus?: ContentPiece["fixStatus"]; owner?: string; note?: string }) => Promise<void>;
   onReaudit: () => void;
   onWorkflow: (id: string) => void;
+  aiEnabled: boolean;
 }) {
   const [owner, setOwner] = useState(piece.owner);
   const [note, setNote] = useState("");
@@ -403,6 +433,23 @@ function PieceRows({
             <div className="pieceActions">
               <button className="primarySmall" onClick={() => void onUpdate(piece.url, { fixStatus: "Fixed" })}>✓ Mark fixed</button>
               <button className="secondaryButton" onClick={onReaudit}>↻ Re-audit</button>
+              <AiExplainButton
+                enabled={aiEnabled}
+                kind="content_piece"
+                subject={{
+                  url: piece.url,
+                  title: piece.title,
+                  priority: piece.priority,
+                  pageSignals: {
+                    statusCode: piece.statusCode,
+                    wordCount: piece.wordCount,
+                    schemaTypes: piece.schemaTypes,
+                    freshnessDate: piece.freshnessDate,
+                  },
+                  issues: piece.issues.slice(0, 12),
+                  deterministicFixes: piece.consolidatedFixes.slice(0, 8),
+                }}
+              />
               <input value={owner} onChange={(event) => setOwner(event.target.value)} onBlur={() => void onUpdate(piece.url, { owner })} placeholder="Owner" />
               <input value={note} onChange={(event) => setNote(event.target.value)} placeholder="Add a note…" />
               <button className="secondaryButton" onClick={() => { if (note.trim()) void onUpdate(piece.url, { note }).then(() => setNote("")); }}>Add note</button>
@@ -412,6 +459,109 @@ function PieceRows({
         </tr>
       )}
     </>
+  );
+}
+
+function GscFindingRows({
+  finding,
+  aiEnabled,
+  onWorkflow,
+}: {
+  finding: Finding;
+  aiEnabled: boolean;
+  onWorkflow: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const evidence = Object.entries(finding.raw).filter(
+    ([key, value]) =>
+      !["url", "page", "address", "reason", "reason_label", "indexing_reason"].includes(key) &&
+      value !== null &&
+      value !== undefined &&
+      String(value).trim(),
+  );
+  return (
+    <>
+      <tr className="gscFindingRow" onClick={() => setOpen((value) => !value)}>
+        <td><strong>{finding.url}</strong><small>Row {finding.rowNumber} · click for explanation</small></td>
+        <td>{finding.reason}</td>
+        <td><button className="workflowChip" onClick={(event) => { event.stopPropagation(); void onWorkflow(finding.workflowId); }}>{finding.workflowId}</button></td>
+        <td><span className={`severity ${finding.severity}`}>{finding.severity}</span></td>
+        <td><strong className="suggestionId">{finding.suggestionId}</strong><p>{finding.suggestion}</p>{finding.missingContext.length > 0 && <small>Missing: {finding.missingContext.join(" · ")}</small>}</td>
+        <td><span className={`state ${finding.status === "evaluated" ? "done" : "review"}`}>{finding.status === "evaluated" ? "Resolved" : "Review"}</span></td>
+      </tr>
+      {open && (
+        <tr className="gscExplainRow">
+          <td colSpan={6}>
+            <div className="explainGrid">
+              <section><span>01 · WHY IT MATCHED</span><h3>{finding.reason} → {finding.workflowId}</h3><p>The export reason maps directly to <strong>{finding.workflowTitle}</strong>. The deterministic engine then evaluates only the context present in this row and its import batch.</p></section>
+              <section><span>02 · EVIDENCE USED</span><h3>{evidence.length ? `${evidence.length} context fields` : "Reason label only"}</h3>{evidence.length ? <dl>{evidence.slice(0, 8).map(([key, value]) => <div key={key}><dt>{key.replaceAll("_", " ")}</dt><dd>{String(value)}</dd></div>)}</dl> : <p>No optional decision fields were present. The engine will not invent them.</p>}</section>
+              <section><span>03 · DECISION OUTCOME</span><h3>{finding.suggestionId}</h3><p>{finding.suggestion}</p></section>
+              <section className={finding.missingContext.length ? "needsContext" : ""}><span>04 · CONFIDENCE GATE</span><h3>{finding.status === "evaluated" ? "Safe terminal reached" : "Human context required"}</h3><p>{finding.missingContext.length ? `Collect: ${finding.missingContext.join(" · ")}` : "The available evidence was sufficient to select a workflow outcome."}</p></section>
+            </div>
+            <div className="explainActions">
+              <button className="secondaryButton" onClick={() => void onWorkflow(finding.workflowId)}>Inspect full workflow →</button>
+              <AiExplainButton
+                enabled={aiEnabled}
+                kind="gsc_finding"
+                subject={{
+                  url: finding.url,
+                  reason: finding.reason,
+                  workflowId: finding.workflowId,
+                  workflowTitle: finding.workflowTitle,
+                  severity: finding.severity,
+                  status: finding.status,
+                  suggestionId: finding.suggestionId,
+                  deterministicRecommendation: finding.suggestion,
+                  evidence: finding.raw,
+                  missingContext: finding.missingContext,
+                }}
+              />
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+function AiExplainButton({
+  enabled,
+  kind,
+  subject,
+}: {
+  enabled: boolean;
+  kind: "content_piece" | "gsc_finding";
+  subject: Record<string, unknown>;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [explanation, setExplanation] = useState("");
+  const [error, setError] = useState("");
+  const explain = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch("/api/ai/explain", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ kind, subject }),
+      });
+      const data = (await response.json()) as { explanation?: string; error?: string };
+      if (!response.ok || !data.explanation) throw new Error(data.error || "AI explanation failed.");
+      setExplanation(data.explanation);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "AI explanation failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <div className="aiExplain">
+      <button className="aiButton" disabled={loading} onClick={() => void explain()}>
+        {loading ? "✦ Explaining…" : enabled ? "✦ Explain with Cloudflare AI" : "✦ Preview AI setup"}
+      </button>
+      {error && <div className="aiError">{error}</div>}
+      {explanation && <div className="aiAnswer"><span>AI EXPLANATION · DETERMINISTIC RESULT PRESERVED</span><p>{explanation}</p></div>}
+    </div>
   );
 }
 

@@ -10,9 +10,12 @@ the supplied `MASTER_BRAIN.json`.
 - Stores owner, status, notes, audit history, evidence, and a consolidated fix
   plan for each page.
 - Imports a GSC CSV export from the dashboard.
+- Shows a CSV preflight before processing.
 - Matches indexing reasons to R1–R27 workflow paths.
 - Uses only evidence present in the export; incomplete rows are marked
   `needs_context`.
+- Expands every GSC finding into: why it matched, evidence used, workflow
+  outcome, and confidence gate.
 - Stores audits, source rows, matches, severity, and recommendations in
   Cloudflare D1.
 - Reopens previous audits from history.
@@ -74,3 +77,32 @@ The import and workflow layers are intentionally separate. A Google OAuth +
 Search Console connector can later submit the same normalized row objects to
 `POST /api/audits` without replacing the dashboard, rules engine, or storage
 model.
+
+## Optional Cloudflare AI explanations
+
+The deterministic workflow engine remains the source of truth. Cloudflare
+Workers AI can optionally translate an existing finding into a short
+plain-language explanation; it cannot change the workflow, severity, evidence,
+or recommendation.
+
+Copy the environment template:
+
+```bash
+cp .env.example .env
+```
+
+Set these values in `.env`:
+
+```env
+CLOUDFLARE_ACCOUNT_ID=your-account-id
+CLOUDFLARE_API_TOKEN=your-workers-ai-token
+CLOUDFLARE_AI_MODEL=@cf/meta/llama-3.2-3b-instruct
+```
+
+Create the token from Cloudflare **Workers AI → Use REST API**. Keep the token
+server-side; never put it in browser code or commit `.env`.
+
+Cloudflare Workers AI documentation:
+
+- https://developers.cloudflare.com/workers-ai/get-started/rest-api/
+- https://developers.cloudflare.com/workers-ai/platform/pricing/

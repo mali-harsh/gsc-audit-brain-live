@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ContentPiece } from "@/lib/content-audit";
-import type { AuditDetail, Finding, ImportRow, Workflow } from "@/lib/types";
+import type { AuditDetail, ChangeRequest, ChangeRequestStatus, Finding, ImportRow, Workflow } from "@/lib/types";
 
-type Mode = "content" | "gsc" | "brain";
+type Mode = "content" | "gsc" | "brain" | "requests";
 type WorkflowSummary = {
   id: string;
   title: string;
@@ -110,6 +110,11 @@ export default function Dashboard() {
   const [gscAudit, setGscAudit] = useState<AuditDetail | null>(null);
   const [aiEnabled, setAiEnabled] = useState(false);
   const [useAi, setUseAi] = useState(false);
+  const [requests, setRequests] = useState<ChangeRequest[]>([]);
+  const [reviewerMode, setReviewerMode] = useState(false);
+  const [reqForm, setReqForm] = useState({ requester: "", title: "", details: "", page: "", expected: "" });
+  const [reqSubmitting, setReqSubmitting] = useState(false);
+  const [reqSubmitted, setReqSubmitted] = useState(false);
 
   const loadPieces = useCallback(async () => {
     const response = await fetch("/api/pieces");
@@ -118,9 +123,17 @@ export default function Dashboard() {
     setPieces(data.items);
   }, []);
 
+  const loadRequests = useCallback(async () => {
+    const response = await fetch("/api/requests");
+    if (!response.ok) return;
+    const data = (await response.json()) as { items: ChangeRequest[] };
+    setRequests(data.items);
+  }, []);
+
   useEffect(() => {
     void Promise.all([
       loadPieces(),
+      loadRequests(),
       fetch("/api/workflows")
         .then((response) => response.json())
         .then((data: { items: WorkflowSummary[] }) => setWorkflows(data.items)),
@@ -128,7 +141,74 @@ export default function Dashboard() {
         .then((response) => response.json())
         .then((data: { enabled: boolean }) => setAiEnabled(data.enabled)),
     ]).catch(() => setError("The workbench could not load its saved data."));
-  }, [loadPieces]);
+  }, [loadPieces, loadRequests]);
+
+  const submitRequest = async () => {
+    if (!reqForm.requester.trim() || !reqForm.title.trim() || !reqForm.details.trim()) {
+      return setError("Add your name, a short title, and what should change.");
+    }
+    setReqSubmitting(true);
+    setError("");
+    try {
+      const response = await fetch("/api/requests", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(reqForm),
+      });
+      const data = (await response.json()) as { item?: ChangeRequest; error?: string };
+      if (!response.ok || !data.item) throw new Error(data.error || "The request could not be saved.");
+      setRequests((current) => [data.item!, ...current]);
+      setReqForm({ requester: reqForm.requester, title: "", details: "", page: "", expected: "" });
+      setReqSubmitted(true);
+      setTimeout(() => setReqSubmitted(false), 4000);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The request could not be saved.");
+    } finally {
+      setReqSubmitting(false);
+    }
+  };
+
+  const updateRequestItem = async (
+    id: string,
+    changes: { status?: ChangeRequestStatus; previewUrl?: string; branch?: string; ownerNote?: string },
+  ) => {
+    const response = await fetch("/api/requests", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ id, ...changes }),
+    });
+    const data = (await response.json()) as { item?: ChangeRequest; error?: string };
+    if (!response.ok || !data.item) return setError(data.error || "The request could not be updated.");
+    setRequests((current) => current.map((item) => (item.id === id ? data.item! : item)));
+  };
+
+  const deleteRequestItem = async (id: string) => {
+    if (!window.confirm("Remove this request?")) return;
+    const response = await fetch("/api/requests", {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (!response.ok) return setError("The request could not be removed.");
+    setRequests((current) => current.filter((item) => item.id !== id));
+  };
+
+  const copyForClaude = (item: ChangeRequest) => {
+    const prompt = [
+      "Implement this change request on a new feature branch, then push it.",
+      "",
+      `Title: ${item.title}`,
+      `Requested by: ${item.requester}`,
+      item.page ? `Page / area: ${item.page}` : "",
+      `What to change: ${item.details}`,
+      item.expected ? `Expected result: ${item.expected}` : "",
+      "",
+      "Do not modify the main branch. Create a feature branch, make the change, run the build, and push the branch so it gets a preview URL.",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    void navigator.clipboard?.writeText(prompt);
+  };
 
   const runContentAudit = async (selectedUrls?: string[]) => {
     const input = selectedUrls ?? urls.split(/[\n,]+/).map((url) => url.trim()).filter(Boolean);
@@ -297,6 +377,7 @@ export default function Dashboard() {
           <button className={mode === "content" ? "active" : ""} onClick={() => setMode("content")}>Content + SEO</button>
           <button className={mode === "gsc" ? "active" : ""} onClick={() => setMode("gsc")}>GSC audit</button>
           <button className={mode === "brain" ? "active" : ""} onClick={() => setMode("brain")}>Workflow brain <em>{workflows.length || 46}</em></button>
+          <button className={mode === "requests" ? "active" : ""} onClick={() => setMode("requests")}>Requests <em>{requests.length || 0}</em></button>
         </nav>
       </header>
 
@@ -475,6 +556,72 @@ export default function Dashboard() {
             <section className="brainHeader"><div><span>SEARCHOPS WORKFLOW ENGINE</span><h1>One inspectable source of truth</h1><p>46 indexing, SEO, content, onboarding, and operations workflows. Click any row to inspect its decisions and outcomes.</p></div><strong>{workflows.length || 46}<small>workflows online</small></strong></section>
             <section className="filters brainFilters"><input value={workflowQuery} onChange={(event) => setWorkflowQuery(event.target.value)} placeholder="Search workflow ID, title, category…" /></section>
             <div className="workflowList">{workflows.filter((workflow) => `${workflow.id} ${workflow.title} ${workflow.category}`.toLowerCase().includes(workflowQuery.toLowerCase())).map((workflow) => <button key={workflow.id} onClick={() => void openWorkflow(workflow.id)}><span className="workflowChip">{workflow.id}</span><span><strong>{workflow.title}</strong><small>{workflow.category}</small></span><span>{workflow.decisionCount} decisions</span><span>{workflow.terminalCount} outcomes</span><em>→</em></button>)}</div>
+          </>
+        )}
+
+        {mode === "requests" && (
+          <>
+            <section className="commandCard requestsIntro">
+              <div>
+                <span className="reqEyebrow">TEAM CHANGE REQUESTS</span>
+                <h1>Ask for a change</h1>
+                <p>Describe what you want changed in plain words — no GitHub or code needed. You&rsquo;ll get a preview link here to review once it&rsquo;s built.</p>
+              </div>
+              <label className="reviewerToggle">
+                <input type="checkbox" checked={reviewerMode} onChange={(event) => setReviewerMode(event.target.checked)} />
+                <span>Reviewer mode</span>
+              </label>
+            </section>
+
+            <section className="requestForm">
+              {reqSubmitted && <div className="requestOk">✓ Thanks! Your request was submitted. It will be reviewed and a preview link will appear below.</div>}
+              <div className="requestGrid">
+                <label>Your name<input value={reqForm.requester} onChange={(event) => setReqForm({ ...reqForm, requester: event.target.value })} placeholder="e.g. Priya" /></label>
+                <label>Short title<input value={reqForm.title} onChange={(event) => setReqForm({ ...reqForm, title: event.target.value })} placeholder="e.g. Make the export button green" /></label>
+              </div>
+              <label className="requestWide">What should change?<textarea value={reqForm.details} onChange={(event) => setReqForm({ ...reqForm, details: event.target.value })} rows={3} placeholder="Describe the change in your own words…" /></label>
+              <div className="requestGrid">
+                <label>Which page / area? <em>(optional)</em><input value={reqForm.page} onChange={(event) => setReqForm({ ...reqForm, page: event.target.value })} placeholder="e.g. results page" /></label>
+                <label>Expected result <em>(optional)</em><input value={reqForm.expected} onChange={(event) => setReqForm({ ...reqForm, expected: event.target.value })} placeholder="e.g. button downloads a CSV" /></label>
+              </div>
+              <div className="requestActions">
+                <button className="runAudit" disabled={reqSubmitting} onClick={() => void submitRequest()}>{reqSubmitting ? "Submitting…" : "Submit request"}</button>
+              </div>
+            </section>
+
+            <section className="requestList">
+              {requests.length ? requests.map((item) => (
+                <article key={item.id} className="requestCard">
+                  <header>
+                    <div>
+                      <strong>{item.title}</strong>
+                      <small>by {item.requester} · {new Date(item.createdAt).toLocaleDateString()}</small>
+                    </div>
+                    <span className={`reqStatus s-${item.status.replace(/\s+/g, "-").toLowerCase()}`}>{item.status}</span>
+                  </header>
+                  <p className="requestDetails">{item.details}</p>
+                  {(item.page || item.expected) && (
+                    <div className="requestMeta">
+                      {item.page && <span><b>Page:</b> {item.page}</span>}
+                      {item.expected && <span><b>Expected:</b> {item.expected}</span>}
+                    </div>
+                  )}
+                  {item.previewUrl && <a className="previewButton" href={item.previewUrl} target="_blank" rel="noreferrer">▶ Open preview</a>}
+                  {item.ownerNote && <div className="requestNote">Reviewer note: {item.ownerNote}</div>}
+
+                  {reviewerMode && (
+                    <div className="requestReviewer">
+                      <button className="secondaryButton" onClick={() => copyForClaude(item)}>⧉ Copy for Claude</button>
+                      <select value={item.status} onChange={(event) => void updateRequestItem(item.id, { status: event.target.value as ChangeRequestStatus })}>
+                        {["Requested", "In progress", "Preview ready", "Done", "Declined"].map((option) => <option key={option}>{option}</option>)}
+                      </select>
+                      <input defaultValue={item.previewUrl} placeholder="Paste preview URL" onBlur={(event) => { if (event.target.value.trim() !== item.previewUrl) void updateRequestItem(item.id, { previewUrl: event.target.value }); }} />
+                      <button className="dangerButton small" onClick={() => void deleteRequestItem(item.id)}>Remove</button>
+                    </div>
+                  )}
+                </article>
+              )) : <div className="empty"><span>◎</span><strong>No requests yet</strong><p>Fill the form above to submit the first change request.</p></div>}
+            </section>
           </>
         )}
       </main>

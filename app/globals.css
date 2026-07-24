@@ -872,3 +872,50 @@ button:disabled { cursor: not-allowed; opacity: .48; }
   .workflowList > button { grid-template-columns: 48px 1fr 16px; }
   .workflowList > button > span:nth-child(3), .workflowList > button > span:nth-child(4) { display: none; }
 }
+
+/* ---- Team change requests ---- */
+.requestsIntro { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.reqEyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; color: var(--indigo); }
+.requestsIntro h1 { margin: 6px 0 6px; font-size: 22px; letter-spacing: -.3px; }
+.requestsIntro p { margin: 0; max-width: 620px; color: var(--muted); font-size: 13px; }
+.reviewerToggle { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); font-size: 12px; font-weight: 600; color: var(--ink-2); white-space: nowrap; cursor: pointer; }
+.reviewerToggle input { width: 15px; height: 15px; }
+
+.requestForm { margin-top: 16px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+.requestOk { margin-bottom: 14px; padding: 10px 12px; border-radius: 10px; background: var(--green-soft); color: var(--green); font-size: 13px; font-weight: 600; }
+.requestGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.requestForm label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink-2); margin-bottom: 12px; }
+.requestForm label em { color: var(--muted); font-weight: 500; font-style: normal; }
+.requestForm input, .requestForm textarea { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 13px; font-weight: 400; color: var(--ink); background: var(--surface-2); resize: vertical; }
+.requestForm input:focus, .requestForm textarea:focus { outline: none; border-color: var(--indigo); background: var(--surface); }
+.requestWide { width: 100%; }
+.requestActions { display: flex; justify-content: flex-end; }
+
+.requestList { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; }
+.requestCard { padding: 16px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+.requestCard > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.requestCard header strong { display: block; font-size: 15px; letter-spacing: -.2px; }
+.requestCard header small { color: var(--muted); font-size: 11px; }
+.requestDetails { margin: 10px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.55; white-space: pre-wrap; }
+.requestMeta { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 12px; color: var(--muted); }
+.requestMeta b { color: var(--ink-2); }
+.requestNote { margin-top: 10px; padding: 8px 10px; border-radius: 8px; background: var(--amber-soft); color: var(--amber); font-size: 12px; }
+.previewButton { display: inline-block; margin-top: 12px; padding: 9px 16px; border-radius: 10px; background: var(--indigo); color: #fff; font-size: 13px; font-weight: 600; text-decoration: none; }
+.previewButton:hover { background: var(--indigo-dark); }
+
+.reqStatus { flex-shrink: 0; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.reqStatus.s-requested { background: var(--indigo-soft); color: var(--indigo-dark); }
+.reqStatus.s-in-progress { background: var(--amber-soft); color: var(--amber); }
+.reqStatus.s-preview-ready { background: var(--green-soft); color: var(--green); }
+.reqStatus.s-done { background: #e8eefc; color: var(--navy); }
+.reqStatus.s-declined { background: var(--rose-soft); color: var(--rose); }
+
+.requestReviewer { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.requestReviewer select, .requestReviewer input { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 12px; background: var(--surface-2); }
+.requestReviewer input { flex: 1; min-width: 200px; }
+.dangerButton.small { padding: 7px 12px; font-size: 12px; }
+
+@media (max-width: 720px) {
+  .requestGrid { grid-template-columns: 1fr; }
+  .requestsIntro { flex-direction: column; }
+}

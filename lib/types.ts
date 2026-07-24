@@ -74,3 +74,25 @@ export type AuditSummary = {
 export type AuditDetail = AuditSummary & {
   findings: Finding[];
 };
+
+export type ChangeRequestStatus =
+  | "Requested"
+  | "In progress"
+  | "Preview ready"
+  | "Done"
+  | "Declined";
+
+export type ChangeRequest = {
+  id: string;
+  requester: string;
+  title: string;
+  details: string;
+  page: string;
+  expected: string;
+  status: ChangeRequestStatus;
+  previewUrl: string;
+  branch: string;
+  ownerNote: string;
+  createdAt: string;
+  updatedAt: string;
+};

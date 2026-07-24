@@ -27,6 +27,9 @@ body {
   background: var(--bg);
   color: var(--ink);
   font: 13px/1.5 var(--font-inter), Inter, Arial, sans-serif;
+  /* Uniform scale-up of the whole compact UI for comfortable reading.
+     Adjust this single value to make everything bigger/smaller. */
+  zoom: 1.15;
 }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }

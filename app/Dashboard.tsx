@@ -298,7 +298,6 @@ export default function Dashboard() {
           <button className={mode === "gsc" ? "active" : ""} onClick={() => setMode("gsc")}>GSC audit</button>
           <button className={mode === "brain" ? "active" : ""} onClick={() => setMode("brain")}>Workflow brain <em>{workflows.length || 46}</em></button>
         </nav>
-        <span className={`aiStatus ${aiEnabled ? "ready" : ""}`}><i /> {aiEnabled ? "Cloudflare AI ready" : "AI optional"}</span>
       </header>
 
       <main className="workbench">
@@ -384,7 +383,7 @@ export default function Dashboard() {
             <div className="pieceTableWrap">
               {pieces.length ? (
                 <>
-                <p className="tableHint">▸ Click any row to open its full fix plan, page evidence, and AI explanation.</p>
+                <p className="tableHint">Tip — click any row to open its full fix plan, page evidence, and AI explanation.</p>
                 <table className="pieceTable">
                   <thead><tr><th>Content piece</th><th>Funnel</th>{GROUPS.map((group) => <th key={group}>{group}</th>)}<th>Issues</th><th>Priority</th><th>Status</th><th>Owner</th></tr></thead>
                   <tbody>

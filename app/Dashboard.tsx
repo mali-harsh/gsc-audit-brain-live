@@ -463,8 +463,6 @@ export default function Dashboard() {
 
             <div className="pieceTableWrap">
               {pieces.length ? (
-                <>
-                <p className="tableHint">Tip — click any row to open its full fix plan, page evidence, and AI explanation.</p>
                 <table className="pieceTable">
                   <thead><tr><th>Content piece</th><th>Funnel</th>{GROUPS.map((group) => <th key={group}>{group}</th>)}<th>Issues</th><th>Priority</th><th>Status</th><th>Owner</th></tr></thead>
                   <tbody>
@@ -483,7 +481,6 @@ export default function Dashboard() {
                     ))}
                   </tbody>
                 </table>
-                </>
               ) : (
                 <div className="empty"><span>◎</span><strong>No content pieces yet</strong><p>Paste URLs above and run the first audit.</p></div>
               )}

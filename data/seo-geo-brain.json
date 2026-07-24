@@ -1,0 +1,5178 @@
+[
+  {
+    "id": "Q1",
+    "title": "How do I grow organic traffic?",
+    "meta": {
+      "category": "Strategy / CMO",
+      "status": "existing",
+      "handoffs": "Q3, Q4, Q6, Q8, Q9, Q10, Q11"
+    },
+    "clarifying": [
+      "Primary goal – traffic volume, leads/revenue, or brand visibility on AI search?",
+      "Any constraints on resources (writers, dev capacity, link-building budget)?",
+      "Specific market or geo focus, or workspace-wide?"
+    ],
+    "synonyms": [
+      "increase organic traffic / get more traffic from Google",
+      "organic growth plan / SEO strategy for growth",
+      "more leads from SEO / grow non-branded clicks",
+      "improve AI search presence (routes here when goal-level, to Q11 when tactical)"
+    ],
+    "structure": "Router tree. S1 picks the primary goal (volume / leads-BOFU / brand-AI), each with its own\ndata pull. S2 checks the goal-metric trend; declining hands to Q4 first. S3 selects the\ndominant growth lever across 8 branches (technical regression, cannibalization, refresh\nupside, coverage gap, AI-search weakness, authority gap, competitor surge, all-clean),\nseven of which hand off; the all-clean branch is a rich TERMINAL (compound + whitespace\nexploration, re-enter in 90 days).",
+    "changes": [
+      "[P1] S3 has 8 lever branches with no declared evaluation order. Multiple levers will fire simultaneously on most real workspaces. Add explicit priority: technical regression > cannibalization > refresh > coverage gap > AI weakness > authority > competitor surge, OR score each fired lever by impact/effort and pick top 2.",
+      "[P1] S3 all-clean terminal packs strategy, whitespace analysis, experiments and cadence into one node. Split into 3 terminals (compound plan / whitespace plays / stretch experiment) so runs are loggable and verifiable.",
+      "[P2] The three S1 data pulls repeat sources. Factor into one shared data-pull node with goal-specific extensions to cut API cost when the goal is ambiguous.",
+      "[P2] Declining-trend branch hands to Q4 unconditionally; add a fast-path when the cause is already known from the data pull (e.g. index coverage collapse → Q12 directly).",
+      "[P3] Add resource-constraint input (from clarifying Q2) as a filter on S3 lever selection — currently collected but unused."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q1: How do I grow organic traffic?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. What is the primary goal?"
+      },
+      {
+        "id": "d_vol",
+        "type": "data",
+        "label": "Volume goal data pull: GSC non-branded 90d YoY, striking distance, content gap, DR, site audit, Atlas TOFU"
+      },
+      {
+        "id": "d_lead",
+        "type": "data",
+        "label": "Lead goal data pull: GSC+GA4 BOFU traffic and conversions, BOFU positions, SERP top-10, Atlas BOFU"
+      },
+      {
+        "id": "d_brand",
+        "type": "data",
+        "label": "Brand goal data pull: Atlas visibility per platform, domain coverage, brand comparison, schema audit"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. What is the trend on the primary goal metric?"
+      },
+      {
+        "id": "h_q4",
+        "type": "handoff",
+        "label": "HANDOFF: Q4 Diagnose the trend issue first"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. What is the dominant growth lever?"
+      },
+      {
+        "id": "h_q9",
+        "type": "handoff",
+        "label": "HANDOFF: Q9 Technical health"
+      },
+      {
+        "id": "h_q6",
+        "type": "handoff",
+        "label": "HANDOFF: Q6 Cannibalization"
+      },
+      {
+        "id": "h_q8r",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Refresh existing pages"
+      },
+      {
+        "id": "h_q8w",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Write new content for coverage gap"
+      },
+      {
+        "id": "h_q11",
+        "type": "handoff",
+        "label": "HANDOFF: Q11 Improve AI search visibility"
+      },
+      {
+        "id": "h_q10",
+        "type": "handoff",
+        "label": "HANDOFF: Q10 Build authority and backlinks"
+      },
+      {
+        "id": "h_q3",
+        "type": "handoff",
+        "label": "HANDOFF: Q3 Competitor analysis"
+      },
+      {
+        "id": "t_clean",
+        "type": "terminal",
+        "label": "TERMINAL: Program healthy — compound, explore whitespace, 1 stretch experiment, re-enter in 90d"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "d_vol",
+        "cond": "1. Volume non-branded clicks (default)"
+      },
+      {
+        "from": "s1",
+        "to": "d_lead",
+        "cond": "2. Leads or revenue BOFU"
+      },
+      {
+        "from": "s1",
+        "to": "d_brand",
+        "cond": "3. Brand visibility on AI search"
+      },
+      {
+        "from": "d_vol",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "d_lead",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "d_brand",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "t_clean",
+        "cond": "(see change: split) —"
+      },
+      {
+        "from": "s2",
+        "to": "h_q4",
+        "cond": "1. Declining >10% over 90d, not seasonal, OR volatile"
+      },
+      {
+        "from": "s2",
+        "to": "s3",
+        "cond": "2. Stable or growing"
+      },
+      {
+        "from": "s3",
+        "to": "h_q9",
+        "cond": "1. Technical regression: GSC errors +20% OR critical audit issues OR new exclusions"
+      },
+      {
+        "from": "s3",
+        "to": "h_q6",
+        "cond": "2. Cannibalization: 5+ queries, 2+ URLs within 5 positions 30+ days"
+      },
+      {
+        "from": "s3",
+        "to": "h_q8r",
+        "cond": "3. Refresh upside: 10+ pages decaying OR 20+ striking distance"
+      },
+      {
+        "from": "s3",
+        "to": "h_q8w",
+        "cond": "4. Coverage gap: 5+ high-value clusters competitors own"
+      },
+      {
+        "from": "s3",
+        "to": "h_q11",
+        "cond": "5. AI search GEO weakness: visibility <30% OR coverage declining"
+      },
+      {
+        "from": "s3",
+        "to": "h_q10",
+        "cond": "6. Authority gap: DR 15+ below top-3, <5 new high-DR/90d"
+      },
+      {
+        "from": "s3",
+        "to": "h_q3",
+        "cond": "7. Competitor surge: top-3 visibility 2x faster 90d"
+      },
+      {
+        "from": "s3",
+        "to": "t_clean",
+        "cond": "8. All gap checks clean"
+      }
+    ]
+  },
+  {
+    "id": "Q2",
+    "title": "Build a M/Q/W Business Review report",
+    "meta": {
+      "category": "Strategy / CMO",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Cadence – weekly, monthly, or quarterly?",
+      "Audience – CMO/Board, marketing leadership, or SEO team?"
+    ],
+    "synonyms": [
+      "weekly SEO report / monthly performance report / QBR deck",
+      "traffic report for leadership / board update on organic",
+      "how did SEO do this month"
+    ],
+    "structure": "Linear pipeline with two decisions. S1 cadence selects the data window (7d / 30d+YoY /\n90d+YoY), then a shared spine: compute 5-state verdict → dominant story + top wins/losses →\nrisk surface + crisis_flag → next-period plan. S2 audience forks into three format tracks\n(CMO half-page, leadership 1-2p, team 2-4p), each with a crisis-first variant.",
+    "changes": [
+      "[P1] crisis_flag=true formats a crisis section but never investigates. Add HANDOFF to Q4 (and Q26 for availability incidents) when crisis_flag fires and cause is unknown — report should link the diagnosis run.",
+      "[P1] \"Compute 5-state verdict\" is undefined in the tree. Document the 5 states and their thresholds in the parameter table (e.g. surging / healthy / flat / eroding / crisis).",
+      "[P2] Weekly cadence lacks YoY; add WoW + 4-week rolling baseline so the verdict logic is cadence-consistent.",
+      "[P2] \"Save CMS\" terminals need a verification signal (URL of saved report + distribution step: email/Slack).",
+      "[P3] Add optional Atlas/GEO KPI block to CMO and leadership tracks — currently only the team track carries Atlas tactical detail."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q2: Build a M/Q/W Business Review report"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. What is the cadence?"
+      },
+      {
+        "id": "d_w",
+        "type": "data",
+        "label": "Pull weekly data (7d)"
+      },
+      {
+        "id": "d_m",
+        "type": "data",
+        "label": "Pull monthly data (30d + YoY)"
+      },
+      {
+        "id": "d_q",
+        "type": "data",
+        "label": "Pull quarterly data (90d + YoY)"
+      },
+      {
+        "id": "a_verdict",
+        "type": "action",
+        "label": "Compute 5-state verdict"
+      },
+      {
+        "id": "a_story",
+        "type": "action",
+        "label": "Identify dominant story + top 3-5 wins/losses with attribution"
+      },
+      {
+        "id": "a_risk",
+        "type": "action",
+        "label": "Compute risk surface and crisis_flag"
+      },
+      {
+        "id": "a_plan",
+        "type": "action",
+        "label": "Extract next-period plan + blockers + forward signals"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Who is the audience?"
+      },
+      {
+        "id": "a_cmo",
+        "type": "action",
+        "label": "CMO track: crisis-led or verdict-led headline, KPI mini-table, 3 insights"
+      },
+      {
+        "id": "a_lead",
+        "type": "action",
+        "label": "Leadership track: crisis section if flagged, verdict headline, driver narrative, Atlas snapshot"
+      },
+      {
+        "id": "a_team",
+        "type": "action",
+        "label": "Team track: tactical crisis brief if flagged, full KPI table, page+keyword wins/losses, backlink ledger"
+      },
+      {
+        "id": "t_cmo",
+        "type": "terminal",
+        "label": "TERMINAL: Format half-page markdown, save CMS"
+      },
+      {
+        "id": "t_lead",
+        "type": "terminal",
+        "label": "TERMINAL: Format 1-2 page markdown, save CMS"
+      },
+      {
+        "id": "t_team",
+        "type": "terminal",
+        "label": "TERMINAL: Format 2-4 page markdown, save CMS"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "d_w",
+        "cond": "1. Weekly 7d"
+      },
+      {
+        "from": "s1",
+        "to": "d_m",
+        "cond": "2. Monthly 30d + YoY"
+      },
+      {
+        "from": "s1",
+        "to": "d_q",
+        "cond": "3. Quarterly 90d + YoY"
+      },
+      {
+        "from": "d_w",
+        "to": "a_verdict",
+        "cond": ""
+      },
+      {
+        "from": "d_m",
+        "to": "a_verdict",
+        "cond": ""
+      },
+      {
+        "from": "d_q",
+        "to": "a_verdict",
+        "cond": ""
+      },
+      {
+        "from": "a_verdict",
+        "to": "a_story",
+        "cond": ""
+      },
+      {
+        "from": "a_story",
+        "to": "a_risk",
+        "cond": ""
+      },
+      {
+        "from": "a_risk",
+        "to": "a_plan",
+        "cond": ""
+      },
+      {
+        "from": "a_plan",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_cmo",
+        "cond": "1. CMO/Board"
+      },
+      {
+        "from": "s2",
+        "to": "a_lead",
+        "cond": "2. Leadership"
+      },
+      {
+        "from": "s2",
+        "to": "a_team",
+        "cond": "3. SEO Team"
+      },
+      {
+        "from": "a_cmo",
+        "to": "t_cmo",
+        "cond": ""
+      },
+      {
+        "from": "a_lead",
+        "to": "t_lead",
+        "cond": ""
+      },
+      {
+        "from": "a_team",
+        "to": "t_team",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "Q3",
+    "title": "How are we doing vs competitors?",
+    "meta": {
+      "category": "Strategy / CMO",
+      "status": "existing",
+      "handoffs": "Q6, Q8, Q10, Q11"
+    },
+    "clarifying": [
+      "Aggregate (all saved competitors) or a specific competitor?",
+      "Workspace-wide or a specific theme/topic?",
+      "Investigating a recent move (last 90d) or a long-standing position?"
+    ],
+    "synonyms": [
+      "competitor analysis / competitive gap / who is beating us",
+      "why is competitor X ranking above us / share of voice vs rivals",
+      "benchmark against competitors"
+    ],
+    "structure": "S1 scopes the analysis (aggregate / specific competitor / specific theme) with matching\ndata pulls. S2 classifies the competitive pattern: we-lead (defensive track: watchlist,\nrefresh cadence, backlink prospecting, prompt expansion, whitespace), recent surge\n(S3-S: what did the surging competitor do — content push, refresh push, PR/authority,\nstructural change, GEO/SERP features → score and sequence), or entrenched gap (S3-G:\ndominant gap type → handoffs to write/refresh/cannibalization/authority/AI-visibility).",
+    "changes": [
+      "[P1] Surge and gap thresholds (\"2x faster\", \"DR 15+ below\") must move to the parameter table; \"recent\" needs a definition (default 90d).",
+      "[P1] S3-S and S3-G branches can fire together (surging competitor AND entrenched gap). Declare: entrenched-gap track wins, surge findings attach as context to the handoff payload.",
+      "[P2] Defensive track terminals (\"identify 1-2 adjacent whitespace themes\") need owners and a verification signal (theme added to Q8 queue).",
+      "[P2] Head-to-head pull assumes competitor is tracked in Atlas + Ahrefs; add degraded mode using SERP-overlap sampling when not tracked.",
+      "[P3] Add \"new entrant detection\" branch — current tree only compares saved competitors."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q3: How are we doing vs competitors?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Analysis scope?"
+      },
+      {
+        "id": "d_agg",
+        "type": "data",
+        "label": "Aggregate snapshot: SoV trend, rank gap, content gap, brand comparison, cannibalization"
+      },
+      {
+        "id": "d_comp",
+        "type": "data",
+        "label": "Head-to-head pull: their traffic, top pages, links, SERP wins, Brand Visibility"
+      },
+      {
+        "id": "d_theme",
+        "type": "data",
+        "label": "Theme snapshot: Theme Health, prompt citations, SERP top-10, theme content gap"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Competitive pattern?"
+      },
+      {
+        "id": "a_def",
+        "type": "action",
+        "label": "Defensive track: watchlist top climbing URLs, refresh cadence, backlink prospecting, prompt expansion"
+      },
+      {
+        "id": "t_def",
+        "type": "terminal",
+        "label": "TERMINAL: whitespace themes queued, plan 12-18 month differentiation, re-evaluate 90d"
+      },
+      {
+        "id": "s3s",
+        "type": "decision",
+        "label": "S3-S. What did the surging competitor do in last 90d?"
+      },
+      {
+        "id": "s3g",
+        "type": "decision",
+        "label": "S3-G. What is the dominant entrenched gap?"
+      },
+      {
+        "id": "a_score",
+        "type": "action",
+        "label": "Score each crossed gap by effort/impact, sequence cheapest-quick-impact first"
+      },
+      {
+        "id": "h_q8w",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Write new content"
+      },
+      {
+        "id": "h_q8r",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Refresh pages"
+      },
+      {
+        "id": "h_q6",
+        "type": "handoff",
+        "label": "HANDOFF: Q6 Cannibalization"
+      },
+      {
+        "id": "h_q10",
+        "type": "handoff",
+        "label": "HANDOFF: Q10 Build authority"
+      },
+      {
+        "id": "h_q11",
+        "type": "handoff",
+        "label": "HANDOFF: Q11 AI search visibility"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "d_agg",
+        "cond": "1. Aggregate (default)"
+      },
+      {
+        "from": "s1",
+        "to": "d_comp",
+        "cond": "2. Specific competitor"
+      },
+      {
+        "from": "s1",
+        "to": "d_theme",
+        "cond": "3. Specific theme"
+      },
+      {
+        "from": "d_agg",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "d_comp",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "d_theme",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_def",
+        "cond": "1. We lead + positive trajectory"
+      },
+      {
+        "from": "a_def",
+        "to": "t_def",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "s3s",
+        "cond": "2. Recent surge last 90d"
+      },
+      {
+        "from": "s2",
+        "to": "s3g",
+        "cond": "3. Entrenched gap"
+      },
+      {
+        "from": "s3s",
+        "to": "a_score",
+        "cond": "1-5. Content push / refresh push / PR-authority / structural change / GEO-SERP features"
+      },
+      {
+        "from": "a_score",
+        "to": "h_q8w",
+        "cond": "Content coverage gap 5+ pages"
+      },
+      {
+        "from": "a_score",
+        "to": "h_q10",
+        "cond": "Authority-driven surge"
+      },
+      {
+        "from": "s3g",
+        "to": "h_q8w",
+        "cond": "1. Content coverage gap 5+"
+      },
+      {
+        "from": "s3g",
+        "to": "h_q8r",
+        "cond": "2. Refresh push 10+ re-published"
+      },
+      {
+        "from": "s3g",
+        "to": "h_q6",
+        "cond": "3. Cannibalization weakness 3+"
+      },
+      {
+        "from": "s3g",
+        "to": "h_q10",
+        "cond": "4. Authority gap DR 15+ below or 2x outpaced"
+      },
+      {
+        "from": "s3g",
+        "to": "h_q11",
+        "cond": "5. GEO/SERP feature gap"
+      }
+    ]
+  },
+  {
+    "id": "Q4",
+    "title": "Why did my organic traffic drop?",
+    "meta": {
+      "category": "Diagnostics",
+      "status": "existing",
+      "handoffs": "Q3, Q5, Q6, Q7, Q8, Q9, Q11"
+    },
+    "clarifying": [
+      "How big is the drop in percent?",
+      "When did it start – sudden or gradual?",
+      "Site-wide, a specific cluster, or a single page?",
+      "Branded or non-branded?"
+    ],
+    "synonyms": [
+      "traffic dropped / clicks are down / lost rankings suddenly",
+      "GSC shows decline / organic tanked after date X",
+      "did Google penalize us"
+    ],
+    "structure": "The densest diagnostic. Confirms the drop is real (seasonality, tracking, branded split),\nthen walks cause categories through chained decisions: measurement/tracking artifact,\nalgorithm-update alignment (→Q7), manual action, technical regression (→Q9),\nSERP-feature/AI-overview displacement (→Q11), competitor displacement (→Q3),\ncannibalization onset (→Q6), content decay (→Q8), single-page cases (→Q5). Multiple\ncross-links between decision stages; terminals for no-measurable-impact and monitoring.",
+    "changes": [
+      "[P1] This tree is the #1 loop source (Q4→Q3→Q8→Q11...). Its handoffs must carry the diagnosis payload and set run flag diagnosed=true so downstream trees do not re-enter Q4.",
+      "[P1] Seasonality check needs a defined baseline (YoY same-week ± STL decomposition) in the parameter table — \"not seasonal\" is currently judgment.",
+      "[P1] Add ordered evaluation: tracking artifact → manual action → algorithm update → technical → SERP/AI displacement → competitive → content. Cheap/definitive checks first; graph currently permits inconsistent entry order.",
+      "[P2] Add missing branch: index coverage collapse (mass deindexation) → HANDOFF Q12 (new). Today it is folded into \"technical\" and under-specified.",
+      "[P2] Add branch for AI-traffic substitution (impressions stable, clicks down, AI Overview present) with Atlas evidence → Q11; distinct from classic SERP-feature loss.",
+      "[P3] Cross-links make the visual unmaintainable; regenerate from structured source with stage layering."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q4: Why did my organic traffic drop?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Is the drop real? (seasonality, tracking, branded/non-branded split)"
+      },
+      {
+        "id": "t_track",
+        "type": "terminal",
+        "label": "TERMINAL: Tracking/measurement artifact — fix analytics, no SEO action"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Drop shape and scope? (sudden/gradual × sitewide/cluster/page)"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. External event alignment? (algorithm update window, manual action, SERP feature change)"
+      },
+      {
+        "id": "h_q7",
+        "type": "handoff",
+        "label": "HANDOFF: Q7 Algorithm update recovery"
+      },
+      {
+        "id": "s4",
+        "type": "decision",
+        "label": "S4. Internal regression? (deploys, technical errors, content changes)"
+      },
+      {
+        "id": "h_q9",
+        "type": "handoff",
+        "label": "HANDOFF: Q9 Technical health"
+      },
+      {
+        "id": "s5",
+        "type": "decision",
+        "label": "S5. Competitive/content causes?"
+      },
+      {
+        "id": "h_q3",
+        "type": "handoff",
+        "label": "HANDOFF: Q3 Competitor displacement"
+      },
+      {
+        "id": "h_q6",
+        "type": "handoff",
+        "label": "HANDOFF: Q6 Cannibalization onset"
+      },
+      {
+        "id": "h_q8",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Content decay refresh"
+      },
+      {
+        "id": "h_q11",
+        "type": "handoff",
+        "label": "HANDOFF: Q11 AI Overview / SERP feature displacement"
+      },
+      {
+        "id": "h_q5",
+        "type": "handoff",
+        "label": "HANDOFF: Q5 Single page diagnostic"
+      },
+      {
+        "id": "t_mon",
+        "type": "terminal",
+        "label": "TERMINAL: No attributable cause — monitor 14d with alert thresholds"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_track",
+        "cond": "1. Artifact: tracking gap or branded-only move"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "2. Real non-branded drop"
+      },
+      {
+        "from": "s2",
+        "to": "h_q5",
+        "cond": "1. Single page"
+      },
+      {
+        "from": "s2",
+        "to": "s3",
+        "cond": "2. Sitewide or cluster"
+      },
+      {
+        "from": "s3",
+        "to": "h_q7",
+        "cond": "1. Aligns with confirmed update, >10% magnitude"
+      },
+      {
+        "from": "s3",
+        "to": "s4",
+        "cond": "2. No external event fits"
+      },
+      {
+        "from": "s4",
+        "to": "h_q9",
+        "cond": "1. Technical regression evidence"
+      },
+      {
+        "from": "s4",
+        "to": "s5",
+        "cond": "2. No internal regression"
+      },
+      {
+        "from": "s5",
+        "to": "h_q3",
+        "cond": "1. Competitor displacement"
+      },
+      {
+        "from": "s5",
+        "to": "h_q6",
+        "cond": "2. Cannibalization onset"
+      },
+      {
+        "from": "s5",
+        "to": "h_q8",
+        "cond": "3. Content decay pattern"
+      },
+      {
+        "from": "s5",
+        "to": "h_q11",
+        "cond": "4. AI Overview/SERP feature took clicks"
+      },
+      {
+        "from": "s5",
+        "to": "t_mon",
+        "cond": "5. No clear cause"
+      }
+    ]
+  },
+  {
+    "id": "Q5",
+    "title": "Why isn't this specific page ranking?",
+    "meta": {
+      "category": "Diagnostics",
+      "status": "existing",
+      "handoffs": "Q6, Q8, Q9, Q10, Q11"
+    },
+    "clarifying": [
+      "Which URL specifically?",
+      "What target keyword should this page rank for?",
+      "How long has the page been live?"
+    ],
+    "synonyms": [
+      "page not ranking / URL stuck on page 2 / page invisible on Google",
+      "why doesn't this page show up / new page not appearing"
+    ],
+    "structure": "Long sequential elimination chain for a single URL: indexed? → crawlable/rendered? →\ncontent-keyword match and intent fit → on-page quality → striking distance check →\ninternal links → authority vs SERP → cannibalization → SERP feature dominance. Each stage\nhas fix-terminals; unresolved cases cascade to the next stage and finally to handoffs\n(Q6 cannibalization, Q8 content rebuild, Q9 technical, Q10 authority, Q11 SERP/AI).",
+    "changes": [
+      "[P1] Chain is ~9 stages deep; add early exits — if page is not indexed, hand to Q12 (new) immediately rather than continuing the on-page stages.",
+      "[P1] \"Page been live\" clarifying answer is unused: add an age gate (<8 weeks → set expectations terminal + indexing checks only).",
+      "[P2] Intent-fit stage needs a decidable test (SERP result-type mix vs page type) — currently subjective.",
+      "[P2] Authority stage threshold (page-level links vs top-10 median) to parameter table.",
+      "[P3] Emit a per-stage scorecard as run output so repeat runs diff cleanly."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q5: Why isn't this specific page ranking?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Is the page indexed?"
+      },
+      {
+        "id": "a_idx",
+        "type": "action",
+        "label": "Fix indexation path (directives, canonical, quality)"
+      },
+      {
+        "id": "t_idx",
+        "type": "terminal",
+        "label": "TERMINAL: Validate via GSC URL inspection, request indexing"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Technical/rendering OK for this URL?"
+      },
+      {
+        "id": "h_q9",
+        "type": "handoff",
+        "label": "HANDOFF: Q9 Technical audit of URL"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Content matches keyword and intent?"
+      },
+      {
+        "id": "h_q8",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Rebuild/refresh content"
+      },
+      {
+        "id": "s4",
+        "type": "decision",
+        "label": "S4. Internal linking adequate?"
+      },
+      {
+        "id": "a_links",
+        "type": "action",
+        "label": "Add contextual internal links from high-equity related pages"
+      },
+      {
+        "id": "s5",
+        "type": "decision",
+        "label": "S5. Authority competitive for this SERP?"
+      },
+      {
+        "id": "h_q10",
+        "type": "handoff",
+        "label": "HANDOFF: Q10 Page-level link building"
+      },
+      {
+        "id": "s6",
+        "type": "decision",
+        "label": "S6. Cannibalization present?"
+      },
+      {
+        "id": "h_q6",
+        "type": "handoff",
+        "label": "HANDOFF: Q6 Resolve cannibalization"
+      },
+      {
+        "id": "s7",
+        "type": "decision",
+        "label": "S7. SERP feature / AI dominance?"
+      },
+      {
+        "id": "h_q11",
+        "type": "handoff",
+        "label": "HANDOFF: Q11 Optimize for features/AI"
+      },
+      {
+        "id": "t_wait",
+        "type": "terminal",
+        "label": "TERMINAL: Fundamentals OK — set 4-6 week checkpoint, track striking distance"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_idx",
+        "cond": "1. Not indexed"
+      },
+      {
+        "from": "a_idx",
+        "to": "t_idx",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "2. Indexed but not ranking"
+      },
+      {
+        "from": "s2",
+        "to": "h_q9",
+        "cond": "1. Technical/rendering issues found"
+      },
+      {
+        "from": "s2",
+        "to": "s3",
+        "cond": "2. Technically clean"
+      },
+      {
+        "from": "s3",
+        "to": "h_q8",
+        "cond": "1. Content/intent mismatch"
+      },
+      {
+        "from": "s3",
+        "to": "s4",
+        "cond": "2. Content fits"
+      },
+      {
+        "from": "s4",
+        "to": "a_links",
+        "cond": "1. Under-linked (below sibling median)"
+      },
+      {
+        "from": "a_links",
+        "to": "s5",
+        "cond": ""
+      },
+      {
+        "from": "s4",
+        "to": "s5",
+        "cond": "2. Linking adequate"
+      },
+      {
+        "from": "s5",
+        "to": "h_q10",
+        "cond": "1. Authority below SERP median"
+      },
+      {
+        "from": "s5",
+        "to": "s6",
+        "cond": "2. Authority competitive"
+      },
+      {
+        "from": "s6",
+        "to": "h_q6",
+        "cond": "1. Sibling URLs competing same query"
+      },
+      {
+        "from": "s6",
+        "to": "s7",
+        "cond": "2. No cannibalization"
+      },
+      {
+        "from": "s7",
+        "to": "h_q11",
+        "cond": "1. Features/AI absorb clicks"
+      },
+      {
+        "from": "s7",
+        "to": "t_wait",
+        "cond": "2. No feature dominance"
+      }
+    ]
+  },
+  {
+    "id": "Q6",
+    "title": "Is this content cannibalizing other pages?",
+    "meta": {
+      "category": "Diagnostics",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Which query or topic do you suspect cannibalization on?",
+      "Which URLs are involved (or detect from GSC)?",
+      "Existing detected pair, or scan the site?"
+    ],
+    "synonyms": [
+      "pages competing with each other / keyword cannibalization",
+      "two URLs ranking for same query / which page should rank"
+    ],
+    "structure": "Cleanest tree in the set. S1 verifies real cannibalization (2+ URLs, same query, within 5\npositions, sustained 30+ days) vs URL cycling. S2 same intent vs Google-confused. Same\nintent → S3 winner-selection matrix (one stronger / equal equity / both weak / 3-plus\ncompeting) with merge/301/rebuild terminals. Different intents → S5 differentiation\nstrategy (sibling keyword / on-page intent split / pillar-supporting hierarchy).",
+    "changes": [
+      "[P2] Add a re-check cadence node after every merge terminal (validate winner ranks in 2-4 weeks, else escalate to Q5).",
+      "[P2] \"One URL significantly stronger\" needs a numeric definition (≥2x clicks and higher avg position) in the parameter table.",
+      "[P2] Add a guard branch: if the \"loser\" URL has BOFU conversions, block the 301 and route to differentiation instead.",
+      "[P3] Sitewide-scan entry (clarifying Q3) is declared but the scan procedure is not a node; add a data node (GSC query-URL pairs export + clustering)."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q6: Is this content cannibalizing other pages?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Real cannibalization?"
+      },
+      {
+        "id": "t_not",
+        "type": "terminal",
+        "label": "TERMINAL: Not cannibalization — URLs cycle or different intents"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Same intent or different?"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Pick the winner (or rewrite path)"
+      },
+      {
+        "id": "s5",
+        "type": "decision",
+        "label": "S5. Differentiation strategy"
+      },
+      {
+        "id": "a_m1",
+        "type": "action",
+        "label": "Identify winner + extract unique sections from losers"
+      },
+      {
+        "id": "t_m1",
+        "type": "terminal",
+        "label": "TERMINAL: Merge → 301 losers → update internal links → reindex"
+      },
+      {
+        "id": "a_m2",
+        "type": "action",
+        "label": "Pick winner by SERP intent fit (equal-equity tie-break)"
+      },
+      {
+        "id": "t_m2",
+        "type": "terminal",
+        "label": "TERMINAL: Merge → 301 → update links → reindex"
+      },
+      {
+        "id": "a_m3",
+        "type": "action",
+        "label": "Build new comprehensive piece (both URLs weak)"
+      },
+      {
+        "id": "t_m3",
+        "type": "terminal",
+        "label": "TERMINAL: Publish on URL with most equity → 301 others → reindex"
+      },
+      {
+        "id": "a_m4",
+        "type": "action",
+        "label": "Rank 3+ competing URLs by combined equity, designate winner, extract unique sections"
+      },
+      {
+        "id": "t_m4",
+        "type": "terminal",
+        "label": "TERMINAL: 301 all weakers → update links → remove from sitemap → reindex"
+      },
+      {
+        "id": "a_d1",
+        "type": "action",
+        "label": "Find sibling keyword that better matches secondary URL"
+      },
+      {
+        "id": "t_d1",
+        "type": "terminal",
+        "label": "TERMINAL: Update title/H1/meta/intro + anchors → reindex"
+      },
+      {
+        "id": "a_d2",
+        "type": "action",
+        "label": "Rewrite each URL's title/H1/meta/slug for distinct intent"
+      },
+      {
+        "id": "t_d2",
+        "type": "terminal",
+        "label": "TERMINAL: Audit internal links, split anchors by context, reindex both"
+      },
+      {
+        "id": "a_d3",
+        "type": "action",
+        "label": "Designate pillar (broad) + supporting (narrow)"
+      },
+      {
+        "id": "t_d3",
+        "type": "terminal",
+        "label": "TERMINAL: Wire links + update titles → reindex both"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "1. 2+ URLs same query within 5 positions sustained 30+ days"
+      },
+      {
+        "from": "s1",
+        "to": "t_not",
+        "cond": "2. URLs cycle or different intents"
+      },
+      {
+        "from": "s2",
+        "to": "s3",
+        "cond": "1. Same intent"
+      },
+      {
+        "from": "s2",
+        "to": "s5",
+        "cond": "2. Different intents but Google confused"
+      },
+      {
+        "from": "s3",
+        "to": "a_m1",
+        "cond": "1. 2 URLs, one significantly stronger"
+      },
+      {
+        "from": "a_m1",
+        "to": "t_m1",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_m2",
+        "cond": "2. 2 URLs roughly equal equity"
+      },
+      {
+        "from": "a_m2",
+        "to": "t_m2",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_m3",
+        "cond": "3. 2 URLs both weak (neither top-20)"
+      },
+      {
+        "from": "a_m3",
+        "to": "t_m3",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_m4",
+        "cond": "4. 3+ URLs competing"
+      },
+      {
+        "from": "a_m4",
+        "to": "t_m4",
+        "cond": ""
+      },
+      {
+        "from": "s5",
+        "to": "a_d1",
+        "cond": "1. One URL fits sibling keyword better"
+      },
+      {
+        "from": "a_d1",
+        "to": "t_d1",
+        "cond": ""
+      },
+      {
+        "from": "s5",
+        "to": "a_d2",
+        "cond": "2. Both stay related, need clearer intent"
+      },
+      {
+        "from": "a_d2",
+        "to": "t_d2",
+        "cond": ""
+      },
+      {
+        "from": "s5",
+        "to": "a_d3",
+        "cond": "3. Pillar + supporting hierarchy needed"
+      },
+      {
+        "from": "a_d3",
+        "to": "t_d3",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "Q7",
+    "title": "How do I recover from a Google algorithm update?",
+    "meta": {
+      "category": "Diagnostics",
+      "status": "existing",
+      "handoffs": "Q4, Q6, Q8, Q10"
+    },
+    "clarifying": [
+      "Which update do you suspect (date or name)?",
+      "Site-wide or concentrated on certain page types?",
+      "Have you confirmed timing aligns with the update window?"
+    ],
+    "synonyms": [
+      "hit by core update / recover from helpful content update",
+      "rankings dropped after Google update / algorithm penalty"
+    ],
+    "structure": "S1 verifies the update actually affected the site (window alignment + >10% magnitude);\nmismatches route to Q4 or a monitor terminal. S2 classifies update type: spam update\n(S3-spam: toxic backlinks → Q10 disavow path; on-page spam tactics → rewrite terminals),\nreviews update (S3-reviews: add first-hand evidence, reviewer credentials → republish\nterminals), core/HCU/unnamed (S3-quality: thin URLs, E-E-A-T gaps, duplication →\nrefresh/prune via Q8, author schema terminals, or wait-and-re-evaluate).",
+    "changes": [
+      "[P1] Needs an update-catalog data source (confirmed updates + dates + type) so S1/S2 are decidable automatically; today classification relies on the user knowing the update.",
+      "[P2] Core-update branch terminal \"wait and re-evaluate\" needs a defined window (next confirmed update or 90d) and an interim action list.",
+      "[P2] Spam on-page branch overlaps Q9 territory (doorway detection); hand technical spam signals to Q9 instead of duplicating.",
+      "[P3] Add post-recovery measurement terminal: compare vs pre-update baseline, log recovery %."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q7: How do I recover from a Google algorithm update?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Did the update affect us?"
+      },
+      {
+        "id": "h_q4",
+        "type": "handoff",
+        "label": "HANDOFF: Q4 Drop is not algorithm-related"
+      },
+      {
+        "id": "t_mon",
+        "type": "terminal",
+        "label": "TERMINAL: No measurable impact — monitor for delayed effects"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. What type of update?"
+      },
+      {
+        "id": "s3s",
+        "type": "decision",
+        "label": "S3. Spam update — audit signals on hit URLs"
+      },
+      {
+        "id": "s3r",
+        "type": "decision",
+        "label": "S3. Reviews update — audit review quality"
+      },
+      {
+        "id": "s3q",
+        "type": "decision",
+        "label": "S3. Quality (core/HCU) — audit hit URL pattern"
+      },
+      {
+        "id": "h_q10",
+        "type": "handoff",
+        "label": "HANDOFF: Q10 Backlinks audit and disavow"
+      },
+      {
+        "id": "a_spam",
+        "type": "action",
+        "label": "Rewrite to remove keyword stuffing, hidden text, doorway intros"
+      },
+      {
+        "id": "t_spam",
+        "type": "terminal",
+        "label": "TERMINAL: Re-publish and request indexing"
+      },
+      {
+        "id": "a_rev1",
+        "type": "action",
+        "label": "Add hands-on signal + original insight to reviews"
+      },
+      {
+        "id": "a_rev2",
+        "type": "action",
+        "label": "Add reviewer credentials + first-hand evidence"
+      },
+      {
+        "id": "t_rev",
+        "type": "terminal",
+        "label": "TERMINAL: Re-publish reviewer-credentialed pages, request indexing"
+      },
+      {
+        "id": "h_q8",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Refresh or prune hit URLs"
+      },
+      {
+        "id": "a_eeat",
+        "type": "action",
+        "label": "Identify hit URLs lacking E-E-A-T attribution; add author bio + Person schema + citations"
+      },
+      {
+        "id": "t_eeat",
+        "type": "terminal",
+        "label": "TERMINAL: Confirm about-us link, re-publish, request indexing"
+      },
+      {
+        "id": "h_q6",
+        "type": "handoff",
+        "label": "HANDOFF: Q6 Cannibalization"
+      },
+      {
+        "id": "t_wait",
+        "type": "terminal",
+        "label": "TERMINAL: No clear remediation pattern — wait and re-evaluate"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "1. Drop aligns with update window + >10% magnitude"
+      },
+      {
+        "from": "s1",
+        "to": "h_q4",
+        "cond": "2. Drop occurred but timing doesn't align"
+      },
+      {
+        "from": "s1",
+        "to": "t_mon",
+        "cond": "3. Update happened but no measurable drop"
+      },
+      {
+        "from": "s2",
+        "to": "s3s",
+        "cond": "1. Confirmed Spam update"
+      },
+      {
+        "from": "s2",
+        "to": "s3r",
+        "cond": "2. Confirmed Reviews update"
+      },
+      {
+        "from": "s2",
+        "to": "s3q",
+        "cond": "3. Core / HCU / unconfirmed / unnamed"
+      },
+      {
+        "from": "s3s",
+        "to": "h_q10",
+        "cond": "1. Toxic/unnatural backlinks primary signal"
+      },
+      {
+        "from": "s3s",
+        "to": "a_spam",
+        "cond": "2. On-page spam tactics on hit URLs"
+      },
+      {
+        "from": "a_spam",
+        "to": "t_spam",
+        "cond": ""
+      },
+      {
+        "from": "s3r",
+        "to": "a_rev1",
+        "cond": "1. Reviews lack original insight"
+      },
+      {
+        "from": "s3r",
+        "to": "a_rev2",
+        "cond": "2. Reviews lack reviewer credentials or first-hand evidence"
+      },
+      {
+        "from": "a_rev1",
+        "to": "t_rev",
+        "cond": ""
+      },
+      {
+        "from": "a_rev2",
+        "to": "t_rev",
+        "cond": ""
+      },
+      {
+        "from": "s3q",
+        "to": "h_q8",
+        "cond": "1. Hit URLs thinner/older, low developed"
+      },
+      {
+        "from": "s3q",
+        "to": "a_eeat",
+        "cond": "2. Hit URLs lack E-E-A-T while survived have"
+      },
+      {
+        "from": "a_eeat",
+        "to": "t_eeat",
+        "cond": ""
+      },
+      {
+        "from": "s3q",
+        "to": "h_q6",
+        "cond": "3. Hit URLs duplicate or cannibalizing"
+      },
+      {
+        "from": "s3q",
+        "to": "t_wait",
+        "cond": "4. No clear pattern"
+      }
+    ]
+  },
+  {
+    "id": "Q8",
+    "title": "What should we write or refresh next?",
+    "meta": {
+      "category": "Content & Editorial",
+      "status": "existing",
+      "handoffs": "Q11"
+    },
+    "clarifying": [
+      "What is the goal – traffic, leads, authority, or AI search visibility?",
+      "Given piece or pillar plus supporting cluster?",
+      "Generally what to do next, or about a specific URL?"
+    ],
+    "synonyms": [
+      "content ideas / what to publish next / content calendar priorities",
+      "which pages to update / refresh queue / editorial roadmap"
+    ],
+    "structure": "Largest tree (38 nodes). S1 strategy exists? (no → cluster keywords by BOFU priority\nfirst). S2 goal selects candidate pull (TOFU/BOFU/pillar/GEO-gap datasets). Candidates\nscored and ranked. S3 refresh-vs-write per candidate; refresh path branches by decay\ntype (topic decay / striking distance / SERP-shift) with rewrite scopes; write path runs\nSERP-shape analysis → format decision → brief generation (spec, entities, internal-link\nplan). Late stage: SERP feature & GEO optimization check — pre-publish Q&A blocks,\nschema, freshness; 2+ GEO gaps hands to Q11. Terminals publish via CMS + track.",
+    "changes": [
+      "[P1] Q8→Q11→Q8 cycle: the pre-publish GEO check hands to Q11, whose content fixes hand back to Q8. Replace the Q8→Q11 handoff with an inlined GEO-checklist node; reserve Q11 for standalone runs.",
+      "[P1] Scoring node (\"score and rank candidates\") must expose its formula (volume × intent weight × effort × authority-fit) in the parameter table; it is the tree's core decision and currently opaque.",
+      "[P2] Brief-generation node should emit a structured brief object (target query, entities, headings, links, schema) — defined output contract for CMS automation.",
+      "[P2] Refresh scopes need decidable triggers (meta-only vs section rewrite vs full rebuild by decay % bands).",
+      "[P3] Strategy-missing pre-path duplicates Q1 S1 logic; import goal from handoff payload when arriving from Q1/Q3/Q4."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q8: What should we write or refresh next?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Does strategy exist?"
+      },
+      {
+        "id": "a_strat",
+        "type": "action",
+        "label": "Cluster keywords by BOFU-first priority, seed strategy"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. What is the goal?"
+      },
+      {
+        "id": "d_cand",
+        "type": "data",
+        "label": "Pull candidates: TOFU/BOFU sets, pillar gaps, GEO gaps, decay + striking distance lists"
+      },
+      {
+        "id": "a_score",
+        "type": "action",
+        "label": "Score and rank candidates (impact/effort/authority-fit)"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Refresh, write new, or rebuild?"
+      },
+      {
+        "id": "s3r",
+        "type": "decision",
+        "label": "S3-R. Refresh scope — decay type?"
+      },
+      {
+        "id": "a_r1",
+        "type": "action",
+        "label": "Meta/title + intro update (topic decay <30%)"
+      },
+      {
+        "id": "a_r2",
+        "type": "action",
+        "label": "Add sections vs SERP gap (striking distance 7-20)"
+      },
+      {
+        "id": "a_r3",
+        "type": "action",
+        "label": "Full rewrite with format shift (SERP shape changed)"
+      },
+      {
+        "id": "s4",
+        "type": "decision",
+        "label": "S4. Write path — SERP shape for target?"
+      },
+      {
+        "id": "a_brief",
+        "type": "action",
+        "label": "Generate brief: spec, entities, headings, internal links, schema"
+      },
+      {
+        "id": "s5",
+        "type": "decision",
+        "label": "S5. SERP feature & GEO opportunities needed?"
+      },
+      {
+        "id": "a_geo",
+        "type": "action",
+        "label": "Pre-publish GEO pass: Q&A blocks, schema per page type, citations, freshness stamp"
+      },
+      {
+        "id": "h_q11",
+        "type": "handoff",
+        "label": "HANDOFF: Q11 if 2+ GEO gaps on cluster (see change: inline)"
+      },
+      {
+        "id": "t_pub",
+        "type": "terminal",
+        "label": "TERMINAL: Publish via CMS + track in refresh/write ledger"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_strat",
+        "cond": "1. No strategy or content themes"
+      },
+      {
+        "from": "a_strat",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "2. Strategy exists"
+      },
+      {
+        "from": "s2",
+        "to": "d_cand",
+        "cond": "1-4. Traffic / leads / authority / AI visibility"
+      },
+      {
+        "from": "d_cand",
+        "to": "a_score",
+        "cond": ""
+      },
+      {
+        "from": "a_score",
+        "to": "s3",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "s3r",
+        "cond": "1. Refresh existing (decaying or striking distance)"
+      },
+      {
+        "from": "s3",
+        "to": "s4",
+        "cond": "2. Write new (coverage gap)"
+      },
+      {
+        "from": "s3r",
+        "to": "a_r1",
+        "cond": "1. Topic decay, rankings soft"
+      },
+      {
+        "from": "s3r",
+        "to": "a_r2",
+        "cond": "2. Striking distance 7-20"
+      },
+      {
+        "from": "s3r",
+        "to": "a_r3",
+        "cond": "3. SERP shape shifted"
+      },
+      {
+        "from": "a_r1",
+        "to": "s5",
+        "cond": ""
+      },
+      {
+        "from": "a_r2",
+        "to": "s5",
+        "cond": ""
+      },
+      {
+        "from": "a_r3",
+        "to": "s5",
+        "cond": ""
+      },
+      {
+        "from": "s4",
+        "to": "a_brief",
+        "cond": "1-3. Guide / comparison / tool per SERP mix"
+      },
+      {
+        "from": "a_brief",
+        "to": "s5",
+        "cond": ""
+      },
+      {
+        "from": "s5",
+        "to": "a_geo",
+        "cond": "1. Feature/GEO opportunities on target"
+      },
+      {
+        "from": "a_geo",
+        "to": "t_pub",
+        "cond": ""
+      },
+      {
+        "from": "s5",
+        "to": "h_q11",
+        "cond": "2. 2+ systemic GEO gaps on cluster"
+      },
+      {
+        "from": "s5",
+        "to": "t_pub",
+        "cond": "3. None — publish"
+      }
+    ]
+  },
+  {
+    "id": "Q9",
+    "title": "Is my site technically healthy?",
+    "meta": {
+      "category": "Technical",
+      "status": "existing",
+      "handoffs": "none"
+    },
+    "clarifying": [
+      "Site-wide audit, or focused on a specific URL?",
+      "Any recent event (migration, replatform, redesign) that triggered the question?"
+    ],
+    "synonyms": [
+      "technical SEO audit / site health check / crawl audit",
+      "fix technical issues / GSC errors audit"
+    ],
+    "structure": "S1 scope (site-wide vs single URL) with matching tech-state pulls (GSC index / mobile /\nCWV / security / robots / sitemaps / links + Semrush Site Audit + CMS). S2 routes by\ndominant issue category across 9 branches: crawl blockers, indexation, CWV, mobile\nusability, security/HTTPS, schema validity, internal linking (orphans/broken), international\n(hreflang), all-clean. Each branch: audit action → fix action → validate terminal.",
+    "changes": [
+      "[P1] RESTRUCTURE: with Q12-Q26 added, Q9 becomes the technical ROUTER. Its 9 category branches convert from inline fix-paths to handoffs: crawl blockers→Q22, indexation→Q12, CWV→Q14, mobile→Q21, security→Q26, schema→Q23, internal linking→Q19, international→Q20. Keep only triage + severity scoring inline. This is the single biggest change in the revision.",
+      "[P1] \"Dominant issue category\" needs a severity×scale scoring rule (affected URLs × traffic at risk × fix cost) — with 9 branches, multiple always fire.",
+      "[P2] Add recent-event fast path: migration trigger from clarifying Q2 routes directly to Q16 (new).",
+      "[P2] Add missing categories to S2: JS rendering (→Q15), crawl budget (→Q13), duplication (→Q18), AI-crawler access (→Q25).",
+      "[P3] All-clean terminal: re-run quarterly → attach to scheduler with delta report."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q9: Is my site technically healthy?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Audit scope?"
+      },
+      {
+        "id": "d_site",
+        "type": "data",
+        "label": "Pull site-wide tech state: GSC index/mobile/CWV/security/crit + Site Audit + robots/sitemap/links"
+      },
+      {
+        "id": "d_url",
+        "type": "data",
+        "label": "Pull single-URL tech state: GSC URL inspection + Site Audit + CMS page metadata"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Dominant issue category? (score = URLs affected × traffic at risk × fix cost)"
+      },
+      {
+        "id": "h_q22",
+        "type": "handoff",
+        "label": "HANDOFF: Q22 Crawl blockers (robots/server/chains/sitemap)"
+      },
+      {
+        "id": "h_q12",
+        "type": "handoff",
+        "label": "HANDOFF: Q12 Indexation issues"
+      },
+      {
+        "id": "h_q14",
+        "type": "handoff",
+        "label": "HANDOFF: Q14 Core Web Vitals failing"
+      },
+      {
+        "id": "h_q21",
+        "type": "handoff",
+        "label": "HANDOFF: Q21 Mobile usability"
+      },
+      {
+        "id": "h_q26",
+        "type": "handoff",
+        "label": "HANDOFF: Q26 Security/HTTPS/server"
+      },
+      {
+        "id": "h_q23",
+        "type": "handoff",
+        "label": "HANDOFF: Q23 Schema missing/invalid"
+      },
+      {
+        "id": "h_q19",
+        "type": "handoff",
+        "label": "HANDOFF: Q19 Internal linking (orphans/broken)"
+      },
+      {
+        "id": "h_q20",
+        "type": "handoff",
+        "label": "HANDOFF: Q20 International/hreflang errors"
+      },
+      {
+        "id": "h_q15",
+        "type": "handoff",
+        "label": "HANDOFF: Q15 JS rendering (new category)"
+      },
+      {
+        "id": "h_q13",
+        "type": "handoff",
+        "label": "HANDOFF: Q13 Crawl budget waste (new category)"
+      },
+      {
+        "id": "t_clean",
+        "type": "terminal",
+        "label": "TERMINAL: Technically healthy — document state, schedule quarterly re-run"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "d_site",
+        "cond": "1. Site-wide audit (default)"
+      },
+      {
+        "from": "s1",
+        "to": "d_url",
+        "cond": "2. Specific URL audit"
+      },
+      {
+        "from": "d_site",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "d_url",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "h_q22",
+        "cond": "1. Crawl blockers"
+      },
+      {
+        "from": "s2",
+        "to": "h_q12",
+        "cond": "2. Indexation issues (unintended exclusions, duplicates)"
+      },
+      {
+        "from": "s2",
+        "to": "h_q14",
+        "cond": "3. CWV failing (poor or needs-improvement on 5+ URL groups)"
+      },
+      {
+        "from": "s2",
+        "to": "h_q21",
+        "cond": "4. Mobile usability (3+ URLs)"
+      },
+      {
+        "from": "s2",
+        "to": "h_q26",
+        "cond": "5. Security/HTTPS issues"
+      },
+      {
+        "from": "s2",
+        "to": "h_q23",
+        "cond": "6. Schema missing/invalid on key page types"
+      },
+      {
+        "from": "s2",
+        "to": "h_q19",
+        "cond": "7. Internal linking (orphans or 5+ broken links)"
+      },
+      {
+        "from": "s2",
+        "to": "h_q20",
+        "cond": "8. International (hreflang errors)"
+      },
+      {
+        "from": "s2",
+        "to": "h_q15",
+        "cond": "9. Rendered content differs from source"
+      },
+      {
+        "from": "s2",
+        "to": "h_q13",
+        "cond": "10. Crawl waste signals at scale"
+      },
+      {
+        "from": "s2",
+        "to": "t_clean",
+        "cond": "11. All categories clean"
+      }
+    ]
+  },
+  {
+    "id": "Q10",
+    "title": "How do I build authority and earn high-quality backlinks?",
+    "meta": {
+      "category": "Authority",
+      "status": "existing",
+      "handoffs": "Q8"
+    },
+    "clarifying": [
+      "Aggregate authority push or links to a specific URL?",
+      "Any indication of toxic backlinks (manual action, sudden ranking drop)?"
+    ],
+    "synonyms": [
+      "link building / get backlinks / improve domain rating",
+      "toxic links cleanup / disavow / earn links to this page"
+    ],
+    "structure": "S1 scope: aggregate (default) vs specific URL, each with a link-state pull. Aggregate S2\nroutes across 7 levers: toxic backlinks (disavow flow), lost recoverable links, unlinked\nbrand mentions, linkable-asset gap (research/data/tool → produce + PR), stale asset\npromotion, local SEO (GBP + citations), authority-competitive terminal. Page-level S2:\nno linkable asset yet → Q8; content lacks hooks → add stats/data/embeddables; competitor\nmirror-source outreach.",
+    "changes": [
+      "[P1] Toxic threshold (\"10+ spammy/PBN OR manual action\") to parameter table; add a caution gate — disavow only on manual action or clear spam-update correlation, warn otherwise (over-disavowing does harm).",
+      "[P2] Outreach terminals need pipeline states (prospected → contacted → won) so telemetry can measure link velocity, not just \"outreach done\".",
+      "[P2] Local SEO branch is a different discipline squeezed into one node pair; either expand to its own tree later or mark as stub.",
+      "[P3] Add digital-PR angle node on the linkable-asset path (data studies pitched to press) with Atlas brand-mention tracking."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q10: How do I build authority and earn high-quality backlinks?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Link-building scope?"
+      },
+      {
+        "id": "d_agg",
+        "type": "data",
+        "label": "Pull aggregate authority state (Ahrefs DR/RD/anchors/lost/toxic/mentions, GSC manual action, CMS linkable assets)"
+      },
+      {
+        "id": "d_url",
+        "type": "data",
+        "label": "Pull page-level link state (Ahrefs URL, backlinks + competitor sources + Content Gap, CMS linkable hooks)"
+      },
+      {
+        "id": "s2a",
+        "type": "decision",
+        "label": "S2. Dominant lever for aggregate authority?"
+      },
+      {
+        "id": "s2p",
+        "type": "decision",
+        "label": "S2. Dominant lever for page-level link?"
+      },
+      {
+        "id": "a_tox",
+        "type": "action",
+        "label": "Identify toxic backlinks via Ahrefs (PBN/spammy/network signatures); build disavow at domain level"
+      },
+      {
+        "id": "t_tox",
+        "type": "terminal",
+        "label": "TERMINAL: Submit disavow via GSC"
+      },
+      {
+        "id": "a_lost",
+        "type": "action",
+        "label": "List top 5 lost links by DR × relevance with reason"
+      },
+      {
+        "id": "t_lost",
+        "type": "terminal",
+        "label": "TERMINAL: Outreach via your process or queue replacement"
+      },
+      {
+        "id": "a_ment",
+        "type": "action",
+        "label": "Find unlinked brand mentions via Ahrefs"
+      },
+      {
+        "id": "t_ment",
+        "type": "terminal",
+        "label": "TERMINAL: Outreach asking publishers to add link"
+      },
+      {
+        "id": "a_asset",
+        "type": "action",
+        "label": "Identify linkable asset gap (research/data/calculator/guide); scope source, methodology, format, embeddables"
+      },
+      {
+        "id": "t_asset",
+        "type": "terminal",
+        "label": "TERMINAL: Produce + publish + plan PR distribution"
+      },
+      {
+        "id": "a_stale",
+        "type": "action",
+        "label": "Build link prospect list from Ahrefs (DR, relevance, likelihood) for existing assets"
+      },
+      {
+        "id": "t_stale",
+        "type": "terminal",
+        "label": "TERMINAL: Outreach — resource pages, broken-link, skyscraper"
+      },
+      {
+        "id": "a_local",
+        "type": "action",
+        "label": "Google Business Profile + citations + reviews"
+      },
+      {
+        "id": "t_local",
+        "type": "terminal",
+        "label": "TERMINAL: Local landing pages + NAP consistency"
+      },
+      {
+        "id": "t_comp",
+        "type": "terminal",
+        "label": "TERMINAL: Authority competitive — maintain RD velocity, prevent asset decay"
+      },
+      {
+        "id": "h_q8",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Build/refresh content first (no asset yet)"
+      },
+      {
+        "id": "a_hooks",
+        "type": "action",
+        "label": "Identify linkable hooks via Ahrefs Content Explorer; add stats, data, embeddables"
+      },
+      {
+        "id": "t_hooks",
+        "type": "terminal",
+        "label": "TERMINAL: Add hooks and re-publish"
+      },
+      {
+        "id": "a_mirror",
+        "type": "action",
+        "label": "List top competitor backlink sources for topic"
+      },
+      {
+        "id": "t_mirror",
+        "type": "terminal",
+        "label": "TERMINAL: Outreach to top 10 sources via your process"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "d_agg",
+        "cond": "2. Aggregate authority push (default)"
+      },
+      {
+        "from": "s1",
+        "to": "d_url",
+        "cond": "1. Specific URL (page-level)"
+      },
+      {
+        "from": "d_agg",
+        "to": "s2a",
+        "cond": ""
+      },
+      {
+        "from": "d_url",
+        "to": "s2p",
+        "cond": ""
+      },
+      {
+        "from": "s2a",
+        "to": "a_tox",
+        "cond": "1. Toxic backlinks (10+ spammy/PBN OR manual action)"
+      },
+      {
+        "from": "a_tox",
+        "to": "t_tox",
+        "cond": ""
+      },
+      {
+        "from": "s2a",
+        "to": "a_lost",
+        "cond": "2. Lost backlinks recoverable (5+ lost DR>50 in 90d)"
+      },
+      {
+        "from": "a_lost",
+        "to": "t_lost",
+        "cond": ""
+      },
+      {
+        "from": "s2a",
+        "to": "a_ment",
+        "cond": "3. Brand mentions unlinked (10+ RDs mention without linking)"
+      },
+      {
+        "from": "a_ment",
+        "to": "t_ment",
+        "cond": ""
+      },
+      {
+        "from": "s2a",
+        "to": "a_asset",
+        "cond": "4. Linkable asset gap (no original research/data/tool)"
+      },
+      {
+        "from": "a_asset",
+        "to": "t_asset",
+        "cond": ""
+      },
+      {
+        "from": "s2a",
+        "to": "a_stale",
+        "cond": "5. Existing assets underutilized (good content, no PR)"
+      },
+      {
+        "from": "a_stale",
+        "to": "t_stale",
+        "cond": ""
+      },
+      {
+        "from": "s2a",
+        "to": "a_local",
+        "cond": "6. Local SEO opportunity"
+      },
+      {
+        "from": "a_local",
+        "to": "t_local",
+        "cond": ""
+      },
+      {
+        "from": "s2a",
+        "to": "t_comp",
+        "cond": "7. Authority competitive — maintain"
+      },
+      {
+        "from": "s2p",
+        "to": "h_q8",
+        "cond": "1. Thin/weak content — no asset to link to yet"
+      },
+      {
+        "from": "s2p",
+        "to": "a_hooks",
+        "cond": "2. Content lacks linkable hooks"
+      },
+      {
+        "from": "a_hooks",
+        "to": "t_hooks",
+        "cond": ""
+      },
+      {
+        "from": "s2p",
+        "to": "a_mirror",
+        "cond": "3. Content + hooks present — mirror competitor sources"
+      },
+      {
+        "from": "a_mirror",
+        "to": "t_mirror",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "Q11",
+    "title": "How do I get cited by ChatGPT / Claude / Perplexity / Gemini?",
+    "meta": {
+      "category": "GEO / AI search",
+      "status": "existing",
+      "handoffs": "Q8, Q10"
+    },
+    "clarifying": [
+      "Workspace and prompts set up with right coverage, or missing?",
+      "Which platform matters most, or all?"
+    ],
+    "synonyms": [
+      "show up in ChatGPT answers / get recommended by AI",
+      "AI search optimization / GEO / LLM visibility / appear in Perplexity sources"
+    ],
+    "structure": "S1 checks Atlas workspace + prompt setup (missing → create prompt set: commercial +\ncomparison + 3-6 early + competitors → baseline terminal). S2 classifies dominant\nvisibility gap: top-brand-visible-but-losing themes (S2a: chart losing themes → keyword\nalignment / chart passages / adjacency → prompt-per-theme checklists), theme gap (S3:\nmissing content → Q8; content exists but wrong format → add TL;DR + Q&A + answer-first +\nschema → republish terminals), single-platform underperformance (diagnose platform signal\nsource — Wikipedia/Reddit/YouTube per platform → terminal), brand-entity weakness (S4:\nWikipedia/Wikidata eligibility, org schema consolidation, author entities, foundations OK\nbut mentions low → Q10). Includes citation-source audit via 3rd-party dashboards.",
+    "changes": [
+      "[P1] Empty synonyms are most damaging here — GEO phrasing varies wildly (\"AI SEO\", \"LLM optimization\", \"ChatGPT recommendations\"). Populate first.",
+      "[P1] Add the missing diagnostic sibling: \"Why did my AI visibility DROP?\" — Q11 assumes improvement mode; a drop diagnostic (platform model change vs competitor content vs source-set change) is a different path. Either a new stage in Q11 or a future Q27; recommended inline stage S0 with trend check like Q1's S2.",
+      "[P2] Platform-specific signal map (which sources each platform over-weights) should be a versioned data table, not node prose — it changes as models update.",
+      "[P2] Q8 handoff must carry the GEO-format requirements (answer-first, Q&A blocks, schema) in the payload so Q8's brief includes them — avoids the round-trip that motivates the Q8↔Q11 loop guard.",
+      "[P3] Add measurement terminal standard: re-measure Atlas visibility after 14d and 28d, log delta per platform."
+    ],
+    "rationale": "",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q11: How do I get cited by ChatGPT / Claude / Perplexity / Gemini?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Atlas workspace set up with right prompts?"
+      },
+      {
+        "id": "a_setup",
+        "type": "action",
+        "label": "Create prompt set: commercial/transactional + comparison + 3-6 early + competitors"
+      },
+      {
+        "id": "t_base",
+        "type": "terminal",
+        "label": "TERMINAL: Baseline 7-14 days of run history before measuring"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. What does workspace-level visibility loss look like?"
+      },
+      {
+        "id": "s2a",
+        "type": "decision",
+        "label": "S2a. Picked losing themes — what lever?"
+      },
+      {
+        "id": "a_kw",
+        "type": "action",
+        "label": "Identify healthy themes losing depth: map missed commercial keywords"
+      },
+      {
+        "id": "t_kw",
+        "type": "terminal",
+        "label": "TERMINAL: Add 2-3 prompts per theme; validate against quality checklist"
+      },
+      {
+        "id": "a_pass",
+        "type": "action",
+        "label": "Audit page/chat cited count + 3rd-party dashboards; review chat passages, identify what made them quotable"
+      },
+      {
+        "id": "t_pass",
+        "type": "terminal",
+        "label": "TERMINAL: Add quotable assertions (stats/FAQ/schema); V-A-R parity with dominants; keep URL stable"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Theme gap — code the citation gap"
+      },
+      {
+        "id": "h_q8",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Build new content for whitespace in gap theme"
+      },
+      {
+        "id": "a_fmt",
+        "type": "action",
+        "label": "Identify dominant cited content format vs ours for competitors"
+      },
+      {
+        "id": "a_fmt2",
+        "type": "action",
+        "label": "Add TL;DR + Q&A summary + answer-first rewrite + FAQ schema, keep URL"
+      },
+      {
+        "id": "t_fmt",
+        "type": "terminal",
+        "label": "TERMINAL: Re-publish via CMS, request indexing, re-measure in 14d"
+      },
+      {
+        "id": "a_plat",
+        "type": "action",
+        "label": "Diagnose laggard platform: report 3rd-party citations mix (Wikipedia/Reddit/YouTube/news) vs ours"
+      },
+      {
+        "id": "t_plat",
+        "type": "terminal",
+        "label": "TERMINAL: Apply platform-aligned tactic; re-measure platform visibility"
+      },
+      {
+        "id": "s4",
+        "type": "decision",
+        "label": "S4. Brand entity foundation — what's missing?"
+      },
+      {
+        "id": "a_wiki",
+        "type": "action",
+        "label": "Confirm Wikipedia notability eligibility; multiple independent secondary sources"
+      },
+      {
+        "id": "t_wiki",
+        "type": "terminal",
+        "label": "TERMINAL: Draft Wikipedia + submit AfC; else strengthen Wikidata + Google-indexes-both"
+      },
+      {
+        "id": "a_schema",
+        "type": "action",
+        "label": "Implement Organization schema + upgrade About + Person schema authors"
+      },
+      {
+        "id": "t_schema",
+        "type": "terminal",
+        "label": "TERMINAL: No publish — did no make (validate schema, monitor KG)"
+      },
+      {
+        "id": "h_q10",
+        "type": "handoff",
+        "label": "HANDOFF: Q10 Build authority and brand mentions"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_setup",
+        "cond": "1. Workspace missing or prompts misaligned/branded or competitors missing"
+      },
+      {
+        "from": "a_setup",
+        "to": "t_base",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "2. Workspace and prompts sound"
+      },
+      {
+        "from": "s2",
+        "to": "s2a",
+        "cond": "1. Top brand visible but losing themes"
+      },
+      {
+        "from": "s2",
+        "to": "a_pass",
+        "cond": "2. Brand visibility decent, cited pages low (Domain Share low)"
+      },
+      {
+        "from": "s2a",
+        "to": "a_kw",
+        "cond": "1. Themes healthy but prompt coverage shallow (under 5)"
+      },
+      {
+        "from": "a_kw",
+        "to": "t_kw",
+        "cond": ""
+      },
+      {
+        "from": "s2a",
+        "to": "a_pass",
+        "cond": "2. Top cited pages aging (over 12 months)"
+      },
+      {
+        "from": "a_pass",
+        "to": "t_pass",
+        "cond": ""
+      },
+      {
+        "from": "s2a",
+        "to": "a_fmt",
+        "cond": "3. Adjacency: whitespace theme"
+      },
+      {
+        "from": "s2",
+        "to": "s3",
+        "cond": "3. Gap themes: weak distribution on plan"
+      },
+      {
+        "from": "s3",
+        "to": "h_q8",
+        "cond": "1. No content to cover on the gap topic"
+      },
+      {
+        "from": "s3",
+        "to": "a_fmt",
+        "cond": "2. Asset exists but format wrong"
+      },
+      {
+        "from": "a_fmt",
+        "to": "a_fmt2",
+        "cond": "1. Asset right format but curb citation signals"
+      },
+      {
+        "from": "a_fmt2",
+        "to": "t_fmt",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_plat",
+        "cond": "4. One platform underperforms"
+      },
+      {
+        "from": "a_plat",
+        "to": "t_plat",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "s4",
+        "cond": "5. Brand visibility uniformly under 30%"
+      },
+      {
+        "from": "s4",
+        "to": "a_wiki",
+        "cond": "1. No Wikipedia/Wikidata"
+      },
+      {
+        "from": "a_wiki",
+        "to": "t_wiki",
+        "cond": ""
+      },
+      {
+        "from": "s4",
+        "to": "a_schema",
+        "cond": "2. Wikipedia exists, no KG / schema gaps"
+      },
+      {
+        "from": "a_schema",
+        "to": "t_schema",
+        "cond": ""
+      },
+      {
+        "from": "s4",
+        "to": "h_q10",
+        "cond": "3. Foundations OK but brand mentions low"
+      }
+    ]
+  },
+  {
+    "id": "Q12",
+    "title": "Why aren't my pages being indexed?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q8, Q13, Q18, Q19, Q22"
+    },
+    "clarifying": [
+      "Single URL, a URL pattern/section, or site-wide?",
+      "Were these pages ever indexed (deindexed) or never indexed?",
+      "Recent launch, migration, or CMS change?"
+    ],
+    "synonyms": [
+      "pages not indexed / Google not indexing my site / discovered currently not indexed",
+      "crawled not indexed / URL not on Google / deindexed pages"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "The most common technical complaint. Routes strictly on GSC's own exclusion reason,\nbecause that is authoritative and machine-readable — every branch maps to one Index\nCoverage state. Never-indexed vs deindexed changes urgency, not the branch logic.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q12: Why aren't my pages being indexed?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Scope?"
+      },
+      {
+        "id": "d_url",
+        "type": "data",
+        "label": "Pull GSC URL Inspection: verdict, crawl date, canonical, referring sitemap/page"
+      },
+      {
+        "id": "d_bulk",
+        "type": "data",
+        "label": "Pull GSC Index Coverage by exclusion reason + sitemap coverage + sample URL inspections"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Dominant GSC exclusion reason?"
+      },
+      {
+        "id": "a_dnc",
+        "type": "action",
+        "label": "Discovered not crawled: check inlinks + sitemap presence + crawl stats for host load"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Why isn't Google crawling it?"
+      },
+      {
+        "id": "h_q19",
+        "type": "handoff",
+        "label": "HANDOFF: Q19 Orphan/deep pages — fix internal linking"
+      },
+      {
+        "id": "h_q13",
+        "type": "handoff",
+        "label": "HANDOFF: Q13 Crawl budget waste starving new URLs"
+      },
+      {
+        "id": "a_cni",
+        "type": "action",
+        "label": "Crawled not indexed: score content uniqueness, template thinness, near-dup ratio"
+      },
+      {
+        "id": "s4",
+        "type": "decision",
+        "label": "S4. Quality signal?"
+      },
+      {
+        "id": "h_q8",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Improve/differentiate thin content"
+      },
+      {
+        "id": "h_q18",
+        "type": "handoff",
+        "label": "HANDOFF: Q18 Near-duplicate templates — consolidate"
+      },
+      {
+        "id": "a_dir",
+        "type": "action",
+        "label": "Blocked by directive: locate noindex/robots rule source (CMS, template, header, CDN)"
+      },
+      {
+        "id": "t_dir",
+        "type": "terminal",
+        "label": "TERMINAL: Remove directive → validate live test → request indexing → confirm in 7d"
+      },
+      {
+        "id": "a_can",
+        "type": "action",
+        "label": "Canonical points elsewhere: verify intent"
+      },
+      {
+        "id": "t_can_ok",
+        "type": "terminal",
+        "label": "TERMINAL: Intended — no action; annotate as consolidated"
+      },
+      {
+        "id": "t_can_fix",
+        "type": "terminal",
+        "label": "TERMINAL: Unintended — fix canonical → reindex → verify GSC picks declared canonical in 14d"
+      },
+      {
+        "id": "a_err",
+        "type": "action",
+        "label": "404/soft-404/redirect: confirm URL should exist; restore content or accept removal"
+      },
+      {
+        "id": "t_err",
+        "type": "terminal",
+        "label": "TERMINAL: Restore + reindex, or 301 to best match; verify status 200/301 sitewide"
+      },
+      {
+        "id": "h_q22",
+        "type": "handoff",
+        "label": "HANDOFF: Q22 Not in sitemap / robots conflicts"
+      },
+      {
+        "id": "t_ok",
+        "type": "terminal",
+        "label": "TERMINAL: Indexed or pending, no blocker — recheck in 7d before further action"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "d_url",
+        "cond": "1. Single URL"
+      },
+      {
+        "from": "s1",
+        "to": "d_bulk",
+        "cond": "2. Pattern or site-wide"
+      },
+      {
+        "from": "d_url",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "d_bulk",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_dnc",
+        "cond": "1. Discovered — currently not crawled"
+      },
+      {
+        "from": "a_dnc",
+        "to": "s3",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "h_q19",
+        "cond": "1. Under-linked: 0-2 inlinks or depth >4"
+      },
+      {
+        "from": "s3",
+        "to": "h_q13",
+        "cond": "2. Host-load / crawl waste pattern at scale"
+      },
+      {
+        "from": "s2",
+        "to": "a_cni",
+        "cond": "2. Crawled — currently not indexed"
+      },
+      {
+        "from": "a_cni",
+        "to": "s4",
+        "cond": ""
+      },
+      {
+        "from": "s4",
+        "to": "h_q8",
+        "cond": "1. Thin/undifferentiated content"
+      },
+      {
+        "from": "s4",
+        "to": "h_q18",
+        "cond": "2. Near-dup template pages >30% similarity"
+      },
+      {
+        "from": "s2",
+        "to": "a_dir",
+        "cond": "3. Excluded by noindex or blocked by robots.txt"
+      },
+      {
+        "from": "a_dir",
+        "to": "t_dir",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_can",
+        "cond": "4. Duplicate — Google chose different canonical"
+      },
+      {
+        "from": "a_can",
+        "to": "t_can_ok",
+        "cond": "1. Consolidation intended"
+      },
+      {
+        "from": "a_can",
+        "to": "t_can_fix",
+        "cond": "2. Unintended"
+      },
+      {
+        "from": "s2",
+        "to": "a_err",
+        "cond": "5. Not found (404) / soft 404 / redirect error"
+      },
+      {
+        "from": "a_err",
+        "to": "t_err",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "h_q22",
+        "cond": "6. Sitemap/robots inconsistencies dominate"
+      },
+      {
+        "from": "s2",
+        "to": "t_ok",
+        "cond": "7. No blocker — crawl queue latency"
+      }
+    ]
+  },
+  {
+    "id": "Q13",
+    "title": "Where is my crawl budget going? (log-file & crawl-waste audit)",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q14, Q17, Q18, Q24"
+    },
+    "clarifying": [
+      "Approximate indexable URL count (crawl budget matters mostly above ~100k)?",
+      "Server logs available (raw or via CDN), or GSC Crawl Stats only?",
+      "Triggered by slow discovery of new content, or general hygiene?"
+    ],
+    "synonyms": [
+      "crawl budget optimization / Googlebot wasting crawls / log file analysis",
+      "Google crawling wrong pages / slow to index new content"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Gate first: most sites do not have a crawl budget problem, and the honest terminal for\nthem prevents wasted effort. For large sites, waste categories are ranked by share of\nGooglebot hits so the fix order is data-driven, not opinion.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q13: Where is my crawl budget going?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Is crawl budget actually a constraint?"
+      },
+      {
+        "id": "t_na",
+        "type": "terminal",
+        "label": "TERMINAL: Not a constraint (<100k URLs, discovery lag <7d) — close; revisit only on scale change"
+      },
+      {
+        "id": "d_logs",
+        "type": "data",
+        "label": "Pull 30d logs (or GSC Crawl Stats): hits by status, path pattern, bot type, response time"
+      },
+      {
+        "id": "a_class",
+        "type": "action",
+        "label": "Classify Googlebot hits: indexable / parameter / redirect / error / low-value pattern shares"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Dominant waste bucket (by % of hits)?"
+      },
+      {
+        "id": "h_q24",
+        "type": "handoff",
+        "label": "HANDOFF: Q24 Parameter/facet URL explosion"
+      },
+      {
+        "id": "h_q17",
+        "type": "handoff",
+        "label": "HANDOFF: Q17 Redirect chains consuming crawls"
+      },
+      {
+        "id": "a_404",
+        "type": "action",
+        "label": "4xx waste: map sources of dead-URL discovery (internal links, sitemaps, external)"
+      },
+      {
+        "id": "t_404",
+        "type": "terminal",
+        "label": "TERMINAL: Fix internal sources + prune sitemap → verify 4xx hit share <5% in next 30d logs"
+      },
+      {
+        "id": "a_low",
+        "type": "action",
+        "label": "Low-value crawled pages: define pattern (tags, archives, thin search pages)"
+      },
+      {
+        "id": "t_low",
+        "type": "terminal",
+        "label": "TERMINAL: noindex or robots-block pattern + remove from sitemap → verify hit share drops"
+      },
+      {
+        "id": "h_q14",
+        "type": "handoff",
+        "label": "HANDOFF: Q14 Slow responses throttling crawl (TTFB p95 > 1s)"
+      },
+      {
+        "id": "h_q18",
+        "type": "handoff",
+        "label": "HANDOFF: Q18 Duplicate URL variants crawled"
+      },
+      {
+        "id": "a_disc",
+        "type": "action",
+        "label": "Budget fine but discovery slow: strengthen freshness signals (sitemap lastmod, hub links, feeds)"
+      },
+      {
+        "id": "t_disc",
+        "type": "terminal",
+        "label": "TERMINAL: Verify new-URL first-crawl time <48h over next 2 weeks"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_na",
+        "cond": "1. Small site + healthy discovery"
+      },
+      {
+        "from": "s1",
+        "to": "d_logs",
+        "cond": "2. Large site OR discovery lag >7d OR waste signals"
+      },
+      {
+        "from": "d_logs",
+        "to": "a_class",
+        "cond": ""
+      },
+      {
+        "from": "a_class",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "h_q24",
+        "cond": "1. Parameter/facet URLs >20% of hits"
+      },
+      {
+        "from": "s2",
+        "to": "h_q17",
+        "cond": "2. Redirect hits >10%"
+      },
+      {
+        "from": "s2",
+        "to": "a_404",
+        "cond": "3. 4xx hits >10%"
+      },
+      {
+        "from": "a_404",
+        "to": "t_404",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_low",
+        "cond": "4. Low-value patterns >20%"
+      },
+      {
+        "from": "a_low",
+        "to": "t_low",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "h_q14",
+        "cond": "5. Slow responses (TTFB p95 >1s, crawl rate capped)"
+      },
+      {
+        "from": "s2",
+        "to": "h_q18",
+        "cond": "6. Duplicate variants (case, trailing, http/https) crawled"
+      },
+      {
+        "from": "s2",
+        "to": "a_disc",
+        "cond": "7. No dominant waste — discovery signals weak"
+      },
+      {
+        "from": "a_disc",
+        "to": "t_disc",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "Q14",
+    "title": "How do I fix Core Web Vitals and page speed?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q15, Q26"
+    },
+    "clarifying": [
+      "Which URL group(s) fail in GSC CWV report, or site-wide?",
+      "Field data (CrUX) failing, lab-only, or both?",
+      "Dev capacity available for template-level changes?"
+    ],
+    "synonyms": [
+      "core web vitals failing / LCP too slow / page speed fix",
+      "INP issues / CLS layout shift / PageSpeed score low"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Branches on the failing metric because remediation differs entirely per vital. Field\ndata governs (lab-only failures get a monitor terminal — Google uses field). TTFB is\npulled out separately since it is server-side and often masquerades as LCP.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q14: How do I fix Core Web Vitals and page speed?"
+      },
+      {
+        "id": "d_cwv",
+        "type": "data",
+        "label": "Pull GSC CWV by URL group + CrUX field data + PSI lab for representative URLs"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Field data failing?"
+      },
+      {
+        "id": "t_lab",
+        "type": "terminal",
+        "label": "TERMINAL: Lab-only failure — field passes; log, monitor monthly, no urgent action"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Which vital fails (worst URL-group first)?"
+      },
+      {
+        "id": "a_ttfb",
+        "type": "action",
+        "label": "TTFB >800ms: audit server/CDN — cache hit ratio, origin latency, DB queries"
+      },
+      {
+        "id": "h_q26",
+        "type": "handoff",
+        "label": "HANDOFF: Q26 Server/hosting/CDN remediation"
+      },
+      {
+        "id": "a_lcp",
+        "type": "action",
+        "label": "LCP: identify LCP element per template; preload hero, optimize images (format/size/priority), remove render-blockers"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. LCP element type?"
+      },
+      {
+        "id": "a_lcp_img",
+        "type": "action",
+        "label": "Image LCP: AVIF/WebP + explicit dimensions + fetchpriority=high + CDN resize"
+      },
+      {
+        "id": "a_lcp_txt",
+        "type": "action",
+        "label": "Text LCP: inline critical CSS + font-display swap + preload fonts"
+      },
+      {
+        "id": "a_inp",
+        "type": "action",
+        "label": "INP: profile long tasks — break up JS, defer non-critical, remove heavy 3rd-party scripts"
+      },
+      {
+        "id": "h_q15",
+        "type": "handoff",
+        "label": "HANDOFF: Q15 Framework hydration dominates INP"
+      },
+      {
+        "id": "a_cls",
+        "type": "action",
+        "label": "CLS: reserve space (images/ads/embeds), avoid late-inject banners, stabilize fonts"
+      },
+      {
+        "id": "t_verify",
+        "type": "terminal",
+        "label": "TERMINAL: Deploy per template → verify PSI lab now, CrUX 28-day rolling green, GSC group passes"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_cwv",
+        "cond": ""
+      },
+      {
+        "from": "d_cwv",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_lab",
+        "cond": "1. Field passes, lab fails"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "2. Field failing (poor or needs improvement)"
+      },
+      {
+        "from": "s2",
+        "to": "a_ttfb",
+        "cond": "1. TTFB p75 >800ms (fix first — inflates LCP)"
+      },
+      {
+        "from": "a_ttfb",
+        "to": "h_q26",
+        "cond": "Server-side cause confirmed"
+      },
+      {
+        "from": "a_ttfb",
+        "to": "t_verify",
+        "cond": "Edge/cache fix applied"
+      },
+      {
+        "from": "s2",
+        "to": "a_lcp",
+        "cond": "2. LCP p75 >2.5s"
+      },
+      {
+        "from": "a_lcp",
+        "to": "s3",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_lcp_img",
+        "cond": "1. Image element"
+      },
+      {
+        "from": "s3",
+        "to": "a_lcp_txt",
+        "cond": "2. Text block"
+      },
+      {
+        "from": "a_lcp_img",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "a_lcp_txt",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_inp",
+        "cond": "3. INP p75 >200ms"
+      },
+      {
+        "from": "a_inp",
+        "to": "h_q15",
+        "cond": "1. Hydration/framework main-thread dominant"
+      },
+      {
+        "from": "a_inp",
+        "to": "t_verify",
+        "cond": "2. Script-level fixes applied"
+      },
+      {
+        "from": "s2",
+        "to": "a_cls",
+        "cond": "4. CLS p75 >0.1"
+      },
+      {
+        "from": "a_cls",
+        "to": "t_verify",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "Q15",
+    "title": "Is JavaScript rendering hurting my SEO?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q12, Q14, Q19"
+    },
+    "clarifying": [
+      "Framework (React/Next, Vue/Nuxt, Angular, other) and rendering mode (CSR/SSR/SSG)?",
+      "Symptom: content missing from index, links not discovered, or ranking underperformance?"
+    ],
+    "synonyms": [
+      "javascript SEO / Google can't see my content / CSR indexing problems",
+      "rendered HTML different / SPA not ranking"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Single decidable core test — diff raw HTML vs rendered DOM vs what GSC renders — then\nbranch on WHAT is missing (content, links, metadata) since each has a different fix and\ndifferent owner. AI crawlers mostly don't render JS, so a CSR finding also feeds Q25.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q15: Is JavaScript rendering hurting my SEO?"
+      },
+      {
+        "id": "d_diff",
+        "type": "data",
+        "label": "Pull triple diff: raw HTML vs rendered DOM vs GSC-rendered HTML for template samples"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Does critical content differ between raw and rendered?"
+      },
+      {
+        "id": "t_none",
+        "type": "terminal",
+        "label": "TERMINAL: Parity OK — JS not the issue; return findings to caller"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. What is client-side only?"
+      },
+      {
+        "id": "a_content",
+        "type": "action",
+        "label": "Body content client-only: enable SSR/SSG for template, or prerender at edge"
+      },
+      {
+        "id": "a_links",
+        "type": "action",
+        "label": "Internal links client-only (onclick/router): output real <a href> in server HTML"
+      },
+      {
+        "id": "h_q19",
+        "type": "handoff",
+        "label": "HANDOFF: Q19 Re-audit link graph after fix"
+      },
+      {
+        "id": "a_meta",
+        "type": "action",
+        "label": "Title/meta/canonical/schema set by JS: move to server response; JS-set canonicals are unreliable"
+      },
+      {
+        "id": "a_block",
+        "type": "action",
+        "label": "JS/CSS resources blocked by robots or 4xx: unblock, fix asset URLs"
+      },
+      {
+        "id": "t_block",
+        "type": "terminal",
+        "label": "TERMINAL: Validate GSC live test renders fully; request recrawl"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Rendering fixed at source or needs infra?"
+      },
+      {
+        "id": "a_ssr",
+        "type": "action",
+        "label": "Adopt SSR/SSG/ISR for SEO-critical routes"
+      },
+      {
+        "id": "a_pre",
+        "type": "action",
+        "label": "Interim: dynamic rendering/prerender service for bot user-agents (document as temporary)"
+      },
+      {
+        "id": "h_q14",
+        "type": "handoff",
+        "label": "HANDOFF: Q14 Hydration cost now dominates INP"
+      },
+      {
+        "id": "t_verify",
+        "type": "terminal",
+        "label": "TERMINAL: Verify GSC render parity + indexed text search (\"site: + unique phrase\") in 14d; notify Q25 (AI bots don't render JS)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_diff",
+        "cond": ""
+      },
+      {
+        "from": "d_diff",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "t_none",
+        "cond": "1. No meaningful diff"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "2. Critical elements differ"
+      },
+      {
+        "from": "s2",
+        "to": "a_content",
+        "cond": "1. Main content client-only"
+      },
+      {
+        "from": "s2",
+        "to": "a_links",
+        "cond": "2. Navigation/internal links client-only"
+      },
+      {
+        "from": "s2",
+        "to": "a_meta",
+        "cond": "3. Metadata/canonical/schema via JS"
+      },
+      {
+        "from": "s2",
+        "to": "a_block",
+        "cond": "4. Blocked JS/CSS resources break render"
+      },
+      {
+        "from": "a_block",
+        "to": "t_block",
+        "cond": ""
+      },
+      {
+        "from": "a_content",
+        "to": "s3",
+        "cond": ""
+      },
+      {
+        "from": "a_links",
+        "to": "h_q19",
+        "cond": ""
+      },
+      {
+        "from": "a_meta",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_ssr",
+        "cond": "1. Dev capacity for proper fix"
+      },
+      {
+        "from": "s3",
+        "to": "a_pre",
+        "cond": "2. Interim mitigation needed now"
+      },
+      {
+        "from": "a_ssr",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "a_ssr",
+        "to": "h_q14",
+        "cond": "Hydration regression detected"
+      },
+      {
+        "from": "a_pre",
+        "to": "t_verify",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "Q16",
+    "title": "How do I execute (or recover from) a site migration?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q4, Q12, Q14, Q17, Q22"
+    },
+    "clarifying": [
+      "Phase: planning, cutover imminent, or already migrated (and dropped)?",
+      "Migration type: domain, URL structure, replatform, redesign, or combination?",
+      "Full URL inventory + redirect map available?"
+    ],
+    "synonyms": [
+      "site migration SEO / domain change checklist / replatforming traffic loss",
+      "redesign killed traffic / URL structure change"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Phase is the master switch. Planning gets a gated checklist pipeline (benchmark →\nmapping → staging validation → cutover plan). Post-migration drop gets a forensic\npath ordered by kill-rate: redirects → directives → canonicals/internal links → parity.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q16: How do I execute or recover from a site migration?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Migration phase?"
+      },
+      {
+        "id": "a_bench",
+        "type": "action",
+        "label": "PLAN: Benchmark — export all URLs, rankings, traffic, links; freeze as baseline"
+      },
+      {
+        "id": "a_map",
+        "type": "action",
+        "label": "PLAN: Build 1:1 redirect map (no mass-to-home); flag consolidations explicitly"
+      },
+      {
+        "id": "a_stage",
+        "type": "action",
+        "label": "PLAN: Staging crawl — validate redirects, canonicals, robots, sitemaps, parity on staging"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Staging validation clean?"
+      },
+      {
+        "id": "a_fix",
+        "type": "action",
+        "label": "Fix staging failures; re-crawl until clean"
+      },
+      {
+        "id": "t_cut",
+        "type": "terminal",
+        "label": "TERMINAL: Cutover runbook — deploy redirects at go-live, new sitemaps both GSC properties, monitor crawl stats daily 14d, keep old sitemap temporarily"
+      },
+      {
+        "id": "d_post",
+        "type": "data",
+        "label": "POST: Pull pre/post crawl compare + GSC both properties + redirect coverage + log sample"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Dominant post-migration failure?"
+      },
+      {
+        "id": "a_redir",
+        "type": "action",
+        "label": "Missing/wrong redirects: generate gap list (old URLs → 404/wrong target) by traffic value"
+      },
+      {
+        "id": "h_q17",
+        "type": "handoff",
+        "label": "HANDOFF: Q17 Chains/loops introduced by migration"
+      },
+      {
+        "id": "a_noidx",
+        "type": "action",
+        "label": "Staging directives left live: remove noindex/robots disallow from production"
+      },
+      {
+        "id": "h_q22",
+        "type": "handoff",
+        "label": "HANDOFF: Q22 Robots/sitemap cleanup"
+      },
+      {
+        "id": "a_canon",
+        "type": "action",
+        "label": "Canonicals/internal links point to old URLs: rewrite sitewide to final URLs"
+      },
+      {
+        "id": "h_q14",
+        "type": "handoff",
+        "label": "HANDOFF: Q14 Performance regression on new stack"
+      },
+      {
+        "id": "h_q12",
+        "type": "handoff",
+        "label": "HANDOFF: Q12 New URLs not entering index"
+      },
+      {
+        "id": "h_q4",
+        "type": "handoff",
+        "label": "HANDOFF: Q4 Drop not migration-correlated — general diagnosis"
+      },
+      {
+        "id": "t_recover",
+        "type": "terminal",
+        "label": "TERMINAL: Fixes deployed — track recovery vs baseline weekly; expected 4-12 week window; escalate if <80% at 12w"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_bench",
+        "cond": "1. Planning"
+      },
+      {
+        "from": "a_bench",
+        "to": "a_map",
+        "cond": ""
+      },
+      {
+        "from": "a_map",
+        "to": "a_stage",
+        "cond": ""
+      },
+      {
+        "from": "a_stage",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_fix",
+        "cond": "1. Failures found"
+      },
+      {
+        "from": "a_fix",
+        "to": "a_stage",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "t_cut",
+        "cond": "2. Clean"
+      },
+      {
+        "from": "s1",
+        "to": "d_post",
+        "cond": "2. Migrated and traffic dropped"
+      },
+      {
+        "from": "s1",
+        "to": "a_stage",
+        "cond": "3. Cutover imminent — jump to validation"
+      },
+      {
+        "from": "d_post",
+        "to": "s3",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_redir",
+        "cond": "1. Redirect coverage <95% of traffic-weighted old URLs"
+      },
+      {
+        "from": "a_redir",
+        "to": "t_recover",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "h_q17",
+        "cond": "2. Chains/loops >5% of redirects"
+      },
+      {
+        "from": "s3",
+        "to": "a_noidx",
+        "cond": "3. Staging noindex/robots left live"
+      },
+      {
+        "from": "a_noidx",
+        "to": "h_q22",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_canon",
+        "cond": "4. Canonicals/internal links to old URLs"
+      },
+      {
+        "from": "a_canon",
+        "to": "t_recover",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "h_q14",
+        "cond": "5. CWV/TTFB regression vs baseline"
+      },
+      {
+        "from": "s3",
+        "to": "h_q12",
+        "cond": "6. New URLs stuck out of index"
+      },
+      {
+        "from": "s3",
+        "to": "h_q4",
+        "cond": "7. No migration-linked pattern"
+      }
+    ]
+  },
+  {
+    "id": "Q17",
+    "title": "How do I clean up redirects (chains, loops, wrong types)?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q13, Q16"
+    },
+    "clarifying": [
+      "Site-wide hygiene pass, or triggered by a migration/event?",
+      "Access to edit redirect rules (server config, CDN, CMS plugin)?"
+    ],
+    "synonyms": [
+      "redirect chains / redirect loops / 302 vs 301 audit",
+      "too many redirects / fix redirect hops"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "One data pull (full crawl redirect map), then rank issue classes by equity and crawl\ncost. Every terminal has a crawl-verifiable check, so this tree is fully automatable\nend-to-end — a good first candidate for hands-off runs.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q17: How do I clean up redirects?"
+      },
+      {
+        "id": "d_map",
+        "type": "data",
+        "label": "Crawl full redirect map: source → hops → final status, type per hop, inlink count per source"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Dominant redirect issue (by traffic-weighted count)?"
+      },
+      {
+        "id": "a_chain",
+        "type": "action",
+        "label": "Chains ≥2 hops: collapse every source to final destination in one hop"
+      },
+      {
+        "id": "a_loop",
+        "type": "action",
+        "label": "Loops / redirect-to-4xx: map broken endpoints, decide final target or kill URL"
+      },
+      {
+        "id": "a_302",
+        "type": "action",
+        "label": "Long-lived 302/307 on permanent moves: convert to 301/308"
+      },
+      {
+        "id": "a_var",
+        "type": "action",
+        "label": "Protocol/host variants (http, www, case, trailing slash) not canonicalized in one hop: consolidate rules"
+      },
+      {
+        "id": "a_int",
+        "type": "action",
+        "label": "Internal links pointing at redirecting URLs: rewrite links to final URLs (top pages first)"
+      },
+      {
+        "id": "h_q16",
+        "type": "handoff",
+        "label": "HANDOFF: Q16 Migration-scale redirect rebuild needed"
+      },
+      {
+        "id": "h_q13",
+        "type": "handoff",
+        "label": "HANDOFF: Q13 Verify crawl-waste reduction in logs after fix"
+      },
+      {
+        "id": "t_verify",
+        "type": "terminal",
+        "label": "TERMINAL: Re-crawl → 0 loops, chains <1%, all permanent moves 301/308; schedule quarterly re-crawl"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_map",
+        "cond": ""
+      },
+      {
+        "from": "d_map",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_chain",
+        "cond": "1. Chains ≥2 hops on >2% of redirects"
+      },
+      {
+        "from": "s1",
+        "to": "a_loop",
+        "cond": "2. Loops or redirect→4xx present (any)"
+      },
+      {
+        "from": "s1",
+        "to": "a_302",
+        "cond": "3. 302/307 older than 90d on permanent moves"
+      },
+      {
+        "from": "s1",
+        "to": "a_var",
+        "cond": "4. Variant normalization multi-hop"
+      },
+      {
+        "from": "s1",
+        "to": "a_int",
+        "cond": "5. >5% internal links hit redirects"
+      },
+      {
+        "from": "s1",
+        "to": "h_q16",
+        "cond": "6. Migration-scale breakage"
+      },
+      {
+        "from": "a_chain",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "a_loop",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "a_302",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "a_var",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "a_int",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "t_verify",
+        "to": "h_q13",
+        "cond": "Large site — confirm in logs"
+      }
+    ]
+  },
+  {
+    "id": "Q18",
+    "title": "How do I fix duplicate content and canonicalization?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q6, Q12, Q24"
+    },
+    "clarifying": [
+      "Technical duplicates (URL variants/templates) or editorial overlap (similar articles)?",
+      "Any syndication or multi-domain publishing involved?"
+    ],
+    "synonyms": [
+      "duplicate content fix / canonical tag issues / Google chose different canonical",
+      "same content multiple URLs / syndicated content SEO"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Sharp boundary with Q6: Q6 is editorial cannibalization (different pages, same query);\nQ18 is technical duplication (same content, different URLs). The intake decision enforces\nthat boundary so the two trees never overlap.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q18: How do I fix duplicate content and canonicalization?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Duplication type?"
+      },
+      {
+        "id": "h_q6",
+        "type": "handoff",
+        "label": "HANDOFF: Q6 Editorial overlap — cannibalization tree"
+      },
+      {
+        "id": "d_dup",
+        "type": "data",
+        "label": "Pull duplicate clusters: crawl similarity ≥85%, GSC \"duplicate\" exclusions, canonical vs indexed-canonical diffs"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Dominant technical duplicate class?"
+      },
+      {
+        "id": "a_param",
+        "type": "action",
+        "label": "Parameter/variant URLs duplicating canonicals"
+      },
+      {
+        "id": "h_q24",
+        "type": "handoff",
+        "label": "HANDOFF: Q24 Faceted/parameter strategy"
+      },
+      {
+        "id": "a_tmpl",
+        "type": "action",
+        "label": "Template near-dups (location/spec pages ≥85% same): add unique data blocks or consolidate + 301"
+      },
+      {
+        "id": "a_conf",
+        "type": "action",
+        "label": "Canonical conflicts: canonical ≠ Google-selected, canonical chains, canonical→noindex/redirect contradictions — fix to self-consistent rules"
+      },
+      {
+        "id": "a_synd",
+        "type": "action",
+        "label": "Syndication: enforce canonical-to-source (or noindex on partner), stagger publication, keep original richer"
+      },
+      {
+        "id": "a_dom",
+        "type": "action",
+        "label": "Cross-domain/staging dupes: canonical or noindex staging, consolidate microsites"
+      },
+      {
+        "id": "t_verify",
+        "type": "terminal",
+        "label": "TERMINAL: GSC duplicate exclusions -50% in 30d; Google-selected canonical = declared on sampled clusters"
+      },
+      {
+        "id": "h_q12",
+        "type": "handoff",
+        "label": "HANDOFF: Q12 If consolidation victims must re-enter index"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "h_q6",
+        "cond": "1. Different pages competing on same query (editorial)"
+      },
+      {
+        "from": "s1",
+        "to": "d_dup",
+        "cond": "2. Same content on multiple URLs (technical)"
+      },
+      {
+        "from": "d_dup",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_param",
+        "cond": "1. Parameter/variant URLs dominate clusters"
+      },
+      {
+        "from": "a_param",
+        "to": "h_q24",
+        "cond": "Facet-scale explosion"
+      },
+      {
+        "from": "a_param",
+        "to": "t_verify",
+        "cond": "Simple variants — canonical + one-hop redirect rules"
+      },
+      {
+        "from": "s2",
+        "to": "a_tmpl",
+        "cond": "2. Template near-duplicates"
+      },
+      {
+        "from": "a_tmpl",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_conf",
+        "cond": "3. Canonical implementation conflicts"
+      },
+      {
+        "from": "a_conf",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_synd",
+        "cond": "4. Syndicated content outranking source"
+      },
+      {
+        "from": "a_synd",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_dom",
+        "cond": "5. Cross-domain or staging duplication"
+      },
+      {
+        "from": "a_dom",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "t_verify",
+        "to": "h_q12",
+        "cond": "Consolidated winners not re-indexed in 30d"
+      }
+    ]
+  },
+  {
+    "id": "Q19",
+    "title": "How do I optimize internal linking and site architecture?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q6, Q8, Q13"
+    },
+    "clarifying": [
+      "Goal: fix defects (orphans/broken), boost specific priority pages, or restructure taxonomy?",
+      "List of priority URLs/clusters available?"
+    ],
+    "synonyms": [
+      "internal linking strategy / orphan pages / site structure SEO",
+      "link equity distribution / crawl depth too deep / topic clusters wiring"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Three distinct jobs sharing one link-graph pull: defect repair (objective, automatable),\nequity steering toward priority pages (needs a priority list), and architecture\nrestructure (biggest, feeds pillar-cluster work in Q8/Q6). Goal drives the branch, not\nsymptom guessing.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q19: How do I optimize internal linking and architecture?"
+      },
+      {
+        "id": "d_graph",
+        "type": "data",
+        "label": "Pull link graph: crawl (depth, inlinks, anchors) + GSC internal links + top-traffic and priority URLs"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Primary goal?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Dominant defect?"
+      },
+      {
+        "id": "a_orph",
+        "type": "action",
+        "label": "Orphans: link each from its hub/category + related posts; add to sitemap"
+      },
+      {
+        "id": "a_deep",
+        "type": "action",
+        "label": "Depth >4 clicks: flatten via hub pages, pagination fixes, breadcrumb + nav paths"
+      },
+      {
+        "id": "a_brok",
+        "type": "action",
+        "label": "Broken/redirected internal links: fix targets to final 200 URLs, top pages first"
+      },
+      {
+        "id": "t_defect",
+        "type": "terminal",
+        "label": "TERMINAL: Re-crawl → 0 orphans on indexable set, depth ≤4 for 95%, broken internal links = 0"
+      },
+      {
+        "id": "a_gap",
+        "type": "action",
+        "label": "Priority pages under-linked: compare inlinks vs sibling median; add contextual links from high-equity relevant pages (traffic + DR donors)"
+      },
+      {
+        "id": "a_anchor",
+        "type": "action",
+        "label": "Anchor audit: vary descriptive anchors, kill generic \"click here\", avoid one-anchor-everywhere"
+      },
+      {
+        "id": "t_boost",
+        "type": "terminal",
+        "label": "TERMINAL: Priority set inlinks ≥ sibling median; recheck rankings at 4w"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Restructure scope?"
+      },
+      {
+        "id": "a_pillar",
+        "type": "action",
+        "label": "Design pillar-cluster map: pillar (broad) ↔ supporting (narrow) bidirectional wiring"
+      },
+      {
+        "id": "h_q8",
+        "type": "handoff",
+        "label": "HANDOFF: Q8 Missing pillar/supporting content to write"
+      },
+      {
+        "id": "h_q6",
+        "type": "handoff",
+        "label": "HANDOFF: Q6 Overlapping cluster pages to consolidate first"
+      },
+      {
+        "id": "a_nav",
+        "type": "action",
+        "label": "Nav/taxonomy revision: category consolidation, faceted nav rules, footer link hygiene"
+      },
+      {
+        "id": "h_q13",
+        "type": "handoff",
+        "label": "HANDOFF: Q13 Validate crawl distribution after restructure"
+      },
+      {
+        "id": "t_arch",
+        "type": "terminal",
+        "label": "TERMINAL: New architecture live — re-crawl, verify depth/equity distribution, monitor 8w"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_graph",
+        "cond": ""
+      },
+      {
+        "from": "d_graph",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "1. Fix defects"
+      },
+      {
+        "from": "s2",
+        "to": "a_orph",
+        "cond": "1. Orphans (indexable, 0 inlinks)"
+      },
+      {
+        "from": "s2",
+        "to": "a_deep",
+        "cond": "2. Depth >4 for >10% of indexable URLs"
+      },
+      {
+        "from": "s2",
+        "to": "a_brok",
+        "cond": "3. Broken/redirecting internal links >2%"
+      },
+      {
+        "from": "a_orph",
+        "to": "t_defect",
+        "cond": ""
+      },
+      {
+        "from": "a_deep",
+        "to": "t_defect",
+        "cond": ""
+      },
+      {
+        "from": "a_brok",
+        "to": "t_defect",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_gap",
+        "cond": "2. Boost priority pages"
+      },
+      {
+        "from": "a_gap",
+        "to": "a_anchor",
+        "cond": ""
+      },
+      {
+        "from": "a_anchor",
+        "to": "t_boost",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s3",
+        "cond": "3. Restructure taxonomy"
+      },
+      {
+        "from": "s3",
+        "to": "a_pillar",
+        "cond": "1. Cluster wiring (content-led)"
+      },
+      {
+        "from": "a_pillar",
+        "to": "h_q8",
+        "cond": "Content gaps in map"
+      },
+      {
+        "from": "a_pillar",
+        "to": "h_q6",
+        "cond": "Overlaps in map"
+      },
+      {
+        "from": "a_pillar",
+        "to": "t_arch",
+        "cond": "Map complete"
+      },
+      {
+        "from": "s3",
+        "to": "a_nav",
+        "cond": "2. Navigation/taxonomy (template-led)"
+      },
+      {
+        "from": "a_nav",
+        "to": "h_q13",
+        "cond": "Large site"
+      },
+      {
+        "from": "a_nav",
+        "to": "t_arch",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "Q20",
+    "title": "How do I handle international SEO and hreflang?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q18, Q19"
+    },
+    "clarifying": [
+      "Existing international setup, or planning expansion?",
+      "Structure: ccTLDs, subfolders, subdomains, or mixed?",
+      "Symptom: wrong country/language version ranking, or duplication between locales?"
+    ],
+    "synonyms": [
+      "hreflang errors / wrong country page ranking / international SEO setup",
+      "multilingual site SEO / geo-targeting"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Planning and debugging are opposite motions. Planning locks the structural decision\n(subfolder default) before any tags. Debugging branches on hreflang validation output,\nwhich is machine-checkable, plus the two failure modes tags can't fix (duplication\nbetween same-language locales, weak local signals).",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q20: How do I handle international SEO and hreflang?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Planning or debugging?"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. PLAN: Structure choice constraints?"
+      },
+      {
+        "id": "a_sub",
+        "type": "action",
+        "label": "Default: subfolders on one domain (consolidated authority) + hreflang + GSC geo-targeting"
+      },
+      {
+        "id": "a_cc",
+        "type": "action",
+        "label": "ccTLDs only if legal/infra requires; accept split authority; plan per-country links"
+      },
+      {
+        "id": "a_impl",
+        "type": "action",
+        "label": "Implement hreflang: full return-tag matrix, x-default, self-reference, sitemap-based for scale"
+      },
+      {
+        "id": "t_plan",
+        "type": "terminal",
+        "label": "TERMINAL: Validate matrix with hreflang checker pre-launch; monitor International Targeting 30d"
+      },
+      {
+        "id": "d_val",
+        "type": "data",
+        "label": "DEBUG: Pull hreflang validation + GSC per-locale performance + duplicate clusters across locales"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Dominant failure?"
+      },
+      {
+        "id": "a_ret",
+        "type": "action",
+        "label": "Missing return tags / invalid codes (en-UK→en-GB): regenerate matrix from locale registry"
+      },
+      {
+        "id": "a_conf",
+        "type": "action",
+        "label": "Canonical vs hreflang conflict (canonical crossing locales): self-canonical per locale, keep hreflang between them"
+      },
+      {
+        "id": "h_q18",
+        "type": "handoff",
+        "label": "HANDOFF: Q18 Same-language locales are near-dups (en-US vs en-GB) — differentiate or consolidate"
+      },
+      {
+        "id": "a_wrong",
+        "type": "action",
+        "label": "Wrong version ranking despite valid tags: strengthen local signals — currency, address, local links, locale-specific content"
+      },
+      {
+        "id": "h_q19",
+        "type": "handoff",
+        "label": "HANDOFF: Q19 Locale sections orphaned from main architecture"
+      },
+      {
+        "id": "t_debug",
+        "type": "terminal",
+        "label": "TERMINAL: Validation errors = 0; right-version impression share per country rising over 60d"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "1. Planning expansion"
+      },
+      {
+        "from": "s2",
+        "to": "a_sub",
+        "cond": "1. No hard constraint (default)"
+      },
+      {
+        "from": "s2",
+        "to": "a_cc",
+        "cond": "2. Legal/localization mandates ccTLD"
+      },
+      {
+        "from": "a_sub",
+        "to": "a_impl",
+        "cond": ""
+      },
+      {
+        "from": "a_cc",
+        "to": "a_impl",
+        "cond": ""
+      },
+      {
+        "from": "a_impl",
+        "to": "t_plan",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "d_val",
+        "cond": "2. Setup exists — debugging"
+      },
+      {
+        "from": "d_val",
+        "to": "s3",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_ret",
+        "cond": "1. Return-tag/code errors dominate"
+      },
+      {
+        "from": "a_ret",
+        "to": "t_debug",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_conf",
+        "cond": "2. Canonical-hreflang conflicts"
+      },
+      {
+        "from": "a_conf",
+        "to": "t_debug",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "h_q18",
+        "cond": "3. Cross-locale duplication"
+      },
+      {
+        "from": "s3",
+        "to": "a_wrong",
+        "cond": "4. Valid tags, wrong version ranks"
+      },
+      {
+        "from": "a_wrong",
+        "to": "t_debug",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "h_q19",
+        "cond": "5. Locale sections under-linked"
+      }
+    ]
+  },
+  {
+    "id": "Q21",
+    "title": "Is mobile parity hurting my rankings?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q14, Q15"
+    },
+    "clarifying": [
+      "Separate mobile experience (adaptive/dynamic serving) or responsive?",
+      "Symptom: GSC mobile usability flags, or suspicion of hidden mobile content?"
+    ],
+    "synonyms": [
+      "mobile SEO / mobile usability errors / mobile-first indexing issues",
+      "site broken on mobile / content hidden on mobile"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Google indexes mobile-only, so parity IS the index. Compact tree: parity diff first\n(content/links/schema present on mobile?), then usability flags, then intrusive\ninterstitials. Speed issues route to Q14 rather than duplicating.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q21: Is mobile parity hurting my rankings?"
+      },
+      {
+        "id": "d_par",
+        "type": "data",
+        "label": "Pull mobile-vs-desktop diff (content, links, schema, meta) + GSC mobile usability + template samples"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Parity gap on mobile?"
+      },
+      {
+        "id": "a_cont",
+        "type": "action",
+        "label": "Content trimmed on mobile: restore full content (accordions fine — hidden-by-CSS is indexed; removed-from-DOM is not)"
+      },
+      {
+        "id": "a_link",
+        "type": "action",
+        "label": "Nav/links reduced on mobile: expose crawlable menu links in mobile DOM"
+      },
+      {
+        "id": "a_schema",
+        "type": "action",
+        "label": "Schema/meta desktop-only: serve identical structured data on mobile"
+      },
+      {
+        "id": "h_q15",
+        "type": "handoff",
+        "label": "HANDOFF: Q15 Mobile DOM built client-side — rendering audit"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Usability flags?"
+      },
+      {
+        "id": "a_ux",
+        "type": "action",
+        "label": "Fix viewport, tap targets, font size, content wider than screen per GSC flagged templates"
+      },
+      {
+        "id": "a_int",
+        "type": "action",
+        "label": "Intrusive interstitials/banners on entry: remove or reduce to compliant formats"
+      },
+      {
+        "id": "h_q14",
+        "type": "handoff",
+        "label": "HANDOFF: Q14 Mobile CWV failing"
+      },
+      {
+        "id": "t_verify",
+        "type": "terminal",
+        "label": "TERMINAL: Parity diff clean + GSC mobile usability 0 errors; re-inspect flagged templates in 14d"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_par",
+        "cond": ""
+      },
+      {
+        "from": "d_par",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_cont",
+        "cond": "1. Content missing from mobile DOM"
+      },
+      {
+        "from": "s1",
+        "to": "a_link",
+        "cond": "2. Links/nav missing on mobile"
+      },
+      {
+        "from": "s1",
+        "to": "a_schema",
+        "cond": "3. Schema/meta missing on mobile"
+      },
+      {
+        "from": "s1",
+        "to": "h_q15",
+        "cond": "4. Mobile DOM client-rendered"
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "5. Parity OK — check usability"
+      },
+      {
+        "from": "a_cont",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "a_link",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "a_schema",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_ux",
+        "cond": "1. GSC usability errors present"
+      },
+      {
+        "from": "s2",
+        "to": "a_int",
+        "cond": "2. Intrusive interstitials"
+      },
+      {
+        "from": "s2",
+        "to": "h_q14",
+        "cond": "3. Mobile CWV failing"
+      },
+      {
+        "from": "s2",
+        "to": "t_verify",
+        "cond": "4. Clean"
+      },
+      {
+        "from": "a_ux",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "a_int",
+        "to": "t_verify",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "Q22",
+    "title": "Are robots.txt, sitemaps, and directives configured correctly?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q12, Q13, Q25"
+    },
+    "clarifying": [
+      "Triggered by a specific incident (blocked pages, sitemap errors in GSC) or hygiene pass?",
+      "Who owns robots.txt / sitemap generation (CMS auto, dev, CDN)?"
+    ],
+    "synonyms": [
+      "robots.txt audit / sitemap errors / blocked by robots",
+      "noindex audit / crawl directives conflict / XML sitemap fix"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Directives are where single-line changes cause site-wide damage. Tree checks the three\nlayers in order of blast radius: robots.txt (crawl), meta/header directives (index),\nsitemaps (discovery) — then conflict detection ACROSS layers, the class of bug audits\nusually miss (e.g. noindex + blocked = noindex never seen).",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q22: Are robots, sitemaps, and directives configured correctly?"
+      },
+      {
+        "id": "d_pull",
+        "type": "data",
+        "label": "Pull robots.txt (+history), meta-robots/X-Robots-Tag crawl export, all sitemaps + GSC sitemap report"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Highest-blast-radius issue?"
+      },
+      {
+        "id": "a_rob",
+        "type": "action",
+        "label": "robots.txt blocks valuable paths (or blocks CSS/JS): rewrite rules; test each against sample URLs"
+      },
+      {
+        "id": "a_noidx",
+        "type": "action",
+        "label": "Unintended noindex (template/CMS default, staging leftover): locate rule source, remove"
+      },
+      {
+        "id": "a_conflict",
+        "type": "action",
+        "label": "Cross-layer conflicts: blocked+noindex (directive unseen), canonical→blocked URL, sitemap lists noindexed/redirected URLs — resolve to one consistent intent per URL"
+      },
+      {
+        "id": "a_smap",
+        "type": "action",
+        "label": "Sitemap defects: 404/redirect/noindex URLs listed, stale lastmod, >50k unsplit, missing sections — regenerate from canonical indexable set only"
+      },
+      {
+        "id": "a_bot",
+        "type": "action",
+        "label": "Bot-specific rules audit: verify Googlebot/Bingbot not throttled by CDN/WAF rules"
+      },
+      {
+        "id": "h_q25",
+        "type": "handoff",
+        "label": "HANDOFF: Q25 AI crawler access rules (GPTBot, ClaudeBot, PerplexityBot)"
+      },
+      {
+        "id": "t_verify",
+        "type": "terminal",
+        "label": "TERMINAL: robots tester passes samples; GSC sitemap success, indexable set = sitemap set; add robots.txt change alerting"
+      },
+      {
+        "id": "h_q12",
+        "type": "handoff",
+        "label": "HANDOFF: Q12 Recover pages deindexed while blocked"
+      },
+      {
+        "id": "h_q13",
+        "type": "handoff",
+        "label": "HANDOFF: Q13 Directive changes shift crawl distribution — verify in logs"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_pull",
+        "cond": ""
+      },
+      {
+        "from": "d_pull",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_rob",
+        "cond": "1. robots.txt blocking valuable/render paths"
+      },
+      {
+        "from": "s1",
+        "to": "a_noidx",
+        "cond": "2. Unintended noindex at scale"
+      },
+      {
+        "from": "s1",
+        "to": "a_conflict",
+        "cond": "3. Cross-layer conflicts"
+      },
+      {
+        "from": "s1",
+        "to": "a_smap",
+        "cond": "4. Sitemap defects only"
+      },
+      {
+        "from": "s1",
+        "to": "a_bot",
+        "cond": "5. Bot access/CDN throttling"
+      },
+      {
+        "from": "a_rob",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "a_noidx",
+        "to": "h_q12",
+        "cond": "Pages were deindexed"
+      },
+      {
+        "from": "a_noidx",
+        "to": "t_verify",
+        "cond": "Caught before deindexation"
+      },
+      {
+        "from": "a_conflict",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "a_smap",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "a_bot",
+        "to": "h_q25",
+        "cond": "AI bots affected too"
+      },
+      {
+        "from": "a_bot",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "t_verify",
+        "to": "h_q13",
+        "cond": "Large site — confirm crawl shift"
+      }
+    ]
+  },
+  {
+    "id": "Q23",
+    "title": "How do I implement structured data / schema at scale?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q11, Q26"
+    },
+    "clarifying": [
+      "Goal: rich results (SERP features), entity/brand strength (GEO), or fixing errors?",
+      "Which page types matter (product, article, FAQ, org, local, review)?"
+    ],
+    "synonyms": [
+      "schema markup / structured data errors / rich results not showing",
+      "JSON-LD implementation / FAQ schema / product schema"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Schema serves two masters now: Google rich results AND AI-engine entity grounding. Goal\nsplits the tree. Error-fixing is mechanical (GSC enhancement reports drive it); rollout\nis template-driven; entity work hands finish to Q11 where its impact is measured.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q23: How do I implement structured data at scale?"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Goal?"
+      },
+      {
+        "id": "d_err",
+        "type": "data",
+        "label": "Pull GSC enhancement reports + Rich Results tests + Site Audit schema warnings"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Error class?"
+      },
+      {
+        "id": "a_inv",
+        "type": "action",
+        "label": "Invalid/missing required fields per type: fix template generators, not pages"
+      },
+      {
+        "id": "a_mis",
+        "type": "action",
+        "label": "Markup-content mismatch (schema claims not visible on page): align or remove — spam-policy risk"
+      },
+      {
+        "id": "a_dep",
+        "type": "action",
+        "label": "Deprecated types (FAQ/HowTo eligibility changes): keep for AI grounding, drop rich-result expectation"
+      },
+      {
+        "id": "t_err",
+        "type": "terminal",
+        "label": "TERMINAL: Re-validate via Rich Results test; GSC errors → 0; watch feature impressions 28d"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. ROLLOUT: Which page types first? (by traffic × feature eligibility)"
+      },
+      {
+        "id": "a_tx",
+        "type": "action",
+        "label": "Transactional: Product/Offer/Review + price/availability feeds parity"
+      },
+      {
+        "id": "a_ed",
+        "type": "action",
+        "label": "Editorial: Article + author Person + FAQ blocks where genuine questions exist"
+      },
+      {
+        "id": "a_org",
+        "type": "action",
+        "label": "Foundation: Organization + WebSite + Breadcrumb sitewide, single @id graph"
+      },
+      {
+        "id": "t_roll",
+        "type": "terminal",
+        "label": "TERMINAL: Deploy per template → validate samples → monitor GSC enhancements + feature CTR"
+      },
+      {
+        "id": "a_ent",
+        "type": "action",
+        "label": "ENTITY: Build consistent entity graph — Organization @id referenced by all pages, sameAs to Wikidata/profiles, Person authors with credentials"
+      },
+      {
+        "id": "h_q11",
+        "type": "handoff",
+        "label": "HANDOFF: Q11 Measure entity impact on AI visibility"
+      },
+      {
+        "id": "h_q26",
+        "type": "handoff",
+        "label": "HANDOFF: Q26 Schema injection/hacked markup found"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "d_err",
+        "cond": "1. Fix existing errors"
+      },
+      {
+        "from": "d_err",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_inv",
+        "cond": "1. Invalid/missing fields"
+      },
+      {
+        "from": "s2",
+        "to": "a_mis",
+        "cond": "2. Markup-content mismatch"
+      },
+      {
+        "from": "s2",
+        "to": "a_dep",
+        "cond": "3. Deprecated feature types"
+      },
+      {
+        "from": "s2",
+        "to": "h_q26",
+        "cond": "4. Unrecognized spam markup (possible hack)"
+      },
+      {
+        "from": "a_inv",
+        "to": "t_err",
+        "cond": ""
+      },
+      {
+        "from": "a_mis",
+        "to": "t_err",
+        "cond": ""
+      },
+      {
+        "from": "a_dep",
+        "to": "t_err",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s3",
+        "cond": "2. Roll out for rich results"
+      },
+      {
+        "from": "s3",
+        "to": "a_tx",
+        "cond": "1. Transactional pages"
+      },
+      {
+        "from": "s3",
+        "to": "a_ed",
+        "cond": "2. Editorial pages"
+      },
+      {
+        "from": "s3",
+        "to": "a_org",
+        "cond": "3. No foundation yet — start here"
+      },
+      {
+        "from": "a_tx",
+        "to": "t_roll",
+        "cond": ""
+      },
+      {
+        "from": "a_ed",
+        "to": "t_roll",
+        "cond": ""
+      },
+      {
+        "from": "a_org",
+        "to": "t_roll",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_ent",
+        "cond": "3. Entity/brand strength for AI search"
+      },
+      {
+        "from": "a_ent",
+        "to": "h_q11",
+        "cond": ""
+      }
+    ]
+  },
+  {
+    "id": "Q24",
+    "title": "How do I control faceted navigation and parameter URLs?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q12, Q13, Q18, Q19"
+    },
+    "clarifying": [
+      "Rough count of parameter/facet URL combinations vs canonical pages?",
+      "Do any facet combinations have real search demand (e.g. \"red running shoes\")?"
+    ],
+    "synonyms": [
+      "faceted navigation SEO / filter URLs indexed / parameter handling",
+      "URL explosion from filters / crawl trap"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "The one problem where BOTH over-blocking and under-blocking are expensive. Core move:\ndemand test per facet dimension — facets with search demand become indexable landing\npages (whitelist), everything else gets systematically excluded. Most trees treat facets\nas pure waste; this one extracts the value first.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q24: How do I control faceted navigation and parameter URLs?"
+      },
+      {
+        "id": "d_inv",
+        "type": "data",
+        "label": "Pull parameter inventory: crawl URL patterns + log hits per pattern + GSC indexed variants + keyword demand per facet dimension"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Is there index/crawl damage today?"
+      },
+      {
+        "id": "a_white",
+        "type": "action",
+        "label": "Demand test per facet dimension: map facet values to query volume (e.g. brand, color+category)"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Facet dimensions with real demand?"
+      },
+      {
+        "id": "a_land",
+        "type": "action",
+        "label": "Whitelist: make demand facets crawlable, indexable, self-canonical, unique title/H1/copy, in sitemap + internal links"
+      },
+      {
+        "id": "h_q19",
+        "type": "handoff",
+        "label": "HANDOFF: Q19 Wire whitelisted facet pages into architecture"
+      },
+      {
+        "id": "a_block",
+        "type": "action",
+        "label": "Exclude the rest: canonical to parent + robots-block crawl-trap params (sort, view, session) + nofollow-free clean URLs in nav"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Already-indexed junk variants at scale?"
+      },
+      {
+        "id": "a_clean",
+        "type": "action",
+        "label": "Cleanup sequence: noindex first → wait for deindex → then robots-block (blocking first freezes noindex unseen)"
+      },
+      {
+        "id": "t_verify",
+        "type": "terminal",
+        "label": "TERMINAL: Indexed variants -80% in 60d; facet crawl share <10% of hits; whitelisted pages indexed"
+      },
+      {
+        "id": "h_q13",
+        "type": "handoff",
+        "label": "HANDOFF: Q13 Confirm crawl reallocation in logs"
+      },
+      {
+        "id": "h_q18",
+        "type": "handoff",
+        "label": "HANDOFF: Q18 Variant duplication beyond facets"
+      },
+      {
+        "id": "h_q12",
+        "type": "handoff",
+        "label": "HANDOFF: Q12 Whitelisted pages not entering index"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_inv",
+        "cond": ""
+      },
+      {
+        "from": "d_inv",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_white",
+        "cond": "1. Yes — variants indexed or >20% crawl share"
+      },
+      {
+        "from": "s1",
+        "to": "a_white",
+        "cond": "2. Preventive design (new build)"
+      },
+      {
+        "from": "a_white",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_land",
+        "cond": "1. Dimensions with demand exist"
+      },
+      {
+        "from": "a_land",
+        "to": "h_q19",
+        "cond": ""
+      },
+      {
+        "from": "a_land",
+        "to": "a_block",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_block",
+        "cond": "2. No demand dimensions"
+      },
+      {
+        "from": "a_block",
+        "to": "s3",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_clean",
+        "cond": "1. Junk variants indexed at scale"
+      },
+      {
+        "from": "a_clean",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "t_verify",
+        "cond": "2. Not indexed — prevention only"
+      },
+      {
+        "from": "t_verify",
+        "to": "h_q13",
+        "cond": "Large site"
+      },
+      {
+        "from": "t_verify",
+        "to": "h_q18",
+        "cond": "Duplication persists beyond facets"
+      },
+      {
+        "from": "t_verify",
+        "to": "h_q12",
+        "cond": "Whitelisted pages stuck"
+      }
+    ]
+  },
+  {
+    "id": "Q25",
+    "title": "Can AI crawlers access and use my site? (technical GEO)",
+    "meta": {
+      "category": "GEO / AI search",
+      "status": "new",
+      "handoffs": "Q11, Q15, Q22"
+    },
+    "clarifying": [
+      "Goal: be citable by AI engines, or also control/limit AI training use?",
+      "CDN/WAF in front of the site (Cloudflare, Akamai) and who controls its bot rules?"
+    ],
+    "synonyms": [
+      "GPTBot blocked / AI crawler access / llms.txt",
+      "ChatGPT can't read my site / Perplexity not crawling / bot blocking audit"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "The technical half of GEO — Q11 assumes engines can read the site; this tree verifies it.\nKey facts encoded: most AI crawlers execute no JS (CSR sites are invisible to them), CDN\nbot-defense silently blocks them, and retrieval bots (ChatGPT-User, PerplexityBot) matter\nmore for citations than training bots (GPTBot). Policy decision (allow vs block training)\nis an explicit branch, not an assumption.",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q25: Can AI crawlers access and use my site?"
+      },
+      {
+        "id": "d_bot",
+        "type": "data",
+        "label": "Pull 30d logs filtered to AI UAs (GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, PerplexityBot, Google-Extended, Bytespider) + robots rules + CDN/WAF bot settings"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Are AI crawlers reaching the site?"
+      },
+      {
+        "id": "a_rob",
+        "type": "action",
+        "label": "Blocked in robots.txt: set per-bot policy — allow retrieval/search bots for citability; training bots per company policy"
+      },
+      {
+        "id": "a_cdn",
+        "type": "action",
+        "label": "Blocked by CDN/WAF (403/challenge, zero hits despite no robots block): whitelist verified AI bot IP ranges / enable verified-bots category"
+      },
+      {
+        "id": "s2",
+        "type": "decision",
+        "label": "S2. Bots arrive — can they READ the content?"
+      },
+      {
+        "id": "h_q15",
+        "type": "handoff",
+        "label": "HANDOFF: Q15 Content client-rendered — AI bots get empty shell"
+      },
+      {
+        "id": "a_pay",
+        "type": "action",
+        "label": "Content behind paywall/login/geo-wall: expose citable summary layer (lead paragraphs, key stats) or accept invisibility"
+      },
+      {
+        "id": "a_struct",
+        "type": "action",
+        "label": "Readability pass: answer-first sections, clean HTML hierarchy, dateModified, stable anchors; optional llms.txt index"
+      },
+      {
+        "id": "s3",
+        "type": "decision",
+        "label": "S3. Access + readability OK — are retrieval bots actually fetching?"
+      },
+      {
+        "id": "a_fresh",
+        "type": "action",
+        "label": "Low retrieval-bot hits: strengthen discovery — sitemaps fresh, key pages linked from crawled hubs, Bing indexation verified (Copilot + ChatGPT rely on Bing)"
+      },
+      {
+        "id": "t_verify",
+        "type": "terminal",
+        "label": "TERMINAL: AI bot hit share healthy on key pages; re-measure Atlas citation rate at 14/28d"
+      },
+      {
+        "id": "h_q11",
+        "type": "handoff",
+        "label": "HANDOFF: Q11 Access clean — visibility gap is content/entity side"
+      },
+      {
+        "id": "h_q22",
+        "type": "handoff",
+        "label": "HANDOFF: Q22 Robots rewrite alongside broader directive cleanup"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_bot",
+        "cond": ""
+      },
+      {
+        "from": "d_bot",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_rob",
+        "cond": "1. Blocked by robots.txt rules"
+      },
+      {
+        "from": "a_rob",
+        "to": "h_q22",
+        "cond": "Broader directive issues found"
+      },
+      {
+        "from": "a_rob",
+        "to": "s2",
+        "cond": "Policy set, bots allowed"
+      },
+      {
+        "from": "s1",
+        "to": "a_cdn",
+        "cond": "2. Blocked at CDN/WAF layer"
+      },
+      {
+        "from": "a_cdn",
+        "to": "s2",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "s2",
+        "cond": "3. Bots reaching site"
+      },
+      {
+        "from": "s2",
+        "to": "h_q15",
+        "cond": "1. Critical content client-rendered"
+      },
+      {
+        "from": "s2",
+        "to": "a_pay",
+        "cond": "2. Content walled"
+      },
+      {
+        "from": "a_pay",
+        "to": "a_struct",
+        "cond": ""
+      },
+      {
+        "from": "s2",
+        "to": "a_struct",
+        "cond": "3. Readable — optimize structure"
+      },
+      {
+        "from": "a_struct",
+        "to": "s3",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "a_fresh",
+        "cond": "1. Retrieval-bot hits low on key pages"
+      },
+      {
+        "from": "a_fresh",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "s3",
+        "to": "t_verify",
+        "cond": "2. Healthy fetch patterns"
+      },
+      {
+        "from": "t_verify",
+        "to": "h_q11",
+        "cond": "Citations still lag after 28d"
+      }
+    ]
+  },
+  {
+    "id": "Q26",
+    "title": "Is a server, security, or availability problem hurting SEO?",
+    "meta": {
+      "category": "Technical",
+      "status": "new",
+      "handoffs": "Q7, Q9, Q14, Q22"
+    },
+    "clarifying": [
+      "Active incident (site down/hacked now) or intermittent/historical pattern?",
+      "Stack access: hosting, CDN, DNS, certificate management?"
+    ],
+    "synonyms": [
+      "5xx errors SEO / site down Google impact / hacked site spam pages",
+      "SSL certificate error / mixed content / DNS issues crawling"
+    ],
+    "structure": "",
+    "changes": [],
+    "rationale": "Ordered by urgency class: active compromise (hacked = existential, spam URLs + cloaking\nmust die fast) > availability (5xx patterns Google throttles on) > certificate/protocol >\nmixed content. Hack branch includes the GSC security-issues + cleanup + review-request\nsequence, then hands history-check to Q7 (spam-update interplay).",
+    "nodes": [
+      {
+        "id": "root",
+        "type": "root",
+        "label": "Q26: Is a server, security, or availability problem hurting SEO?"
+      },
+      {
+        "id": "d_sec",
+        "type": "data",
+        "label": "Pull GSC Security Issues + crawl stats (5xx trend) + uptime + cert status + logs (error spikes, odd URL creation)"
+      },
+      {
+        "id": "s1",
+        "type": "decision",
+        "label": "S1. Issue class (worst first)?"
+      },
+      {
+        "id": "a_hack",
+        "type": "action",
+        "label": "COMPROMISE: quarantine — patch entry, remove injected pages/links/cloaking, rotate credentials"
+      },
+      {
+        "id": "a_hack2",
+        "type": "action",
+        "label": "Serve 410 for spam URLs, purge caches/CDN, resubmit clean sitemap"
+      },
+      {
+        "id": "a_hack3",
+        "type": "action",
+        "label": "GSC: request security review; document timeline"
+      },
+      {
+        "id": "h_q7",
+        "type": "handoff",
+        "label": "HANDOFF: Q7 If manual action / spam-update overlap on hacked period"
+      },
+      {
+        "id": "a_5xx",
+        "type": "action",
+        "label": "5xx/availability: correlate error windows with crawl-rate drops; fix origin capacity, cache errors NEVER (no cached 5xx), tune CDN failover"
+      },
+      {
+        "id": "h_q14",
+        "type": "handoff",
+        "label": "HANDOFF: Q14 Chronic slowness beyond errors"
+      },
+      {
+        "id": "a_dns",
+        "type": "action",
+        "label": "DNS/certificate: fix expiry/chain/CAA; enforce single canonical host over 301; HSTS after validation"
+      },
+      {
+        "id": "a_mixed",
+        "type": "action",
+        "label": "Mixed content / http leftovers: rewrite asset URLs, upgrade-insecure-requests, fix hardcoded http links"
+      },
+      {
+        "id": "a_waf",
+        "type": "action",
+        "label": "Overzealous WAF/rate limits throttling Googlebot: verify bot IPs, exempt verified crawlers"
+      },
+      {
+        "id": "h_q22",
+        "type": "handoff",
+        "label": "HANDOFF: Q22 Bot access rules audit"
+      },
+      {
+        "id": "t_verify",
+        "type": "terminal",
+        "label": "TERMINAL: 5xx <0.5% of crawls, cert valid, GSC security clean; add uptime + robots + cert alerting"
+      },
+      {
+        "id": "h_q9",
+        "type": "handoff",
+        "label": "HANDOFF: Q9 Full technical re-audit after incident closed"
+      }
+    ],
+    "edges": [
+      {
+        "from": "root",
+        "to": "d_sec",
+        "cond": ""
+      },
+      {
+        "from": "d_sec",
+        "to": "s1",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_hack",
+        "cond": "1. Compromise: GSC security issue / injected spam URLs / cloaking"
+      },
+      {
+        "from": "a_hack",
+        "to": "a_hack2",
+        "cond": ""
+      },
+      {
+        "from": "a_hack2",
+        "to": "a_hack3",
+        "cond": ""
+      },
+      {
+        "from": "a_hack3",
+        "to": "h_q7",
+        "cond": "Manual action or spam-update overlap"
+      },
+      {
+        "from": "a_hack3",
+        "to": "t_verify",
+        "cond": "Clean review passed"
+      },
+      {
+        "from": "s1",
+        "to": "a_5xx",
+        "cond": "2. 5xx spike or crawl-rate collapse"
+      },
+      {
+        "from": "a_5xx",
+        "to": "h_q14",
+        "cond": "Chronic performance root cause"
+      },
+      {
+        "from": "a_5xx",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_dns",
+        "cond": "3. DNS/certificate faults"
+      },
+      {
+        "from": "a_dns",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_mixed",
+        "cond": "4. Mixed content / protocol debris"
+      },
+      {
+        "from": "a_mixed",
+        "to": "t_verify",
+        "cond": ""
+      },
+      {
+        "from": "s1",
+        "to": "a_waf",
+        "cond": "5. WAF throttling crawlers"
+      },
+      {
+        "from": "a_waf",
+        "to": "h_q22",
+        "cond": ""
+      },
+      {
+        "from": "t_verify",
+        "to": "h_q9",
+        "cond": "Post-incident full audit"
+      }
+    ]
+  }
+]

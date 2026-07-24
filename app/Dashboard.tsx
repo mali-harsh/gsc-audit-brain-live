@@ -360,7 +360,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               )}
-              <div className="scopeNote"><strong>Evidence first.</strong> MASTER_BRAIN_V2 handles deterministic SEO and content checks. {useAi ? "Cloudflare AI is on for plain-language explanations." : "AI stays optional and never changes the rule outcome."}</div>
+              <div className="scopeNote"><strong>Evidence first.</strong> The SearchOps workflow engine handles deterministic SEO and content checks. {useAi ? "Cloudflare AI is on for plain-language explanations." : "AI stays optional and never changes the rule outcome."}</div>
             </section>
 
             <section className="summary">
@@ -383,6 +383,8 @@ export default function Dashboard() {
 
             <div className="pieceTableWrap">
               {pieces.length ? (
+                <>
+                <p className="tableHint">▸ Click any row to open its full fix plan, page evidence, and AI explanation.</p>
                 <table className="pieceTable">
                   <thead><tr><th>Content piece</th><th>Funnel</th>{GROUPS.map((group) => <th key={group}>{group}</th>)}<th>Issues</th><th>Priority</th><th>Status</th><th>Owner</th></tr></thead>
                   <tbody>
@@ -401,6 +403,7 @@ export default function Dashboard() {
                     ))}
                   </tbody>
                 </table>
+                </>
               ) : (
                 <div className="empty"><span>◎</span><strong>No content pieces yet</strong><p>Paste URLs above and run the first audit.</p></div>
               )}
@@ -470,7 +473,7 @@ export default function Dashboard() {
 
         {mode === "brain" && (
           <>
-            <section className="brainHeader"><div><span>MASTER_BRAIN_V2.JSON</span><h1>One inspectable source of truth</h1><p>46 indexing, SEO, content, onboarding, and operations workflows. Click any row to inspect its decisions and outcomes.</p></div><strong>{workflows.length || 46}<small>workflows online</small></strong></section>
+            <section className="brainHeader"><div><span>SEARCHOPS WORKFLOW ENGINE</span><h1>One inspectable source of truth</h1><p>46 indexing, SEO, content, onboarding, and operations workflows. Click any row to inspect its decisions and outcomes.</p></div><strong>{workflows.length || 46}<small>workflows online</small></strong></section>
             <section className="filters brainFilters"><input value={workflowQuery} onChange={(event) => setWorkflowQuery(event.target.value)} placeholder="Search workflow ID, title, category…" /></section>
             <div className="workflowList">{workflows.filter((workflow) => `${workflow.id} ${workflow.title} ${workflow.category}`.toLowerCase().includes(workflowQuery.toLowerCase())).map((workflow) => <button key={workflow.id} onClick={() => void openWorkflow(workflow.id)}><span className="workflowChip">{workflow.id}</span><span><strong>{workflow.title}</strong><small>{workflow.category}</small></span><span>{workflow.decisionCount} decisions</span><span>{workflow.terminalCount} outcomes</span><em>→</em></button>)}</div>
           </>
@@ -511,7 +514,7 @@ function PieceRows({
   return (
     <>
       <tr className={`pieceRow ${piece.fixStatus === "Fixed" ? "fixed" : ""}`} onClick={onToggle}>
-        <td><strong>{piece.title}</strong><small>{piece.url}</small>{piece.error && <em className="fetchError">Fetch error</em>}</td>
+        <td className="pieceTitleCell"><span className={`rowChevron${open ? " open" : ""}`} aria-hidden="true">▸</span><span className="pieceTitleText"><strong>{piece.title}</strong><small>{piece.url}</small>{piece.error && <em className="fetchError">Fetch error</em>}</span></td>
         <td><span className="funnel">{piece.funnel}</span></td>
         {GROUPS.map((group) => {
           const count = piece.groupCounts[group] ?? 0;

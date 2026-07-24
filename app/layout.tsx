@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const origin = `${protocol}://${host}`;
   const title = "SearchOps Workbench";
   const description =
-    "Audit technical SEO and content, import Google Search Console exports, run MASTER_BRAIN_V2 workflows, and manage every fix in one durable workbench.";
+    "Audit technical SEO and content, import Google Search Console exports, run SearchOps workflow-engine checks, and manage every fix in one durable workbench.";
   return {
     title,
     description,

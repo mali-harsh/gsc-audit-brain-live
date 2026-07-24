@@ -16,6 +16,14 @@ type WorkflowSummary = {
 };
 
 const GROUPS = ["AEO", "GEO", "TECH", "FRESH"] as const;
+// Display labels for the group columns. The data key stays "TECH" (technical SEO);
+// we just show it to users as "SEO".
+const GROUP_LABELS: Record<(typeof GROUPS)[number], string> = {
+  AEO: "AEO",
+  GEO: "GEO",
+  TECH: "SEO",
+  FRESH: "FRESH",
+};
 const PRIORITIES = ["P0", "P1", "P2", "P3", "OK"] as const;
 const GUIDED_GSC_DEMO: ImportRow[] = [
   { url: "https://example.com/server-error", reason: "Server error (5xx)", last_crawl_time: "2026-07-20T10:00:00Z", in_sitemap: "yes" },
@@ -464,7 +472,7 @@ export default function Dashboard() {
             <div className="pieceTableWrap">
               {pieces.length ? (
                 <table className="pieceTable">
-                  <thead><tr><th>Content piece</th><th>Funnel</th>{GROUPS.map((group) => <th key={group}>{group}</th>)}<th>Issues</th><th>Priority</th><th>Status</th><th>Owner</th></tr></thead>
+                  <thead><tr><th>Content piece</th><th>Funnel</th>{GROUPS.map((group) => <th key={group}>{GROUP_LABELS[group]}</th>)}<th>Issues</th><th>Priority</th><th>Status</th><th>Owner</th></tr></thead>
                   <tbody>
                     {filteredPieces.map((piece) => (
                       <PieceRows
@@ -687,7 +695,7 @@ function PieceRows({
               {GROUPS.map((group) => {
                 const issues = piece.issues.filter((finding) => finding.group === group);
                 if (!issues.length) return null;
-                return <section key={group}><h4>{group} · {issues.length}</h4>{issues.map((finding) => <div className="issue" key={finding.code}><p><strong>{finding.symptom}</strong><span className="codeChip">CODE</span><button onClick={() => void onWorkflow(finding.workflowId)}>{finding.workflowId}</button></p><small>{finding.rootCause} → <i>{finding.fix}</i></small></div>)}</section>;
+                return <section key={group}><h4>{GROUP_LABELS[group]} · {issues.length}</h4>{issues.map((finding) => <div className="issue" key={finding.code}><p><strong>{finding.symptom}</strong><span className="codeChip">CODE</span><button onClick={() => void onWorkflow(finding.workflowId)}>{finding.workflowId}</button></p><small>{finding.rootCause} → <i>{finding.fix}</i></small></div>)}</section>;
               })}
             </div>
             <div className="pieceActions">
